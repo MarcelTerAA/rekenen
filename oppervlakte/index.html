@@ -101,6 +101,15 @@
   .timer{font-family:var(--mono);font-size:30px;color:var(--accent2);border:1px solid var(--line);border-radius:10px;padding:4px 14px;cursor:pointer;background:var(--panel)}
   .term{font-family:var(--mono);font-size:20px;color:var(--blue)}
   svg text{font-family:var(--sans)}
+  .bgphoto{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.22;z-index:0;pointer-events:none}
+  .bgphoto::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--bg) 0%,rgba(14,22,38,.4) 60%,rgba(14,22,38,.1) 100%)}
+  #content > *{position:relative;z-index:1}
+  #content > .bgphoto{position:absolute;z-index:0}
+  .photo{display:block;object-fit:cover;border-radius:16px;border:1px solid var(--line);box-shadow:0 18px 40px rgba(0,0,0,.45);background:var(--panel)}
+  .pz{border-radius:50%;overflow:hidden;box-shadow:0 16px 36px rgba(0,0,0,.55);background:#d99a3e;flex:none}
+  .pz img{width:100%;height:100%;object-fit:cover;transform:scale(1.32);display:block}
+  .credit{position:absolute !important;left:60px;bottom:4px;font-size:13px;color:#6f819f;z-index:2}
+  .credit a{color:#6f819f}
 </style>
 </head>
 <body>
@@ -135,6 +144,26 @@ const L = (tag, txt) => {
 const C = t => `<span class="calc">${t}</span>`;
 const PH = (k) => `<!--phase:${k}-->`;
 const TIMER = `<span class="timer" data-timer="10">⏱ 10 s</span>`;
+
+/* ============ foto's (Wikimedia Commons, vrij te gebruiken) ============ */
+const WM = "https://upload.wikimedia.org/wikipedia/commons/thumb/";
+const PHOTOS = {
+  pizza:   {src:WM+"c/c6/Pizza_Margherita_%28%29.JPG/1280px-Pizza_Margherita_%28%29.JPG", by:"Lombroso", lic:"CC BY-SA 4.0", page:"https://commons.wikimedia.org/wiki/File:Pizza_Margherita_().JPG"},
+  lan:     {src:WM+"f/f7/Winter_2004_DreamHack_LAN_Party.jpg/1280px-Winter_2004_DreamHack_LAN_Party.jpg", by:"Toffelginkgo", lic:"CC BY-SA 3.0", page:"https://commons.wikimedia.org/wiki/File:Winter_2004_DreamHack_LAN_Party.jpg"},
+  monitors:{src:WM+"2/27/Dual_monitor_setup_in_a_gaming_room_with_keyboard_and_mouse_in_focus.jpg/1280px-Dual_monitor_setup_in_a_gaming_room_with_keyboard_and_mouse_in_focus.jpg", by:"Shixart1985", lic:"CC BY 2.0", page:"https://commons.wikimedia.org/wiki/File:Dual_monitor_setup_in_a_gaming_room_with_keyboard_and_mouse_in_focus.jpg"},
+  office:  {src:WM+"f/ff/Lone_office_worker_%28Unsplash%29.jpg/1280px-Lone_office_worker_%28Unsplash%29.jpg", by:"Jadon Barnes", lic:"CC0", page:"https://commons.wikimedia.org/wiki/File:Lone_office_worker_(Unsplash).jpg"},
+  field:   {src:WM+"2/29/Aerial_view_of_the_Chatham_Town_FC_football_pitch.jpg/1280px-Aerial_view_of_the_Chatham_Town_FC_football_pitch.jpg", by:"Stephen Kennard", lic:"CC BY-SA 3.0", page:"https://commons.wikimedia.org/wiki/File:Aerial_view_of_the_Chatham_Town_FC_football_pitch.jpg"},
+  dc:      {src:WM+"0/0c/Google_Data_Center%2C_Council_Bluffs_Iowa_%2849062863796%29.jpg/1280px-Google_Data_Center%2C_Council_Bluffs_Iowa_%2849062863796%29.jpg", by:"Chad Davis", lic:"CC BY 2.0", page:"https://commons.wikimedia.org/wiki/File:Google_Data_Center,_Council_Bluffs_Iowa_(49062863796).jpg"},
+  lab:     {src:WM+"4/40/Computer_lab_showing_desktop_PCs_warwick.jpg/1280px-Computer_lab_showing_desktop_PCs_warwick.jpg", by:"Mike1024", lic:"publiek domein", page:"https://commons.wikimedia.org/wiki/File:Computer_lab_showing_desktop_PCs_warwick.jpg"},
+  cafe:    {src:WM+"8/8d/Cafeteria_2.jpg/1280px-Cafeteria_2.jpg", by:"Tejeshmavinamar", lic:"CC BY-SA 4.0", page:"https://commons.wikimedia.org/wiki/File:Cafeteria_2.jpg"},
+  ap:      {src:WM+"f/f8/Unifi_AC_Lite_Access_Point.jpg/1280px-Unifi_AC_Lite_Access_Point.jpg", by:"ServerGuruBrisbane", lic:"CC BY-SA 4.0", page:"https://commons.wikimedia.org/wiki/File:Unifi_AC_Lite_Access_Point.jpg"},
+  code:    {src:WM+"7/7f/Code_on_computer_monitor_%28Unsplash%29.jpg/1280px-Code_on_computer_monitor_%28Unsplash%29.jpg", by:"Markus Spiske", lic:"CC0", page:"https://commons.wikimedia.org/wiki/File:Code_on_computer_monitor_(Unsplash).jpg"}
+};
+// foto als blok; verdwijnt netjes als er geen internet is
+const PH_IMG = (k, w, h, extra="") => `<img class="photo" src="${PHOTOS[k].src}" alt="" style="width:${w}px;height:${h}px;${extra}" onerror="this.style.display='none'">`;
+const BG = k => `<div class="bgphoto" style="background-image:url('${PHOTOS[k].src}')"></div>`;
+const CREDIT = (...ks) => `<div class="credit">Foto's via Wikimedia Commons: ${ks.map(k=>`<a href="${PHOTOS[k].page}" target="_blank" rel="noopener">${PHOTOS[k].by}</a> (${PHOTOS[k].lic})`).join(" · ")}</div>`;
+const PIZZA = (d) => `<div class="pz" style="width:${d}px;height:${d}px"><img src="${PHOTOS.pizza.src}" alt="" onerror="this.style.display='none'"></div>`;
 
 function phases(){
   return `<div class="phases">
@@ -263,12 +292,14 @@ const LESSONS = {
         ${Q("4","Schat: hoeveel m² is dit lokaal?","meten!")}
       </div>`},
     {step:2, html:`<div class="kicker">Servicedesk</div><h1>Er komt een ticket binnen…</h1>
-      <div class="ticket"><div class="hd"><span>TICKET #2611</span><span>Prioriteit: normaal</span><span class="st">NIEUW</span></div>
+      <div class="ticket" style="max-width:1000px"><div class="hd"><span>TICKET #2611</span><span>Prioriteit: normaal</span><span class="st">NIEUW</span></div>
       <h3>Nieuwe flexruimte</h3>
       <p>Wij verhuizen naar een ruimte van <b>9 m bij 6 m</b>.</p>
       <p>In een hoek komt een <b>printerhoek van 2 m bij 2 m</b>.</p>
       <p>Per werkplek rekenen wij <b>6 m²</b>.</p>
-      <p class="hl">Hoeveel werkplekken kunnen jullie klaarmaken?</p></div>`},
+      <p class="hl">Hoeveel werkplekken kunnen jullie klaarmaken?</p></div>
+      ${R(PH_IMG("office",420,300,"position:absolute;right:60px;top:20px;transform:rotate(2deg)"))}
+      ${CREDIT("office")}`},
     {step:3, html:`<div class="kicker">Uitleg</div><h1>Oppervlakte = hoeveel vierkantjes passen erin?</h1>
       <div class="row"><div>${SVG_ROOMS.replace('viewBox="0 0 900 420" width="900" height="420"','viewBox="0 0 470 420" width="470" height="420"')}</div>
       <div class="col">
@@ -302,18 +333,20 @@ const LESSONS = {
   words:["vierkante meter <i>m²</i>","hectare <i>ha</i>","vierkante kilometer <i>km²</i>"],
   slides:[
     {step:0, html:`<div class="kicker">Welkom!</div><h1>Hoeveel klaslokalen passen in een voetbalveld?</h1>
-      <div class="row"><div>${SVG_FIELD}</div><div class="col" style="padding-top:60px"><p class="big">10? 50? 100?</p><p class="muted">Wat denk jij?</p></div></div>`},
+      <div class="row"><div>${PH_IMG("field",820,540)}</div><div class="col" style="padding-top:60px"><p class="big">10? 50? 100?</p><p class="muted">Wat denk jij?</p></div></div>
+      ${CREDIT("field")}`},
     {step:3, html:`<div class="kicker">Uitleg</div><h1>Grote oppervlaktes: hectare en km²</h1>
-      <div class="row"><div>${SVG_FIELD}</div><div class="col">
+      <div class="row"><div>${PH_IMG("field",620,420)}</div><div class="col">
         ${R(`<p>Voetbalveld: ${C("105 × 68 ≈ 7.000 m²")}</p>`)}
         ${R(`<p>Lokaal ≈ 56 m² → ruim <span class="hl">120 lokalen</span>!</p>`)}
         ${R(`<p><span class="hl">1 ha</span> = 100 m × 100 m = <b>10.000 m²</b></p>`)}
         ${R(`<p><span class="hl">1 km²</span> = 1.000 m × 1.000 m = <b>100 ha</b></p>`)}
         ${R(`<p class="muted">ICT: een groot datacenter staat op tientallen hectares.</p>`)}
-      </div></div>`},
+      </div></div>
+      ${CREDIT("field")}`},
     {step:4, phased:true, html:`<div class="kicker">Samen oplossen</div>${phases()}
       <div class="think">
-        ${PH(1)}${L("q","Een terrein voor een datacenter is 300 m bij 200 m. Hoeveel hectare is dat?")}
+        ${PH(1)}${L("q","Een terrein voor een datacenter is 300 m bij 200 m.<br>Hoeveel hectare is dat?")}
         ${L("d","Ik weet: 1 ha = 10.000 m². Eerst m², dan delen.")}
         ${estimateBox()}
         ${PH(2)}${L("d",`${C("300 × 200 = 60.000 m²")}`)}
@@ -321,7 +354,9 @@ const LESSONS = {
         ${PH(3)}${L("q","Klopt dat? Hoeveel voetbalvelden is dat ongeveer?")}
         ${L("d","1 veld ≈ 0,7 ha → 6 ha ≈ 8 à 9 voetbalvelden. Dat kan kloppen.")}
         ${R(`<div class="answer">✔ Het terrein is <b>6 ha</b></div>`)}
-      </div>`},
+      </div>
+      ${PH_IMG("dc",500,300,"position:absolute;right:60px;top:150px")}
+      ${CREDIT("dc")}`},
     {step:5, html: COMMON_FF(2,"Oppervlakte 1",["Vierkante kilometers en hectares"],"1 ha = <b>10.000 m²</b><br>1 km² = <b>100 ha</b>")}
   ]
 },
@@ -331,8 +366,13 @@ const LESSONS = {
   code:"ID.26ST.A · 27015 ICT support technician",
   words:["omtrek <i>m</i>","oppervlakte <i>m²</i>","straal","diameter"],
   slides:[
-    {step:0, html:`<div class="kicker">Pizza na de LAN-party</div><h1>Wat geeft méér pizza?</h1>${SVG_PIZZA}
-      <p class="big" style="margin-top:10px">1 pizza van 40 cm <span class="muted">of</span> 2 pizza's van 28 cm?</p>`},
+    {step:0, html:`${BG("lan")}<div class="kicker">Pizza na de LAN-party</div><h1>Wat geeft méér pizza?</h1>
+      <div style="display:flex;gap:120px;align-items:center;margin:20px 0 10px 40px">
+        <div style="text-align:center">${PIZZA(300)}<p class="big" style="margin:14px 0 0"><b>1 ×</b> 40 cm</p></div>
+        <div style="text-align:center"><div style="display:flex;gap:28px">${PIZZA(210)}${PIZZA(210)}</div><p class="big" style="margin:14px 0 0"><b>2 ×</b> 28 cm</p></div>
+      </div>
+      <p class="big">Wat kies jij?</p>
+      ${CREDIT("lan","pizza")}`},
     {step:1, html:`<div class="kicker">Hersenen aan</div><h1>Omtrek (O) of oppervlakte (A)? ${TIMER}</h1>
       <div class="row"><div class="col"><div class="qa">
         ${Q("1","Hek om de tuin","O")}
@@ -346,20 +386,22 @@ const LESSONS = {
         ${Q("8","3,14 × 10","31,4")}
       </div></div></div>`},
     {step:2, html:`<div class="kicker">Werkorder</div><h1>Jij gaat dit lokaal klaarmaken</h1>
-      <div class="ticket"><div class="hd"><span>WERKORDER #4471</span><span>Lokaal B2.14</span><span class="st">OPEN</span></div>
+      <div class="ticket" style="max-width:1000px"><div class="hd"><span>WERKORDER #4471</span><span>Lokaal B2.14</span><span class="st">OPEN</span></div>
       <h3>Kabelgoot voor flexlokaal</h3>
       <p>Lokaal: <b>8 m × 6 m</b>.</p>
       <p>Kabelgoot langs <b>alle muren</b>, behalve bij de dubbele deur (<b>2 m</b> breed).</p>
       <p>Kabelgoot per stuk van <b>3 m</b>, <b>€ 12,50</b> per stuk.</p>
-      <p class="hl">Hoeveel stukken bestel je? Wat kost dat?</p></div>`},
-    {step:3, html:`<div class="kicker">Uitleg</div><h1>Rand of vlak?</h1>
+      <p class="hl">Hoeveel stukken bestel je? Wat kost dat?</p></div>
+      ${R(PH_IMG("lab",440,310,"position:absolute;right:60px;top:20px;transform:rotate(2deg)"))}
+      ${CREDIT("lab")}`},
+    {step:3, html:`<div class="kicker">Uitleg</div><h1>Rand of vlak?</h1>${CREDIT("pizza")}
       <div class="row"><div class="col">
         ${R(`<p><span class="hl">Omtrek</span> = de rand → alles optellen → <b>m</b><br>${C("rechthoek: 2 × (l + b)")}</p>`)}
         ${R(`<p><span class="hl">Oppervlakte</span> = het vlak → <b>m²</b><br>${C("rechthoek: l × b")}</p>`)}
         ${R(`<p><span class="hl">Driehoek</span> = halve rechthoek<br>${C("(basis × hoogte) : 2")} <span class="muted">— hoogte staat recht, niet schuin!</span></p>`)}
         ${R(`<p><span class="hl">Cirkel</span> &nbsp;straal r = midden → rand · diameter = 2 × r<br>${C("omtrek = 3,14 × diameter")} &nbsp; ${C("opp. = 3,14 × r × r")}</p>`)}
       </div><div class="col" style="flex:.9">
-        ${R(`<div class="card"><p style="margin:0" class="hl">En de pizza?</p>
+        ${R(`<div class="card"><div style="display:flex;gap:16px;align-items:center;float:right">${PIZZA(110)}${PIZZA(78)}${PIZZA(78)}</div><p style="margin:0" class="hl">En de pizza?</p>
         <p>${C("3,14 × 20 × 20 = 1.256 cm²")}</p>
         <p>${C("2 × 3,14 × 14 × 14 = 1.231 cm²")}</p>
         <p class="ok">1 grote pizza wint (net)!</p>
@@ -388,9 +430,9 @@ const LESSONS = {
   code:"ID.26SE.A · 27016 ICT system engineer",
   words:["omtrek <i>m</i>","oppervlakte <i>m²</i>","straal <i>r</i>","π ≈ 3,14"],
   slides:[
-    {step:0, html:`<div class="kicker">Klopt dit?</div><h1>27 inch is 3 inch meer dan 24 inch…</h1>${SVG_MONITORS}
+    {step:0, html:`${BG("monitors")}<div class="kicker">Klopt dit?</div><h1>27 inch is 3 inch meer dan 24 inch…</h1>${SVG_MONITORS}
       <p class="big">…dus het scherm is ongeveer <span class="hl">12% groter</span>.</p>
-      <p class="muted">Klopt dit? Ja of nee?</p>`},
+      <p class="muted">Klopt dit? Ja of nee?</p>${CREDIT("monitors")}`},
     {step:1, html:`<div class="kicker">Hersenen aan · eerst stil opschrijven</div><h1>Opwarmen ${TIMER}</h1>
       <div class="qa">
         ${Q("1","Straal 5 cm. Diameter?","10 cm")}
@@ -400,12 +442,15 @@ const LESSONS = {
         ${Q("5","3,14 × 100","314")}
       </div>`},
     {step:2, html:`<div class="kicker">Netwerkontwerp</div><h1>Vraag van de klant</h1>
-      <div class="ticket"><div class="hd"><span>DESIGN-REQUEST #0815</span><span>Wifi kantine</span><span class="st">ANALYSE</span></div>
+      <div class="ticket" style="max-width:930px"><div class="hd"><span>DESIGN-REQUEST #0815</span><span>Wifi kantine</span><span class="st">ANALYSE</span></div>
       <h3>Is één access point genoeg?</h3>
       <p>Kantine: <b>20 m × 15 m</b>.</p>
       <p>Eén access point <b>midden in de ruimte</b>.</p>
       <p>Bereik volgens leverancier: <b>10 m</b>.</p>
-      <p class="muted" style="font-size:24px">Vereenvoudigd: in het echt hangt bereik af van muren, materialen en storing.</p></div>`},
+      <p class="muted" style="font-size:24px">Vereenvoudigd: in het echt hangt bereik af van muren,<br>materialen en storing.</p></div>
+      ${PH_IMG("cafe",480,320,"position:absolute;right:60px;top:20px;transform:rotate(2deg)")}
+      ${R(PH_IMG("ap",250,250,"position:absolute;right:300px;top:370px;transform:rotate(-3deg)"))}
+      ${CREDIT("cafe","ap")}`},
     {step:3, html:`<div class="kicker">Uitleg</div><h1>Oppervlakte groeit met het kwadraat</h1>
       <div class="row"><div class="col">
         ${R(`<p>Omtrek = rand (<b>m</b>) · oppervlakte = vlak (<b>m²</b>)</p>`)}
@@ -443,9 +488,9 @@ const LESSONS = {
   words:["omtrek <i>m</i>","oppervlakte <i>m²</i>","straal <i>r</i>","π ≈ 3,14"],
   wordsEN:["perimeter","area","radius","diameter","circumference"],
   slides:[
-    {step:0, html:`<div class="kicker">Klopt dit?</div><h1>27 inch is 3 inch meer dan 24 inch…</h1>${SVG_MONITORS}
+    {step:0, html:`${BG("monitors")}<div class="kicker">Klopt dit?</div><h1>27 inch is 3 inch meer dan 24 inch…</h1>${SVG_MONITORS}
       <p class="big">…dus het scherm is ongeveer <span class="hl">12% groter</span>.</p>
-      <p class="muted">Klopt dit? Ja of nee? Het antwoord komt bij stap 4.</p>`},
+      <p class="muted">Klopt dit? Ja of nee? Het antwoord komt bij stap 4.</p>${CREDIT("monitors")}`},
     {step:1, html:`<div class="kicker">Hersenen aan</div><h1>Opwarmen ${TIMER}</h1>
       <div class="qa">
         ${Q("1","Straal 5 cm. Diameter?","10 cm")}
@@ -454,14 +499,14 @@ const LESSONS = {
         ${Q("4","Hoeveel m² is 1 ha?","10.000")}
         ${Q("5","3,14 × 100","314")}
       </div>`},
-    {step:2, html:`<div class="kicker">Backlog</div><h1>Nieuwe user story</h1>
+    {step:2, html:`${BG("code")}<div class="kicker">Backlog</div><h1>Nieuwe user story</h1>
       <div class="row"><div class="col"><div class="ticket"><div class="hd"><span>STORY #142</span><span>Profiel</span><span class="st">TO DO</span></div>
       <h3>Als gebruiker wil ik een ronde profielfoto</h3>
       <p>Upload: <b>400 × 400 px</b>.</p>
       <p>De cirkel past <b>precies</b> in het vierkant.</p>
       <p class="hl">Hoeveel pixels gooien we weg? Welk deel van de foto is dat?</p>
       <p class="muted" style="font-size:24px">Game dev? Zelfde som: een ronde hitbox in een vierkant sprite-vak.</p></div></div>
-      <div>${SVG_AVATAR}</div></div>`},
+      <div>${SVG_AVATAR}</div></div>${CREDIT("code")}`},
     {step:3, html:`<div class="kicker">Uitleg</div><h1>Oppervlakte groeit met het kwadraat</h1>
       <div class="row"><div class="col">
         ${R(`<p>Omtrek = rand (<b>m</b>) · oppervlakte = vlak (<b>m²</b>)</p>`)}
