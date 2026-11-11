@@ -166,7 +166,7 @@
 
 <script>
 /* ============ helpers ============ */
-const STEPS = ["Deur","Opwarmen","ICT-koppeling","Uitleg","Samen oplossen","Aan de slag"];
+const STEPS = ["Deur","Opwarmen","Uitleg","ICT-koppeling","Samen oplossen","Aan de slag"];
 const $ = s => document.querySelector(s);
 const R = (html, cls="", style="") => `<div class="rev ${cls}" style="${style}">${html}</div>`;
 const Q = (n, q, a) => R(`<div class="q"><span class="n">${n}</span><span>${q}</span><span class="a rev">${a}</span></div>`);
@@ -382,7 +382,7 @@ const LESSONS = {
         ${Q("5","De trap is 3 m bij 2 m. Dus de vloer is… 48 − ?","48 − 6 = 42 m²")}
       </div>`,
      notes:N(NH("Opwarmen · 3 min"),NL("Iedereen schrijft het antwoord op (wisbordje of kladblok). Pas daarna het antwoord laten zien.","Vraag 4: let op de eenheid. Zegt iemand '15 meter'? Vraag dan: is dat de rand of de vloer?","Vraag 5 lost het raadsel van de deur op. Laat iemand uitleggen waarom je 6 eraf haalt."))},
-    {step:2, html:`<div class="kicker">Servicedesk</div><h1>Er komt een ticket binnen…</h1>
+    {step:3, html:`<div class="kicker">Servicedesk</div><h1>Er komt een ticket binnen…</h1>
       <div class="row" style="gap:30px"><div class="col"><div class="ticket"><div class="hd"><span>TICKET #2702</span><span>Facilitair</span><span class="st">NIEUW</span></div>
       <h3>Nieuwe vloer reparatieruimte</h3>
       <p>In de reparatieruimte maken wij laptops open.</p>
@@ -392,16 +392,17 @@ const LESSONS = {
       <p class="hl">Hoeveel dozen moeten wij bestellen?</p></div></div>
       <div>${lroom({W:7,H:5,cw:3,ch:2,s:62,cutName:"opslag"})}</div></div>`,
      notes:N(NH("ICT-koppeling · 1 min"),NL("Antistatisch of ESD: statische elektriciteit kan chips kapotmaken. Daarom heeft een reparatieruimte vaak een speciale vloer en polsbandjes.","Lees het ticket samen. Vraag: wat zie je op de tekening? Twee maten ontbreken (de vraagtekens)."))},
-    {step:3, html:`<div class="kicker">Uitleg</div><h1>Geen rechthoek? Maak er rechthoeken van!</h1>
-      <div class="row"><div>${lroom({W:7,H:5,cw:3,ch:2,s:58,cutName:"opslag",showQ:false,hulp:true,grid:true})}</div>
+    {step:2, html:`<div class="kicker">Uitleg</div><h1>Geen rechthoek? Maak er rechthoeken van!</h1>
+      <div class="row"><div>${lroom({W:8,H:6,cw:3,ch:2,s:52,cutName:"trap",showQ:false,hulp:true,grid:true})}</div>
       <div class="col">
         ${R(`<p><span class="hl">Rechthoek</span>: lengte × breedte = m²</p>`)}
         ${R(`<p><span class="hl">Hulplijn</span>: knip de vorm in rechthoeken.</p>`)}
-        ${R(`<p><span class="hl">Maat mist?</span> Reken hem uit.<br>${C("7 − 3 = 4 m")} &nbsp; ${C("5 − 2 = 3 m")}</p>`)}
-        ${R(`<p class="muted">Of: de grote rechthoek <b>min</b> het stuk dat eruit is.</p>`)}
+        ${R(`<p><span class="hl">Maat mist?</span> Reken hem uit.<br>${C("8 − 3 = 5 m")} &nbsp; ${C("6 − 2 = 4 m")}</p>`)}
+        ${R(`<p>${C("5 × 6 = 30")} + ${C("3 × 4 = 12")} = <span class="ok">42 m²</span></p>`)}
+        ${R(`<p class="muted">Of: de grote rechthoek <b>min</b> het stuk dat eruit is: ${C("48 − 6 = 42")}</p>`)}
         ${R(`<p>Waar heb je dit nodig? Vloer, tapijt of verf voor <b>je eigen kamer</b>. Een kamer is bijna nooit een perfecte rechthoek.</p>`)}
       </div></div>`,
-     notes:N(NH("Uitleg · 2 min"),NL("De gele stippellijn is de hulplijn. Die mag ook horizontaal: dan krijg je 7 × 3 = 21 en 4 × 2 = 8, samen ook 29.","Rekentaal: lengte, breedte, oppervlakte, vierkante meter, hulplijn.","Studenten van de Entree en anderstalige studenten: wijs bij elk woord iets aan in de tekening."))},
+     notes:N(NH("Uitleg · 2 min"),NL("De gele stippellijn is de hulplijn. Dit is de vorm van de deurvraag. De hulplijn mag ook horizontaal: 8 × 4 = 32 en 5 × 2 = 10, samen ook 42.","Rekentaal: lengte, breedte, oppervlakte, vierkante meter, hulplijn.","Studenten van de Entree en anderstalige studenten: wijs bij elk woord iets aan in de tekening."))},
     {step:4, phased:true, html:`<div class="kicker">Samen oplossen · ticket #2702</div>${phases()}
       <div class="row" style="gap:20px"><div class="col"><div class="think">
         ${PH(1)}${L("q","Wat moeten we weten?")}
@@ -433,7 +434,7 @@ const LESSONS = {
       <div class="row"><div>${SVG_TWO_ROOMS(false)}</div>
       <div class="col" style="padding-top:80px"><p class="big">Ja of nee?</p><p class="muted">In welke kamer zou jij willen gamen?</p></div></div>`,
      notes:N(NH("Deur"),NL("Check eerst de omtrek: A = 9 + 1 + 9 + 1 = 20 m, B = 5 + 5 + 5 + 5 = 20 m.","Oppervlakte: A = 9 m², B = 25 m². Zelfde rand, heel andere vloer!"))},
-    {step:3, html:`<div class="kicker">Uitleg</div><h1>Rand of vlak?</h1>
+    {step:2, html:`<div class="kicker">Uitleg</div><h1>Rand of vlak?</h1>
       <div class="row"><div>${SVG_TWO_ROOMS(true).replace('viewBox="0 0 900 360" width="900" height="360"','viewBox="0 0 900 360" width="700" height="280"')}</div>
       <div class="col">
         ${R(`<p><span class="hl">Omtrek</span> = de rand.<br>Alle zijden optellen → <b>m</b></p>`)}
@@ -480,7 +481,7 @@ const LESSONS = {
         ${Q("6","Blikje energydrink: welke vorm?","cilinder")}
       </div></div></div>`,
      notes:N(NH("Opwarmen · 3 min"),NL("Vraag 1 komt terug bij de uitleg: 10 × 10 × 10 cm = 1.000 cm³ = 1 liter.","Vraag 6: ruimtelijke figuren noemen. Wat nog meer? Kubus (dobbelsteen), balk (pc-kast), bol, piramide."))},
-    {step:2, html:`<div class="kicker">Werkorder</div><h1>De serverruimte wordt te warm</h1>
+    {step:3, html:`<div class="kicker">Werkorder</div><h1>De serverruimte wordt te warm</h1>
       <div class="row" style="gap:30px"><div class="col"><div class="ticket"><div class="hd"><span>WERKORDER #4502</span><span>Serverruimte</span><span class="st">OPEN</span></div>
       <h3>Is deze ventilator genoeg?</h3>
       <p>Ruimte: <b>4 m × 3 m</b>, <b>2,5 m</b> hoog.</p>
@@ -489,7 +490,7 @@ const LESSONS = {
       <p class="muted" style="font-size:24px">Vereenvoudigd. In het echt rekent een installateur ook met de warmte van de servers.</p></div></div>
       <div>${SVG_SERVERROOM}</div></div>`,
      notes:N(NH("ICT-koppeling · 1 min"),NL("Echte ventilatoren staan in de webshop met 'm³/h'. Dat is de hoeveelheid lucht per uur.","Vraag: wie heeft weleens een serverkast of switchkast gezien die heet werd?"))},
-    {step:3, html:`<div class="kicker">Uitleg</div><h1>Inhoud = hoeveel past erin?</h1>
+    {step:2, html:`<div class="kicker">Uitleg</div><h1>Inhoud = hoeveel past erin?</h1>
       <div class="row"><div class="col">
         ${R(`<p><span class="hl">Balk</span>: lengte × breedte × hoogte</p>`)}
         ${R(LADDER(true))}
@@ -544,7 +545,7 @@ const LESSONS = {
         ${Q("6","2³","8")}
       </div></div></div>`,
      notes:N(NH("Opwarmen · 3 min"),NL("Vraag 3: cc = kubieke centimeter. Een scooter van 50 cc heeft een cilinderinhoud van 50 ml.","Vraag 6 is de sleutel voor de deurvraag."))},
-    {step:2, html:`${BG("dc")}<div class="kicker">Datacenter</div><h1>Servers in een bad</h1>
+    {step:3, html:`${BG("dc")}<div class="kicker">Datacenter</div><h1>Servers in een bad</h1>
       <div class="row" style="gap:30px"><div class="col"><div class="ticket"><div class="hd"><span>CHANGE #7731</span><span>Koeling</span><span class="st">PLAN</span></div>
       <h3>Immersion cooling: hoeveel vloeistof?</h3>
       <p>Servers hangen in een bak met <b>koelvloeistof</b>. Die geleidt geen stroom.</p>
@@ -554,7 +555,7 @@ const LESSONS = {
       <p class="hl">Hoeveel vaten bestel je?</p></div></div>
       <div style="padding-top:60px">${SVG_TANK}</div></div>${CREDIT("dc")}`,
      notes:N(NH("ICT-koppeling · 1 min"),NL("Immersion cooling bestaat echt. Het wordt steeds vaker gebruikt voor servers met veel rekenkracht, zoals AI-servers. Lucht kan die warmte niet meer goed afvoeren.","Vraag aan cloud- en networkstudenten: waarom zou je dit willen? (stiller, minder energie voor koeling, meer servers per m²)"))},
-    {step:3, html:`<div class="kicker">Uitleg</div><h1>Inhoud groeit met de derde macht</h1>
+    {step:2, html:`<div class="kicker">Uitleg</div><h1>Inhoud groeit met de derde macht</h1>
       <div class="row"><div class="col">
         ${R(`<p><span class="hl">Balk</span> ${C("l × b × h")}</p>`)}
         ${R(LADDER(true))}
@@ -591,12 +592,11 @@ const LESSONS = {
 "sd": {
   code:"ID.26SD · 25998 Software developer",
   words:["inhoud","m³","dm³ = liter","cm³ = ml = cc"],
-  wordsEN:["volume","cubic metre","litre","millilitre","cuboid"],
   slides:[
     {step:0, html:`<div class="kicker">Klopt dit?</div><h1>"De grote doos is 2× zo groot, dus er past 2 liter in."</h1>
       <div class="row"><div>${SVG_CUBES(false)}</div>
-      <div class="col" style="padding-top:60px"><p class="big">Klopt dit?</p><p class="muted">Ja of nee? Het antwoord komt bij stap 4.</p></div></div>`,
-     notes:N(NH("Deur"),NL("Antwoord: 2 × 2 × 2 = <b>8 liter</b>.","TTO: 'Is the big box really twice as big?'"))},
+      <div class="col" style="padding-top:60px"><p class="big">Klopt dit?</p><p class="muted">Ja of nee? Het antwoord komt bij de uitleg.</p></div></div>`,
+     notes:N(NH("Deur"),NL("Antwoord: 2 × 2 × 2 = <b>8 liter</b>."))},
     {step:1, html:`<div class="kicker">Hersenen aan</div><h1>Opwarmen ${TIMER()}</h1>
       <div class="row"><div class="col"><div class="qa">
         ${Q("1","1 m³ = … dm³","1.000")}
@@ -608,7 +608,7 @@ const LESSONS = {
         ${Q("6","2³","8")}
       </div></div></div>`,
      notes:N(NH("Opwarmen · 3 min"),NL("Eerst stil voor zichzelf opschrijven, dan pas antwoorden laten zien. Dat geeft rust en voorspelbaarheid in de klas.","Vraag 6 is de sleutel voor de deurvraag."))},
-    {step:2, html:`${BG("code")}<div class="kicker">Bugreport</div><h1>"Mijn aquarium is een zwembad?!"</h1>
+    {step:3, html:`${BG("code")}<div class="kicker">Bugreport</div><h1>"Mijn aquarium is een zwembad?!"</h1>
       <div class="row" style="gap:30px"><div class="col">
       <div class="ticket"><div class="hd"><span>BUG #318</span><span>AquaCalc-app</span><span class="st">OPEN</span></div>
       <p>Mijn aquarium is <b>100 × 40 × 50 cm</b>.</p>
@@ -620,7 +620,7 @@ const LESSONS = {
       <p class="muted" style="font-size:24px">Game dev? Dezelfde bug krijg je als je cm en m door elkaar gebruikt in je engine.</p></div>
       <div style="padding-top:20px">${SVG_AQUA}</div></div>${CREDIT("code")}`,
      notes:N(NH("ICT-koppeling · 1 min"),NL("De app is verzonnen, de bug niet. Een fout met eenheden is een klassieker in software.","Vraag: wie ziet de bug al? Nog niet verklappen. Eerst het rekenwerk, dan de fix."))},
-    {step:3, html:`<div class="kicker">Uitleg</div><h1>Inhoud groeit met de derde macht</h1>
+    {step:2, html:`<div class="kicker">Uitleg</div><h1>Inhoud groeit met de derde macht</h1>
       <div class="row"><div class="col">
         ${R(`<p><span class="hl">Balk</span> ${C("l × b × h")}</p>`)}
         ${R(LADDER(true))}
@@ -647,12 +647,15 @@ const LESSONS = {
       </div></div><div style="padding-top:30px">${SVG_AQUA.replace('width="486" height="270"','width="380" height="211"')}</div></div>`,
      notes:N(NH("Samen oplossen · 4 min · hardop denken"),
       "<p><b>Zeg:</b> 'Voordat ik code ga aanpassen, wil ik eerst weten wat het goede antwoord is. Anders kan ik mijn fix niet testen.'</p>",
-      NL("<b>Valkuil 1:</b> delen door 100 of door 10 (dan 2.000 L of 20.000 L).","<b>Valkuil 2:</b> de fix zonder test opleveren. Het testgeval 10 × 10 × 10 = 1 L is makkelijk te onthouden.","Extra vraag: 200 L water weegt ongeveer 200 kg. Kan je bureau dat hebben?","TTO: 'unit test', 'expected value', 'cubic centimetre'."))},
+      NL("<b>Valkuil 1:</b> delen door 100 of door 10 (dan 2.000 L of 20.000 L).","<b>Valkuil 2:</b> de fix zonder test opleveren. Het testgeval 10 × 10 × 10 = 1 L is makkelijk te onthouden.","Extra vraag: 200 L water weegt ongeveer 200 kg. Kan je bureau dat hebben?","Laat studenten zelf een tweede testgeval bedenken."))},
     {step:5, html: COMMON_FF(4,"Kubieke inhoud",["Liters en kubieke decimeters","Kubieke meters","cc en milliliters"],
       "Elke stap op de trap is <b>× 1.000</b>.<br>Test je antwoord: kán het eigenlijk wel?"), notes:NOTE_FF}
   ]
 }
 };
+
+/* schermen op volgorde van de stappen zetten (Uitleg vóór ICT-koppeling) */
+Object.values(LESSONS).forEach(l=>l.slides.sort((a,b)=>a.step-b.step));
 
 /* ============ start screen ============ */
 const START_HTML = `<div id="start">
