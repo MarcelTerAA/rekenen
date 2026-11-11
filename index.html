@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rekenen – lesintro's digibord</title>
+<style>
+  :root{--bg:#0e1626;--panel:#16223a;--line:#2c3f63;--ink:#eef3fb;--muted:#9fb0cc;--accent:#3ee0b0;--accent2:#ffcf4a;
+    --mono:ui-monospace,"Cascadia Code","Consolas",monospace;--sans:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:40px 40px}
+  main{max-width:1100px;margin:0 auto;padding:64px 32px}
+  .kicker{font-family:var(--mono);color:var(--accent);letter-spacing:2px;text-transform:uppercase;font-size:15px}
+  h1{font-size:56px;margin:8px 0 6px}
+  p.lead{color:var(--muted);font-size:20px;margin:0 0 36px}
+  h2{font-size:15px;font-family:var(--mono);color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;margin:36px 0 12px;font-weight:400}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px}
+  a.card{display:block;text-decoration:none;color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:22px 24px;transition:border-color .2s,transform .2s}
+  a.card:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .meta{font-family:var(--mono);color:var(--accent);font-size:14px}
+  .t{font-size:26px;font-weight:700;margin:6px 0}
+  .s{color:var(--muted);font-size:16px}
+  .soon{opacity:.45;pointer-events:none}
+  footer{margin-top:56px;color:var(--muted);font-size:14px}
+</style>
+</head>
+<body>
+<main>
+  <div class="kicker">ICT &amp; Design College · Ter AA Helmond</div>
+  <h1>Rekenen</h1>
+  <p class="lead">Lesintro's voor het digibord. Kies het onderwerp en daarna de klas.</p>
+
+  <h2>Periode 2 · Oriëntatie in de twee- en driedimensionale wereld</h2>
+  <div class="grid">
+    <a class="card" href="oppervlakte/">
+      <div class="meta">week 1 · niveau 2, 3 en 4</div>
+      <div class="t">Oppervlakte</div>
+      <div class="s">m², hectare en km² · omtrek · driehoek · cirkel</div>
+    </a>
+  </div>
+
+  <footer>Te gebruiken naast ffRekenen. Bediening op het digibord: pijltjestoetsen of klikken, F voor volledig scherm.</footer>
+</main>
+</body>
+</html>

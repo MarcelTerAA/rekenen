@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rekenen – Oppervlakte | Lesintro digibord</title>
+<style>
+  :root{
+    --bg:#0e1626; --panel:#16223a; --panel2:#1d2c4a; --line:#2c3f63;
+    --ink:#eef3fb; --muted:#9fb0cc; --accent:#3ee0b0; --accent2:#ffcf4a;
+    --warn:#ff6b6b; --blue:#5aa9ff;
+    --mono: ui-monospace, "Cascadia Code", "Consolas", "SFMono-Regular", monospace;
+    --sans: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:#070c16;color:var(--ink);font-family:var(--sans);overflow:hidden}
+  #viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+  #stage{width:1600px;height:900px;position:relative;background:var(--bg);transform-origin:center center;
+    background-image:radial-gradient(circle at 85% 10%, rgba(62,224,176,.08), transparent 40%),
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size:auto,40px 40px,40px 40px;overflow:hidden}
+
+  /* top bar */
+  #top{position:absolute;left:0;right:0;top:0;height:76px;display:flex;align-items:center;gap:18px;padding:0 40px;border-bottom:1px solid var(--line)}
+  #classTag{white-space:nowrap;font-family:var(--mono);font-size:18px;color:var(--accent);background:rgba(62,224,176,.1);border:1px solid rgba(62,224,176,.35);padding:6px 12px;border-radius:8px;cursor:pointer}
+  #steps{display:flex;gap:6px;margin-left:auto}
+  .stp{font-size:16px;color:var(--muted);padding:7px 14px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
+  .stp.on{color:#06121f;background:var(--accent);border-color:var(--accent);font-weight:700}
+  .stp.done{color:var(--ink);border-color:#3b5482}
+
+  #content{position:absolute;left:0;right:0;top:76px;bottom:64px;padding:28px 60px}
+  #bottom{position:absolute;left:0;right:0;bottom:0;height:64px;display:flex;align-items:center;padding:0 40px;gap:16px;border-top:1px solid var(--line);color:var(--muted);font-size:17px}
+  #words{display:flex;gap:10px;flex-wrap:wrap}
+  .word{background:var(--panel2);border:1px solid var(--line);color:var(--ink);padding:4px 12px;border-radius:6px;font-size:18px}
+  .word i{color:var(--accent2);font-style:normal}
+  #nav{margin-left:auto;display:flex;gap:10px}
+  .btn{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 16px;font-size:18px;cursor:pointer;font-family:var(--sans)}
+  .btn:hover{border-color:var(--accent)}
+  .btn.primary{background:var(--accent);color:#06121f;border-color:var(--accent);font-weight:700}
+
+  h1{font-size:60px;margin:0 0 18px;line-height:1.1;letter-spacing:-.5px}
+  h2{font-size:44px;margin:0 0 20px;line-height:1.15}
+  .kicker{font-family:var(--mono);color:var(--accent);font-size:22px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  p,li{font-size:30px;line-height:1.4}
+  .muted{color:var(--muted)}
+  .big{font-size:40px}
+  .hl{color:var(--accent2);font-weight:700}
+  .ok{color:var(--accent);font-weight:700}
+  .bad{color:var(--warn);font-weight:700}
+  .row{display:flex;gap:40px;align-items:flex-start}
+  .col{flex:1}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px 30px}
+  .rev{opacity:0;transform:translateY(10px);transition:opacity .35s, transform .35s;pointer-events:none}
+  .rev.show{opacity:1;transform:none;pointer-events:auto}
+  .rev.dim{opacity:.45}
+
+  /* ticket */
+  .ticket{background:var(--panel);border:1px solid var(--line);border-left:8px solid var(--accent2);border-radius:14px;padding:26px 34px;max-width:1300px}
+  .ticket .hd{font-family:var(--mono);font-size:22px;color:var(--accent2);display:flex;gap:18px;margin-bottom:10px}
+  .ticket .hd span.st{margin-left:auto;color:#06121f;background:var(--accent2);padding:2px 10px;border-radius:6px;font-weight:700}
+  .ticket h3{font-size:38px;margin:0 0 12px}
+  .ticket p{margin:8px 0;font-size:31px}
+
+  /* warm-up list */
+  .qa{display:flex;flex-direction:column;gap:14px}
+  .q{display:flex;align-items:center;gap:22px;font-size:34px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 24px}
+  .q .n{font-family:var(--mono);color:var(--accent);font-size:26px;width:34px}
+  .q .a{margin-left:auto;color:var(--accent2);font-weight:700;font-family:var(--mono)}
+
+  /* phases (stap 5) */
+  .phases{display:flex;gap:12px;margin-bottom:14px}
+  .ph{flex:1;border:2px solid var(--line);border-radius:14px;padding:10px 18px;color:var(--muted);font-size:24px;font-weight:700;display:flex;gap:12px;align-items:center}
+  .ph b{font-family:var(--mono);font-size:28px}
+  .ph.on{border-color:var(--accent);color:var(--ink);background:rgba(62,224,176,.08)}
+  .ph.done{border-color:#3b5482;color:var(--ink)}
+  .ph small{font-weight:400;font-size:18px;color:var(--muted);display:block}
+  .think{display:flex;flex-direction:column;gap:8px}
+  .line{display:flex;gap:16px;align-items:flex-start;font-size:27px;line-height:1.3}
+  .line .tag{font-family:var(--mono);font-size:17px;padding:3px 9px;border-radius:6px;white-space:nowrap;margin-top:3px}
+  .tag.tq{background:rgba(255,207,74,.15);color:var(--accent2);border:1px solid rgba(255,207,74,.4)}
+  .tag.td{background:rgba(90,169,255,.15);color:var(--blue);border:1px solid rgba(90,169,255,.4)}
+  .tag.r{background:rgba(62,224,176,.15);color:var(--accent);border:1px solid rgba(62,224,176,.4)}
+  .calc{white-space:nowrap;font-family:var(--mono);color:var(--ink);background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:2px 10px}
+  .answer{font-size:31px;border:2px solid var(--accent);background:rgba(62,224,176,.08);border-radius:14px;padding:14px 22px;margin-top:6px}
+  .est{display:flex;gap:12px;align-items:center;font-size:24px;color:var(--muted)}
+  .est input{font-size:26px;font-family:var(--mono);background:#0b1220;color:var(--accent2);border:1px solid var(--line);border-radius:8px;padding:6px 12px;width:520px}
+
+  /* start screen */
+  #start h1{font-size:72px}
+  .classes{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:26px}
+  .cls{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px 26px;cursor:pointer;text-align:left;color:var(--ink);font-family:var(--sans)}
+  .cls:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .cls .c{font-family:var(--mono);color:var(--accent);font-size:20px}
+  .cls .t{font-size:30px;font-weight:700;margin:6px 0}
+  .cls .s{font-size:20px;color:var(--muted)}
+  .lesbtns{display:flex;gap:10px;margin-top:12px}
+  .lesbtns .btn{font-size:18px}
+
+  .help{position:absolute;right:60px;bottom:90px;font-size:18px;color:var(--muted);text-align:right;line-height:1.6}
+  kbd{font-family:var(--mono);background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:1px 7px;color:var(--ink)}
+  .timer{font-family:var(--mono);font-size:30px;color:var(--accent2);border:1px solid var(--line);border-radius:10px;padding:4px 14px;cursor:pointer;background:var(--panel)}
+  .term{font-family:var(--mono);font-size:20px;color:var(--blue)}
+  svg text{font-family:var(--sans)}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+  <div id="top">
+    <div id="classTag" title="Andere klas kiezen (Home)">kies een klas</div>
+    <div id="title" style="font-size:20px;color:var(--muted);white-space:nowrap">Rekenen · Oppervlakte</div>
+    <div id="steps"></div>
+  </div>
+  <div id="content"></div>
+  <div id="bottom">
+    <div id="words"></div>
+    <div id="nav">
+      <button class="btn" id="fsBtn" title="Volledig scherm (F)">⛶</button>
+      <button class="btn" id="prevBtn">← terug</button>
+      <button class="btn primary" id="nextBtn">verder →</button>
+    </div>
+  </div>
+</div></div>
+
+<script>
+/* ============ helpers ============ */
+const STEPS = ["Deur","Opwarmen","ICT-koppeling","Uitleg","Samen oplossen","Aan de slag"];
+const $ = s => document.querySelector(s);
+const R = (html, cls="", style="") => `<div class="rev ${cls}" style="${style}">${html}</div>`; // revealable block
+const Q = (n, q, a) => R(`<div class="q"><span class="n">${n}</span><span>${q}</span><span class="a rev">${a}</span></div>`);
+// think line: tag d = docent denkt/zegt, q = vraag aan klas, r = resultaat
+const L = (tag, txt) => {
+  const lab = {d:"ik denk", q:"vraag"}[tag];
+  return R(`<div class="line"><span class="tag t${tag}">${lab}</span><span>${txt}</span></div>`);
+};
+const C = t => `<span class="calc">${t}</span>`;
+const PH = (k) => `<!--phase:${k}-->`;
+const TIMER = `<span class="timer" data-timer="10">⏱ 10 s</span>`;
+
+function phases(){
+  return `<div class="phases">
+    <div class="ph" data-ph="1"><b>1</b><span>Analyseren<small>Wat is het probleem? Wat weet ik al?</small></span></div>
+    <div class="ph" data-ph="2"><b>2</b><span>Uitvoeren<small>Wat reken ik eerst uit?</small></span></div>
+    <div class="ph" data-ph="3"><b>3</b><span>Testen<small>Klopt mijn antwoord?</small></span></div>
+  </div>`;
+}
+function estimateBox(){
+  return R(`<div class="est">Schattingen van de klas: <input type="text" placeholder="typ hier de schattingen…" autocomplete="off"></div>`);
+}
+
+/* ============ SVG drawings ============ */
+function gridRoom(x,y,w,h,cell,label,fill){
+  let s=`<rect x="${x}" y="${y}" width="${w*cell}" height="${h*cell}" fill="${fill}" stroke="#eef3fb" stroke-width="3"/>`;
+  for(let i=1;i<w;i++) s+=`<line x1="${x+i*cell}" y1="${y}" x2="${x+i*cell}" y2="${y+h*cell}" stroke="rgba(255,255,255,.18)"/>`;
+  for(let j=1;j<h;j++) s+=`<line x1="${x}" y1="${y+j*cell}" x2="${x+w*cell}" y2="${y+j*cell}" stroke="rgba(255,255,255,.18)"/>`;
+  s+=`<text x="${x+w*cell/2}" y="${y-18}" fill="#ffcf4a" font-size="34" font-weight="700" text-anchor="middle">${label}</text>`;
+  s+=`<text x="${x+w*cell/2}" y="${y+h*cell+40}" fill="#9fb0cc" font-size="28" text-anchor="middle">${w} m</text>`;
+  s+=`<text x="${x-18}" y="${y+h*cell/2+10}" fill="#9fb0cc" font-size="28" text-anchor="end">${h} m</text>`;
+  return s;
+}
+const SVG_ROOMS = `<svg viewBox="0 0 900 420" width="900" height="420">
+  ${gridRoom(110,60,6,4,55,"Kamer A","rgba(90,169,255,.25)")}
+  ${gridRoom(560,60,5,5,55,"Kamer B","rgba(62,224,176,.22)")}
+</svg>`;
+
+const SVG_PIZZA = `<svg viewBox="0 0 900 360" width="900" height="360">
+  <g><circle cx="200" cy="180" r="140" fill="#f2b03c" stroke="#c9771f" stroke-width="10"/>
+  <circle cx="200" cy="180" r="118" fill="#e0542e" opacity=".55"/>
+  <text x="200" y="352" fill="#eef3fb" font-size="30" text-anchor="middle" font-weight="700">1 × 40 cm</text></g>
+  <g><circle cx="560" cy="180" r="98" fill="#f2b03c" stroke="#c9771f" stroke-width="8"/>
+  <circle cx="560" cy="180" r="82" fill="#e0542e" opacity=".55"/>
+  <circle cx="780" cy="180" r="98" fill="#f2b03c" stroke="#c9771f" stroke-width="8"/>
+  <circle cx="780" cy="180" r="82" fill="#e0542e" opacity=".55"/>
+  <text x="670" y="352" fill="#eef3fb" font-size="30" text-anchor="middle" font-weight="700">2 × 28 cm</text></g>
+</svg>`;
+
+function monitor(x,y,w,h,label){
+  return `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="#0b1220" stroke="#5aa9ff" stroke-width="6"/>
+  <rect x="${x+w/2-14}" y="${y+h}" width="28" height="40" fill="#2c3f63"/>
+  <rect x="${x+w/2-70}" y="${y+h+40}" width="140" height="10" rx="5" fill="#2c3f63"/>
+  <text x="${x+w/2}" y="${y+h/2+16}" fill="#eef3fb" font-size="46" font-weight="700" text-anchor="middle">${label}</text>`;
+}
+// 24" 16:9 = 20.9 × 11.8 inch, 27" = 23.5 × 13.2 inch; schaal 15 px/inch
+const SVG_MONITORS = `<svg viewBox="0 0 900 330" width="900" height="330">
+  ${monitor(40,40,314,177,'24"')}${monitor(450,19,353,198,'27"')}
+</svg>`;
+
+// kantine 20 x 15 m, schaal 20 px/m
+function apSvg(two){
+  const ox=60, oy=30, s=20;
+  let c = two
+    ? `<circle cx="${ox+5*s}" cy="${oy+7.5*s}" r="${10*s}" fill="rgba(62,224,176,.18)" stroke="#3ee0b0" stroke-width="3"/>
+       <circle cx="${ox+15*s}" cy="${oy+7.5*s}" r="${10*s}" fill="rgba(62,224,176,.18)" stroke="#3ee0b0" stroke-width="3"/>
+       <circle cx="${ox+5*s}" cy="${oy+7.5*s}" r="9" fill="#ffcf4a"/><circle cx="${ox+15*s}" cy="${oy+7.5*s}" r="9" fill="#ffcf4a"/>
+       <line x1="${ox+10*s}" y1="${oy}" x2="${ox+10*s}" y2="${oy+15*s}" stroke="#9fb0cc" stroke-dasharray="8 6"/>`
+    : `<circle cx="${ox+10*s}" cy="${oy+7.5*s}" r="${10*s}" fill="rgba(62,224,176,.18)" stroke="#3ee0b0" stroke-width="3"/>
+       <circle cx="${ox+10*s}" cy="${oy+7.5*s}" r="9" fill="#ffcf4a"/>
+       <line x1="${ox+10*s}" y1="${oy+7.5*s}" x2="${ox+20*s}" y2="${oy+7.5*s}" stroke="#ffcf4a" stroke-width="3"/>
+       <text x="${ox+15*s}" y="${oy+7.5*s-10}" fill="#ffcf4a" font-size="24" text-anchor="middle">r = 10 m</text>`;
+  const corners = two ? "" : [[0,0],[20,0],[0,15],[20,15]].map(([a,b])=>`<circle cx="${ox+a*s}" cy="${oy+b*s}" r="20" fill="none" stroke="#ff6b6b" stroke-width="5"/>`).join("");
+  return `<svg viewBox="0 0 520 380" width="520" height="380">
+    <defs><clipPath id="room${two?2:1}"><rect x="${ox}" y="${oy}" width="${20*s}" height="${15*s}"/></clipPath></defs>
+    <rect x="${ox}" y="${oy}" width="${20*s}" height="${15*s}" fill="rgba(255,107,107,.18)" stroke="#eef3fb" stroke-width="3"/>
+    <g clip-path="url(#room${two?2:1})">${c}</g>${corners}
+    <text x="${ox+10*s}" y="${oy+15*s+36}" fill="#9fb0cc" font-size="24" text-anchor="middle">20 m</text>
+    <text x="${ox-12}" y="${oy+7.5*s+8}" fill="#9fb0cc" font-size="24" text-anchor="end">15 m</text>
+  </svg>`;
+}
+
+const SVG_AVATAR = `<svg viewBox="0 0 420 380" width="420" height="380">
+  <defs><pattern id="hatch" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+    <rect width="12" height="12" fill="rgba(255,107,107,.15)"/><line x1="0" y1="0" x2="0" y2="12" stroke="#ff6b6b" stroke-width="4"/></pattern></defs>
+  <rect x="60" y="20" width="300" height="300" fill="url(#hatch)" stroke="#eef3fb" stroke-width="3"/>
+  <circle cx="210" cy="170" r="150" fill="#16223a" stroke="#3ee0b0" stroke-width="4"/>
+  <circle cx="210" cy="140" r="48" fill="#5aa9ff" opacity=".7"/>
+  <path d="M120 285 Q210 180 300 285 Z" fill="#5aa9ff" opacity=".7"/>
+  <line x1="210" y1="170" x2="360" y2="170" stroke="#ffcf4a" stroke-width="3"/>
+  <text x="285" y="160" fill="#ffcf4a" font-size="22" text-anchor="middle">r = ?</text>
+  <text x="210" y="355" fill="#9fb0cc" font-size="24" text-anchor="middle">400 px</text>
+</svg>`;
+
+// voetbalveld 105 x 68 m, schaal 5 px/m; lokaal ~ 8 x 7 m
+const SVG_FIELD = `<svg viewBox="0 0 640 420" width="640" height="420">
+  <rect x="50" y="30" width="525" height="340" fill="#2f7a3e" stroke="#eef3fb" stroke-width="4"/>
+  <line x1="312.5" y1="30" x2="312.5" y2="370" stroke="#eef3fb" stroke-width="3"/>
+  <circle cx="312.5" cy="200" r="46" fill="none" stroke="#eef3fb" stroke-width="3"/>
+  <rect x="50" y="110" width="82" height="180" fill="none" stroke="#eef3fb" stroke-width="3"/>
+  <rect x="493" y="110" width="82" height="180" fill="none" stroke="#eef3fb" stroke-width="3"/>
+  <rect x="80" y="45" width="40" height="35" fill="#ffcf4a"/>
+  <text x="130" y="70" fill="#ffcf4a" font-size="22" font-weight="700">= ons lokaal</text>
+  <text x="312" y="405" fill="#9fb0cc" font-size="24" text-anchor="middle">ca. 105 m × 68 m</text>
+</svg>`;
+
+/* ============ lesson content per klas ============ */
+const COMMON_FF = (niv, onderdeel, items, letop, extra="") => `
+  <div class="kicker">Aan de slag</div>
+  <h1>ffRekenen · MBO niveau ${niv}</h1>
+  <div class="card" style="margin-bottom:22px">
+    <p style="margin:0;font-family:var(--mono);font-size:26px;color:var(--muted)">Oriëntatie in de twee- en driedimensionale wereld › <span class="hl">${onderdeel}</span></p>
+  </div>
+  <div class="row">
+    <div class="col">
+      ${items.map((t,i)=>`<p style="margin:6px 0"><span class="ok">${i+1}.</span> ${t}</p>`).join("")}
+      <p class="muted" style="font-size:26px;margin-top:14px">Per onderdeel: Introductie → Verdieping → Toets.<br>Fout bij de introductie? Doe eerst <b>Extra oefenen</b>.</p>
+    </div>
+    <div class="col">${R(`<div class="card" style="border-color:var(--accent2)"><p style="margin:0" class="hl">Let op</p><p style="margin:6px 0 0">${letop}</p></div>`)}${extra}</div>
+  </div>`;
+
+const LESSONS = {
+
+/* ---------------- NIVEAU 2 – les 1 ---------------- */
+"mi-1": {
+  code:"ID.26MI.A · 25999 Medewerker ICT · les 1",
+  words:["oppervlakte","lengte","breedte","vierkante meter <i>m²</i>"],
+  slides:[
+    {step:0, html:`<div class="kicker">Welkom!</div><h1>Welke kamer is groter?</h1>
+      <div class="row"><div>${SVG_ROOMS}</div>
+      <div class="col" style="padding-top:40px"><p class="big">A of B?</p><p class="muted">Zeg het bij de deur.</p></div></div>`},
+    {step:1, html:`<div class="kicker">Hersenen aan</div><h1>Opwarmen ${TIMER}</h1>
+      <div class="qa">
+        ${Q("1","Kamer A: 6 × 4 = ? &nbsp; Kamer B: 5 × 5 = ?","A = 24 · B = 25 → B!")}
+        ${Q("2","3 × 4 &nbsp;·&nbsp; 6 × 6 &nbsp;·&nbsp; 10 × 10","12 · 36 · 100")}
+        ${Q("3","Hoeveel cm is 1 meter?","100 cm")}
+        ${Q("4","Schat: hoeveel m² is dit lokaal?","meten!")}
+      </div>`},
+    {step:2, html:`<div class="kicker">Servicedesk</div><h1>Er komt een ticket binnen…</h1>
+      <div class="ticket"><div class="hd"><span>TICKET #2611</span><span>Prioriteit: normaal</span><span class="st">NIEUW</span></div>
+      <h3>Nieuwe flexruimte</h3>
+      <p>Wij verhuizen naar een ruimte van <b>9 m bij 6 m</b>.</p>
+      <p>In een hoek komt een <b>printerhoek van 2 m bij 2 m</b>.</p>
+      <p>Per werkplek rekenen wij <b>6 m²</b>.</p>
+      <p class="hl">Hoeveel werkplekken kunnen jullie klaarmaken?</p></div>`},
+    {step:3, html:`<div class="kicker">Uitleg</div><h1>Oppervlakte = hoeveel vierkantjes passen erin?</h1>
+      <div class="row"><div>${SVG_ROOMS.replace('viewBox="0 0 900 420" width="900" height="420"','viewBox="0 0 470 420" width="470" height="420"')}</div>
+      <div class="col">
+        ${R(`<p>1 vierkantje = 1 m bij 1 m = <span class="hl">1 m²</span></p>`)}
+        ${R(`<p>Rechthoek: <span class="hl">lengte × breedte</span></p><p>${C("6 × 4 = 24 m²")}</p>`)}
+        ${R(`<p class="muted">Langs de muren meten = <b>meter</b>.<br>De vloer = <b>vierkante meter (m²)</b>.</p>`)}
+        ${R(`<p>Waarom? Werkplekken inrichten · kabels en vloer bestellen · je eigen kamer.</p>`)}
+      </div></div>`},
+    {step:4, phased:true, html:`<div class="kicker">Samen oplossen · ticket #2611</div>${phases()}
+      <div class="think">
+        ${PH(1)}${L("q","Wat is het probleem?")}
+        ${L("d","Ze willen weten: <b>hoeveel werkplekken</b>. Niet hoeveel m².")}
+        ${L("d","Wat weet ik? 9 m en 6 m · printerhoek 2 m × 2 m · 6 m² per plek.")}
+        ${L("q","Wat schatten jullie?")}
+        ${estimateBox()}
+        ${PH(2)}${L("d",`Ruimte: ${C("9 × 6 = 54 m²")}`)}
+        ${L("d",`Printerhoek: ${C("2 × 2 = 4 m²")} &nbsp;→&nbsp; ${C("54 − 4 = 50 m²")}`)}
+        ${L("d",`Werkplekken: ${C("50 : 6 = 8,33…")}`)}
+        ${PH(3)}${L("q","8,33 werkplekken? Naar boven of naar beneden?")}
+        ${L("d","Een 9e plek past niet. Dus <b>naar beneden</b>.")}
+        ${R(`<div class="answer">✔ Antwoord ticket: <b>8 werkplekken</b> → 8 laptops en 8 netwerkkabels</div>`)}
+      </div>`},
+    {step:5, html: COMMON_FF(2,"Oppervlakte 1",["Oppervlakte en vierkante meters","(les 2) Vierkante kilometers en hectares"],
+      "Oppervlakte → <b>m²</b><br>Lengte → <b>m</b><br>Zet altijd de eenheid achter je antwoord!")}
+  ]
+},
+
+/* ---------------- NIVEAU 2 – les 2 (mini-intro) ---------------- */
+"mi-2": {
+  code:"ID.26MI.A · 25999 Medewerker ICT · les 2",
+  words:["vierkante meter <i>m²</i>","hectare <i>ha</i>","vierkante kilometer <i>km²</i>"],
+  slides:[
+    {step:0, html:`<div class="kicker">Welkom!</div><h1>Hoeveel klaslokalen passen in een voetbalveld?</h1>
+      <div class="row"><div>${SVG_FIELD}</div><div class="col" style="padding-top:60px"><p class="big">10? 50? 100?</p><p class="muted">Wat denk jij?</p></div></div>`},
+    {step:3, html:`<div class="kicker">Uitleg</div><h1>Grote oppervlaktes: hectare en km²</h1>
+      <div class="row"><div>${SVG_FIELD}</div><div class="col">
+        ${R(`<p>Voetbalveld: ${C("105 × 68 ≈ 7.000 m²")}</p>`)}
+        ${R(`<p>Lokaal ≈ 56 m² → ruim <span class="hl">120 lokalen</span>!</p>`)}
+        ${R(`<p><span class="hl">1 ha</span> = 100 m × 100 m = <b>10.000 m²</b></p>`)}
+        ${R(`<p><span class="hl">1 km²</span> = 1.000 m × 1.000 m = <b>100 ha</b></p>`)}
+        ${R(`<p class="muted">ICT: een groot datacenter staat op tientallen hectares.</p>`)}
+      </div></div>`},
+    {step:4, phased:true, html:`<div class="kicker">Samen oplossen</div>${phases()}
+      <div class="think">
+        ${PH(1)}${L("q","Een terrein voor een datacenter is 300 m bij 200 m. Hoeveel hectare is dat?")}
+        ${L("d","Ik weet: 1 ha = 10.000 m². Eerst m², dan delen.")}
+        ${estimateBox()}
+        ${PH(2)}${L("d",`${C("300 × 200 = 60.000 m²")}`)}
+        ${L("d",`${C("60.000 : 10.000 = 6")}`)}
+        ${PH(3)}${L("q","Klopt dat? Hoeveel voetbalvelden is dat ongeveer?")}
+        ${L("d","1 veld ≈ 0,7 ha → 6 ha ≈ 8 à 9 voetbalvelden. Dat kan kloppen.")}
+        ${R(`<div class="answer">✔ Het terrein is <b>6 ha</b></div>`)}
+      </div>`},
+    {step:5, html: COMMON_FF(2,"Oppervlakte 1",["Vierkante kilometers en hectares"],"1 ha = <b>10.000 m²</b><br>1 km² = <b>100 ha</b>")}
+  ]
+},
+
+/* ---------------- NIVEAU 3 ---------------- */
+"st": {
+  code:"ID.26ST.A · 27015 ICT support technician",
+  words:["omtrek <i>m</i>","oppervlakte <i>m²</i>","straal","diameter"],
+  slides:[
+    {step:0, html:`<div class="kicker">Pizza na de LAN-party</div><h1>Wat geeft méér pizza?</h1>${SVG_PIZZA}
+      <p class="big" style="margin-top:10px">1 pizza van 40 cm <span class="muted">of</span> 2 pizza's van 28 cm?</p>`},
+    {step:1, html:`<div class="kicker">Hersenen aan</div><h1>Omtrek (O) of oppervlakte (A)? ${TIMER}</h1>
+      <div class="row"><div class="col"><div class="qa">
+        ${Q("1","Hek om de tuin","O")}
+        ${Q("2","Vloerbedekking in je kamer","A")}
+        ${Q("3","Netwerkkabel langs de plint","O")}
+        ${Q("4","Muur verven","A")}
+        ${Q("5","Scherm van je telefoon","A")}
+      </div></div><div class="col" style="flex:.8"><div class="qa">
+        ${Q("6","2 × (8 + 6)","28")}
+        ${Q("7","helft van 24","12")}
+        ${Q("8","3,14 × 10","31,4")}
+      </div></div></div>`},
+    {step:2, html:`<div class="kicker">Werkorder</div><h1>Jij gaat dit lokaal klaarmaken</h1>
+      <div class="ticket"><div class="hd"><span>WERKORDER #4471</span><span>Lokaal B2.14</span><span class="st">OPEN</span></div>
+      <h3>Kabelgoot voor flexlokaal</h3>
+      <p>Lokaal: <b>8 m × 6 m</b>.</p>
+      <p>Kabelgoot langs <b>alle muren</b>, behalve bij de dubbele deur (<b>2 m</b> breed).</p>
+      <p>Kabelgoot per stuk van <b>3 m</b>, <b>€ 12,50</b> per stuk.</p>
+      <p class="hl">Hoeveel stukken bestel je? Wat kost dat?</p></div>`},
+    {step:3, html:`<div class="kicker">Uitleg</div><h1>Rand of vlak?</h1>
+      <div class="row"><div class="col">
+        ${R(`<p><span class="hl">Omtrek</span> = de rand → alles optellen → <b>m</b><br>${C("rechthoek: 2 × (l + b)")}</p>`)}
+        ${R(`<p><span class="hl">Oppervlakte</span> = het vlak → <b>m²</b><br>${C("rechthoek: l × b")}</p>`)}
+        ${R(`<p><span class="hl">Driehoek</span> = halve rechthoek<br>${C("(basis × hoogte) : 2")} <span class="muted">— hoogte staat recht, niet schuin!</span></p>`)}
+        ${R(`<p><span class="hl">Cirkel</span> &nbsp;straal r = midden → rand · diameter = 2 × r<br>${C("omtrek = 3,14 × diameter")} &nbsp; ${C("opp. = 3,14 × r × r")}</p>`)}
+      </div><div class="col" style="flex:.9">
+        ${R(`<div class="card"><p style="margin:0" class="hl">En de pizza?</p>
+        <p>${C("3,14 × 20 × 20 = 1.256 cm²")}</p>
+        <p>${C("2 × 3,14 × 14 × 14 = 1.231 cm²")}</p>
+        <p class="ok">1 grote pizza wint (net)!</p>
+        <p class="muted" style="font-size:24px">De straal telt twee keer mee. Een cirkel groeit sneller dan je denkt.</p></div>`)}
+      </div></div>`},
+    {step:4, phased:true, html:`<div class="kicker">Samen oplossen · werkorder #4471</div>${phases()}
+      <div class="think">
+        ${PH(1)}${L("q","Omtrek of oppervlakte?")}
+        ${L("d","Kabelgoot gaat langs de muur → de rand → <b>omtrek</b>.")}
+        ${L("d","Wat is nieuw? Je kunt alleen <b>hele stukken</b> kopen.")}
+        ${estimateBox()}
+        ${PH(2)}${L("d",`${C("8 + 6 + 8 + 6 = 28 m")} &nbsp;→ deur eraf: ${C("28 − 2 = 26 m")}`)}
+        ${L("d",`${C("26 : 3 = 8,67 stukken")}`)}
+        ${PH(3)}${L("q","8 of 9 stukken?")}
+        ${L("d",`8 stukken = 24 m → te kort! Dus <b>9 stukken</b> (27 m, 1 m over).`)}
+        ${L("d",`${C("9 × € 12,50 = € 112,50")} — klopt met mijn schatting?`)}
+        ${R(`<div class="answer">✔ Bestelbon: <b>9 stukken kabelgoot · € 112,50</b></div>`)}
+      </div>`},
+    {step:5, html: COMMON_FF(3,"Oppervlakte 2",["Omtrek en oppervlakte","Oppervlakte driehoeken","Oppervlakte cirkel"],
+      "<b>Straal of diameter?</b> Check dat eerst, voordat je gaat rekenen.")}
+  ]
+},
+
+/* ---------------- NIVEAU 4 – SE ---------------- */
+"se": {
+  code:"ID.26SE.A · 27016 ICT system engineer",
+  words:["omtrek <i>m</i>","oppervlakte <i>m²</i>","straal <i>r</i>","π ≈ 3,14"],
+  slides:[
+    {step:0, html:`<div class="kicker">Klopt dit?</div><h1>27 inch is 3 inch meer dan 24 inch…</h1>${SVG_MONITORS}
+      <p class="big">…dus het scherm is ongeveer <span class="hl">12% groter</span>.</p>
+      <p class="muted">Klopt dit? Ja of nee?</p>`},
+    {step:1, html:`<div class="kicker">Hersenen aan · eerst stil opschrijven</div><h1>Opwarmen ${TIMER}</h1>
+      <div class="qa">
+        ${Q("1","Straal 5 cm. Diameter?","10 cm")}
+        ${Q("2","7² &nbsp;en&nbsp; 12²","49 · 144")}
+        ${Q("3","Driehoek: basis 6, hoogte 4. Oppervlakte?","12")}
+        ${Q("4","Hoeveel m² is 1 ha?","10.000")}
+        ${Q("5","3,14 × 100","314")}
+      </div>`},
+    {step:2, html:`<div class="kicker">Netwerkontwerp</div><h1>Vraag van de klant</h1>
+      <div class="ticket"><div class="hd"><span>DESIGN-REQUEST #0815</span><span>Wifi kantine</span><span class="st">ANALYSE</span></div>
+      <h3>Is één access point genoeg?</h3>
+      <p>Kantine: <b>20 m × 15 m</b>.</p>
+      <p>Eén access point <b>midden in de ruimte</b>.</p>
+      <p>Bereik volgens leverancier: <b>10 m</b>.</p>
+      <p class="muted" style="font-size:24px">Vereenvoudigd: in het echt hangt bereik af van muren, materialen en storing.</p></div>`},
+    {step:3, html:`<div class="kicker">Uitleg</div><h1>Oppervlakte groeit met het kwadraat</h1>
+      <div class="row"><div class="col">
+        ${R(`<p>Omtrek = rand (<b>m</b>) · oppervlakte = vlak (<b>m²</b>)</p>`)}
+        ${R(`<p><span class="hl">Driehoek</span> ${C("(b × h) : 2")}</p>`)}
+        ${R(`<p><span class="hl">Cirkel</span> ${C("omtrek = π × d")} &nbsp; ${C("opp. = π × r × r")}</p>`)}
+      </div><div class="col">
+        ${R(`<div class="card"><p style="margin:0" class="hl">En de monitor?</p>
+        <p>${C("(27 : 24)² = 1,125² ≈ 1,27")}</p>
+        <p class="ok">≈ 27% meer scherm, geen 12%!</p>
+        <p class="muted" style="font-size:24px">2× zo breed én 2× zo hoog = 4× zoveel oppervlakte.</p></div>`)}
+      </div></div>`},
+    {step:4, phased:true, html:`<div class="kicker">Samen oplossen · design-request #0815</div>${phases()}
+      <div class="row" style="gap:30px"><div class="col"><div class="think">
+        ${PH(1)}${L("q","Welke berekeningen passen hierbij?")}
+        ${L("d","Rechthoek (kantine) vergelijken met cirkel (bereik).")}
+        ${estimateBox()}
+        ${PH(2)}${L("d",`Kantine: ${C("20 × 15 = 300 m²")}`)}
+        ${L("d",`Bereik: ${C("3,14 × 10 × 10 = 314 m²")}`)}
+        ${L("d","314 > 300 … dus het past?")}
+        ${PH(3)}${L("q","<b>Is mijn antwoord juist?</b> Teken het!")}
+        ${R(apSvg(false),"","position:absolute;right:50px;top:150px;background:var(--bg)")}
+        ${L("d",`<span class="bad">Nee!</span> De cirkel raakt precies de korte muren → <b>de hoeken vallen erbuiten</b>.`)}
+        ${R(apSvg(true),"","position:absolute;right:50px;top:150px;background:var(--bg)")}
+        ${R(`<div class="answer">✔ Advies: <b>2 access points</b>, elk midden in een helft van 10 × 15 m</div>`)}
+      </div></div>
+      <div style="width:520px"></div></div>`},
+    {step:5, html: COMMON_FF(4,"Oppervlakte",["Omtrek en oppervlakte","Oppervlakte driehoeken","Oppervlakte cirkel"],
+      "<b>Straal of diameter?</b><br>En test je antwoord: kán het eigenlijk wel?")}
+  ]
+},
+
+/* ---------------- NIVEAU 4 – SD ---------------- */
+"sd": {
+  code:"ID.26SD · 25998 Software developer",
+  words:["omtrek <i>m</i>","oppervlakte <i>m²</i>","straal <i>r</i>","π ≈ 3,14"],
+  wordsEN:["perimeter","area","radius","diameter","circumference"],
+  slides:[
+    {step:0, html:`<div class="kicker">Klopt dit?</div><h1>27 inch is 3 inch meer dan 24 inch…</h1>${SVG_MONITORS}
+      <p class="big">…dus het scherm is ongeveer <span class="hl">12% groter</span>.</p>
+      <p class="muted">Klopt dit? Ja of nee? Het antwoord komt bij stap 4.</p>`},
+    {step:1, html:`<div class="kicker">Hersenen aan</div><h1>Opwarmen ${TIMER}</h1>
+      <div class="qa">
+        ${Q("1","Straal 5 cm. Diameter?","10 cm")}
+        ${Q("2","7² &nbsp;en&nbsp; 12²","49 · 144")}
+        ${Q("3","Driehoek: basis 6, hoogte 4. Oppervlakte?","12")}
+        ${Q("4","Hoeveel m² is 1 ha?","10.000")}
+        ${Q("5","3,14 × 100","314")}
+      </div>`},
+    {step:2, html:`<div class="kicker">Backlog</div><h1>Nieuwe user story</h1>
+      <div class="row"><div class="col"><div class="ticket"><div class="hd"><span>STORY #142</span><span>Profiel</span><span class="st">TO DO</span></div>
+      <h3>Als gebruiker wil ik een ronde profielfoto</h3>
+      <p>Upload: <b>400 × 400 px</b>.</p>
+      <p>De cirkel past <b>precies</b> in het vierkant.</p>
+      <p class="hl">Hoeveel pixels gooien we weg? Welk deel van de foto is dat?</p>
+      <p class="muted" style="font-size:24px">Game dev? Zelfde som: een ronde hitbox in een vierkant sprite-vak.</p></div></div>
+      <div>${SVG_AVATAR}</div></div>`},
+    {step:3, html:`<div class="kicker">Uitleg</div><h1>Oppervlakte groeit met het kwadraat</h1>
+      <div class="row"><div class="col">
+        ${R(`<p>Omtrek = rand (<b>m</b>) · oppervlakte = vlak (<b>m²</b>)</p>`)}
+        ${R(`<p><span class="hl">Driehoek</span> ${C("(b × h) : 2")}</p>`)}
+        ${R(`<p><span class="hl">Cirkel</span> ${C("omtrek = π × d")} &nbsp; ${C("opp. = π × r × r")}</p>`)}
+      </div><div class="col">
+        ${R(`<div class="card"><p style="margin:0" class="hl">Antwoord monitor-vraag</p>
+        <p>${C("(27 : 24)² = 1,125² ≈ 1,27")}</p>
+        <p class="ok">Nee, het klopt niet: ≈ 27% meer scherm, geen 12%.</p>
+        <p class="muted" style="font-size:24px">Breedte én hoogte worden groter. Dus de oppervlakte groeit dubbel mee.</p></div>`)}
+      </div></div>`},
+    {step:4, phased:true, html:`<div class="kicker">Samen oplossen · story #142</div>${phases()}
+      <div class="row" style="gap:30px"><div class="col"><div class="think">
+        ${PH(1)}${L("q","Wat is hier de straal?")}
+        ${L("d","De cirkel past precies: diameter = 400 px → <b>straal = 200 px</b>.")}
+        ${L("q","Wat schatten jullie: welk deel valt weg?")}
+        ${estimateBox()}
+        ${PH(2)}${L("d",`Vierkant: ${C("400 × 400 = 160.000 px")}`)}
+        ${L("d",`Cirkel: ${C("3,14 × 200 × 200 = 125.600 px")}`)}
+        ${L("d",`Weg: ${C("160.000 − 125.600 = 34.400 px")}`)}
+        ${L("d",`Deel: ${C("34.400 : 160.000 = 0,215")} → 21,5%`)}
+        ${PH(3)}${L("q","Klopt dit met de schatting? En wat als je 400 als straal neemt?")}
+        ${L("d",`${C("3,14 × 400 × 400 = 502.400 px")} → <span class="bad">groter dan de foto!</span>`)}
+        ${R(`<div class="answer">✔ <b>34.400 px</b> weg ≈ <b>21,5%</b>, ongeveer een vijfde van de foto</div>`)}
+      </div></div><div>${SVG_AVATAR.replace("r = ?","r = 200")}</div></div>`},
+    {step:5, html: COMMON_FF(4,"Oppervlakte",["Omtrek en oppervlakte","Oppervlakte driehoeken","Oppervlakte cirkel"],
+      "<b>Straal of diameter?</b><br>En test je antwoord: kán het eigenlijk wel?")}
+  ]
+}
+};
+
+/* ============ start screen ============ */
+const START_HTML = `<div id="start">
+  <div class="kicker">Rekenen · Oriëntatie in de twee- en driedimensionale wereld</div>
+  <h1>Oppervlakte</h1>
+  <p class="muted" style="margin:0">Kies de klas. De opgaven passen zich aan de opleiding aan.</p>
+  <div class="classes">
+    <div class="cls" style="cursor:default"><div class="c">25999 · niveau 2 · 2F</div><div class="t">Medewerker ICT</div><div class="s">ID.26MI.A · Oppervlakte 1</div>
+      <div class="lesbtns"><button class="btn primary" data-go="mi-1">Les 1 · m²</button><button class="btn" data-go="mi-2">Les 2 · ha en km²</button></div></div>
+    <button class="cls" data-go="st"><div class="c">27015 · niveau 3 · 2F</div><div class="t">ICT support technician</div><div class="s">ID.26ST.A · Oppervlakte 2</div></button>
+    <button class="cls" data-go="se"><div class="c">27016 · niveau 4 · 3F</div><div class="t">ICT system engineer</div><div class="s">ID.26SE.A · cloud · cyber · network</div></button>
+    <button class="cls" data-go="sd"><div class="c">25998 · niveau 4 · 3F</div><div class="t">Software developer</div><div class="s">ID.26SD.A · software · full stack · game</div></button>
+    <button class="cls" data-go="sd" data-en="1"><div class="c">25998 · niveau 4 · 3F · TTO</div><div class="t">Software developer (EN)</div><div class="s">ID.26SD.E · met Engelse vaktermen</div></button>
+  </div>
+  <div class="help">
+    <kbd>→</kbd> / <kbd>spatie</kbd> / klik: volgende stap &nbsp; <kbd>←</kbd>: terug<br>
+    <kbd>F</kbd>: volledig scherm &nbsp; <kbd>T</kbd>: timer &nbsp; <kbd>Home</kbd>: klas kiezen
+  </div>
+</div>`;
+
+/* ============ engine ============ */
+let lesson=null, slideIdx=0, revIdx=0, en=false;
+
+function fit(){
+  const s=Math.min(innerWidth/1600, innerHeight/900);
+  $("#stage").style.transform=`scale(${s})`;
+}
+addEventListener("resize",fit); fit();
+
+function renderSteps(active){
+  $("#steps").innerHTML = STEPS.map((s,i)=>{
+    const c = active<0 ? "" : (i===active?"on":(i<active?"done":""));
+    return `<span class="stp ${c}">${i+1}. ${s}</span>`;
+  }).join("");
+}
+function renderWords(){
+  if(!lesson){ $("#words").innerHTML=""; return; }
+  let w = lesson.words.map(t=>`<span class="word">${t}</span>`).join("");
+  if(en && lesson.wordsEN) w += lesson.wordsEN.map(t=>`<span class="word term">${t}</span>`).join("");
+  $("#words").innerHTML = w;
+}
+
+function showStart(){
+  lesson=null; slideIdx=0; revIdx=0;
+  $("#classTag").textContent="kies een klas";
+  renderSteps(-1); renderWords();
+  $("#content").innerHTML = START_HTML;
+  document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",e=>{
+    e.stopPropagation(); en = b.dataset.en==="1"; startLesson(b.dataset.go);
+  }));
+  try{ if(location.hash) history.replaceState(null,"",location.pathname); }catch(e){}
+}
+
+function startLesson(key){
+  lesson = LESSONS[key]; lesson.key=key; slideIdx=0; revIdx=0;
+  $("#classTag").textContent = lesson.code + (en?" · TTO":"");
+  renderWords(); renderSlide();
+  try{ location.hash = key + (en?"-en":""); }catch(e){}
+}
+
+
+function renderSlide(){
+  const s = lesson.slides[slideIdx];
+  renderSteps(s.step);
+  // phase markers: wrap think lines with data-phase
+  let html = s.html;
+  $("#content").innerHTML = html;
+  // tag rev elements in phased slides with their phase
+  if(s.phased){
+    let ph=0;
+    const walker = document.createTreeWalker($("#content"), NodeFilter.SHOW_COMMENT|NodeFilter.SHOW_ELEMENT);
+    let n; while((n=walker.nextNode())){
+      if(n.nodeType===8){ const m=n.nodeValue.match(/phase:(\d)/); if(m) ph=+m[1]; }
+      else if(n.classList && n.classList.contains("rev")) n.dataset.phase = n.dataset.phase || ph;
+    }
+  }
+  revIdx=0; applyReveal();
+  bindTimers();
+}
+function revList(){
+  // ordered reveal list: top-level .rev plus answers inside .q (answer after question)
+  const out=[];
+  $("#content").querySelectorAll(".rev").forEach(el=>out.push(el));
+  return out;
+}
+function applyReveal(){
+  const list=revList();
+  list.forEach((el,i)=>el.classList.toggle("show", i<revIdx));
+  // phases highlight
+  const s=lesson.slides[slideIdx];
+  if(s.phased){
+    let cur=0; list.forEach((el,i)=>{ if(i<revIdx) cur=Math.max(cur,+el.dataset.phase||0); });
+    document.querySelectorAll(".ph").forEach(p=>{
+      const k=+p.dataset.ph; p.classList.toggle("on",k===cur); p.classList.toggle("done",k<cur);
+    });
+  }
+  const last = slideIdx===lesson.slides.length-1 && revIdx>=list.length;
+  $("#nextBtn").textContent = last ? "klaar ✓" : "verder →";
+}
+function next(){
+  if(!lesson) return;
+  const list=revList();
+  if(revIdx<list.length){ revIdx++; applyReveal();
+    const el=list[revIdx-1]; const inp=el.querySelector && el.querySelector("input"); if(inp) setTimeout(()=>inp.focus(),50);
+    return; }
+  if(slideIdx<lesson.slides.length-1){ slideIdx++; renderSlide(); }
+}
+function prev(){
+  if(!lesson) return;
+  if(revIdx>0){ revIdx--; applyReveal(); return; }
+  if(slideIdx>0){ slideIdx--; renderSlide(); revIdx=revList().length; applyReveal(); }
+  else showStart();
+}
+
+/* timer */
+let tInt=null;
+function bindTimers(){
+  document.querySelectorAll("[data-timer]").forEach(t=>t.addEventListener("click",e=>{e.stopPropagation();runTimer(t);}));
+}
+function runTimer(t){
+  t = t || document.querySelector("[data-timer]"); if(!t) return;
+  clearInterval(tInt); let left=+t.dataset.timer; t.textContent=`⏱ ${left} s`; t.style.color="var(--accent2)";
+  tInt=setInterval(()=>{ left--; t.textContent = left>0?`⏱ ${left} s`:"⏱ tijd!"; if(left<=0){clearInterval(tInt); t.style.color="var(--warn)";} },1000);
+}
+
+/* fullscreen */
+function toggleFS(){
+  try{
+    if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+    else document.exitFullscreen().catch(()=>{});
+  }catch(e){}
+}
+
+/* input */
+document.addEventListener("keydown",e=>{
+  if(e.target.tagName==="INPUT"){ if(e.key==="Escape"||e.key==="Enter") e.target.blur(); return; }
+  if(["ArrowRight","PageDown"," ","Enter"].includes(e.key)){ e.preventDefault(); next(); }
+  else if(["ArrowLeft","PageUp","Backspace"].includes(e.key)){ e.preventDefault(); prev(); }
+  else if(e.key==="Home"||e.key==="Escape"&&!document.fullscreenElement){ showStart(); }
+  else if(e.key==="f"||e.key==="F"){ toggleFS(); }
+  else if(e.key==="t"||e.key==="T"){ runTimer(); }
+});
+$("#content").addEventListener("click",e=>{
+  if(e.target.closest("input,button,.btn,[data-timer],.cls")) return;
+  next();
+});
+$("#nextBtn").addEventListener("click",next);
+$("#prevBtn").addEventListener("click",prev);
+$("#fsBtn").addEventListener("click",toggleFS);
+$("#classTag").addEventListener("click",showStart);
+
+/* deep link via #mi-1, #st, #se, #sd, #sd-en */
+function fromHash(){
+  const h=(location.hash||"").slice(1);
+  if(!h){ showStart(); return; }
+  const isEn = h.endsWith("-en"); const key = isEn? h.slice(0,-3) : h;
+  if(LESSONS[key]){ en=isEn; if(!lesson||lesson.key!==key){ startLesson(key);} }
+  else showStart();
+}
+addEventListener("hashchange", fromHash);
+fromHash();
+</script>
+</body>
+</html>
