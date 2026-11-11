@@ -143,7 +143,7 @@
 
 <script>
 /* ============ helpers ============ */
-const STEPS = ["Deur","Opwarmen","ICT-koppeling","Uitleg","Samen oplossen","Aan de slag"];
+const STEPS = ["Deur","Opwarmen","Uitleg","ICT-koppeling","Samen oplossen","Aan de slag"];
 const $ = s => document.querySelector(s);
 const R = (html, cls="", style="") => `<div class="rev ${cls}" style="${style}">${html}</div>`; // revealable block
 const Q = (n, q, a) => R(`<div class="q"><span class="n">${n}</span><span>${q}</span><span class="a rev">${a}</span></div>`);
@@ -313,7 +313,15 @@ const LESSONS = {
         ${Q("3","Hoeveel cm is 1 meter?","100 cm")}
         ${Q("4","Schat: hoeveel m² is dit lokaal?","meten!")}
       </div>`},
-    {step:2, html:`<div class="kicker">Servicedesk</div><h1>Er komt een ticket binnen…</h1>
+    {step:2, html:`<div class="kicker">Uitleg</div><h1>Oppervlakte = hoeveel vierkantjes passen erin?</h1>
+      <div class="row"><div>${SVG_ROOMS.replace('viewBox="0 0 900 420" width="900" height="420"','viewBox="0 0 470 420" width="470" height="420"')}</div>
+      <div class="col">
+        ${R(`<p>1 vierkantje = 1 m bij 1 m = <span class="hl">1 m²</span></p>`)}
+        ${R(`<p>Rechthoek: <span class="hl">lengte × breedte</span></p><p>${C("6 × 4 = 24 m²")}</p>`)}
+        ${R(`<p class="muted">Langs de muren meten = <b>meter</b>.<br>De vloer = <b>vierkante meter (m²)</b>.</p>`)}
+        ${R(`<p>Waarom? Werkplekken inrichten · kabels en vloer bestellen · je eigen kamer.</p>`)}
+      </div></div>`},
+    {step:3, html:`<div class="kicker">Servicedesk</div><h1>Er komt een ticket binnen…</h1>
       <div class="ticket" style="max-width:1000px"><div class="hd"><span>TICKET #2611</span><span>Prioriteit: normaal</span><span class="st">NIEUW</span></div>
       <h3>Nieuwe flexruimte</h3>
       <p>Wij verhuizen naar een ruimte van <b>9 m bij 6 m</b>.</p>
@@ -322,14 +330,6 @@ const LESSONS = {
       <p class="hl">Hoeveel werkplekken kunnen jullie klaarmaken?</p></div>
       ${R(PH_IMG("office",420,300,"transform:rotate(2deg)"),"","position:absolute;right:60px;top:20px")}
       ${CREDIT("office")}`},
-    {step:3, html:`<div class="kicker">Uitleg</div><h1>Oppervlakte = hoeveel vierkantjes passen erin?</h1>
-      <div class="row"><div>${SVG_ROOMS.replace('viewBox="0 0 900 420" width="900" height="420"','viewBox="0 0 470 420" width="470" height="420"')}</div>
-      <div class="col">
-        ${R(`<p>1 vierkantje = 1 m bij 1 m = <span class="hl">1 m²</span></p>`)}
-        ${R(`<p>Rechthoek: <span class="hl">lengte × breedte</span></p><p>${C("6 × 4 = 24 m²")}</p>`)}
-        ${R(`<p class="muted">Langs de muren meten = <b>meter</b>.<br>De vloer = <b>vierkante meter (m²)</b>.</p>`)}
-        ${R(`<p>Waarom? Werkplekken inrichten · kabels en vloer bestellen · je eigen kamer.</p>`)}
-      </div></div>`},
     {step:4, phased:true, html:`<div class="kicker">Samen oplossen · ticket #2611</div>${phases()}
       <div class="think">
         ${PH(1)}${L("q","Wat is het probleem?")}
@@ -357,7 +357,7 @@ const LESSONS = {
     {step:0, html:`<div class="kicker">Welkom!</div><h1>Hoeveel klaslokalen passen in een voetbalveld?</h1>
       <div class="row"><div>${PH_IMG("field",820,540)}</div><div class="col" style="padding-top:60px"><p class="big">10? 50? 100?</p><p class="muted">Wat denk jij?</p></div></div>
       ${CREDIT("field")}`},
-    {step:3, html:`<div class="kicker">Uitleg</div><h1>Grote oppervlaktes: hectare en km²</h1>
+    {step:2, html:`<div class="kicker">Uitleg</div><h1>Grote oppervlaktes: hectare en km²</h1>
       <div class="row"><div>${PH_IMG("field",620,420)}</div><div class="col">
         ${R(`<p>Voetbalveld: ${C("105 × 68 ≈ 7.000 m²")}</p>`)}
         ${R(`<p>Lokaal ≈ 56 m² → ruim <span class="hl">120 lokalen</span>!</p>`)}
@@ -407,16 +407,7 @@ const LESSONS = {
         ${Q("7","helft van 24","12")}
         ${Q("8","3,14 × 10","31,4")}
       </div></div></div>`},
-    {step:2, html:`<div class="kicker">Werkorder</div><h1>Jij gaat dit lokaal klaarmaken</h1>
-      <div class="ticket" style="max-width:1000px"><div class="hd"><span>WERKORDER #4471</span><span>Lokaal B2.14</span><span class="st">OPEN</span></div>
-      <h3>Kabelgoot voor flexlokaal</h3>
-      <p>Lokaal: <b>8 m × 6 m</b>.</p>
-      <p>Kabelgoot langs <b>alle muren</b>, behalve bij de dubbele deur (<b>2 m</b> breed).</p>
-      <p>Kabelgoot per stuk van <b>3 m</b>, <b>€ 12,50</b> per stuk.</p>
-      <p class="hl">Hoeveel stukken bestel je? Wat kost dat?</p></div>
-      ${R(PH_IMG("lab",440,310,"transform:rotate(2deg)"),"","position:absolute;right:60px;top:20px")}
-      ${CREDIT("lab")}`},
-    {step:3, html:`<div class="kicker">Uitleg</div><h1>Rand of vlak?</h1>${CREDIT("pizza")}
+    {step:2, html:`<div class="kicker">Uitleg</div><h1>Rand of vlak?</h1>${CREDIT("pizza")}
       <div class="row"><div class="col">
         ${R(`<p><span class="hl">Omtrek</span> = de rand → alles optellen → <b>m</b><br>${C("rechthoek: 2 × (l + b)")}</p>`)}
         ${R(`<p><span class="hl">Oppervlakte</span> = het vlak → <b>m²</b><br>${C("rechthoek: l × b")}</p>`)}
@@ -429,6 +420,15 @@ const LESSONS = {
         <p class="ok">1 grote pizza wint (net)!</p>
         <p class="muted" style="font-size:24px">De straal telt twee keer mee. Een cirkel groeit sneller dan je denkt.</p></div>`)}
       </div></div>`},
+    {step:3, html:`<div class="kicker">Werkorder</div><h1>Jij gaat dit lokaal klaarmaken</h1>
+      <div class="ticket" style="max-width:1000px"><div class="hd"><span>WERKORDER #4471</span><span>Lokaal B2.14</span><span class="st">OPEN</span></div>
+      <h3>Kabelgoot voor flexlokaal</h3>
+      <p>Lokaal: <b>8 m × 6 m</b>.</p>
+      <p>Kabelgoot langs <b>alle muren</b>, behalve bij de dubbele deur (<b>2 m</b> breed).</p>
+      <p>Kabelgoot per stuk van <b>3 m</b>, <b>€ 12,50</b> per stuk.</p>
+      <p class="hl">Hoeveel stukken bestel je? Wat kost dat?</p></div>
+      ${R(PH_IMG("lab",440,310,"transform:rotate(2deg)"),"","position:absolute;right:60px;top:20px")}
+      ${CREDIT("lab")}`},
     {step:4, phased:true, html:`<div class="kicker">Samen oplossen · werkorder #4471</div>${phases()}
       <div class="think">
         ${PH(1)}${L("q","Omtrek of oppervlakte?")}
@@ -463,17 +463,7 @@ const LESSONS = {
         ${Q("4","Hoeveel m² is 1 ha?","10.000")}
         ${Q("5","3,14 × 100","314")}
       </div>`},
-    {step:2, html:`<div class="kicker">Netwerkontwerp</div><h1>Vraag van de klant</h1>
-      <div class="ticket" style="max-width:930px"><div class="hd"><span>DESIGN-REQUEST #0815</span><span>Wifi kantine</span><span class="st">ANALYSE</span></div>
-      <h3>Is één access point genoeg?</h3>
-      <p>Kantine: <b>20 m × 15 m</b>.</p>
-      <p>Eén access point <b>midden in de ruimte</b>.</p>
-      <p>Bereik volgens leverancier: <b>10 m</b>.</p>
-      <p class="muted" style="font-size:24px">Vereenvoudigd: in het echt hangt bereik af van muren,<br>materialen en storing.</p></div>
-      ${PH_IMG("cafe",480,320,"position:absolute;right:60px;top:20px;transform:rotate(2deg)")}
-      ${R(PH_IMG("ap",250,250,"transform:rotate(-3deg)"),"","position:absolute;right:300px;top:370px")}
-      ${CREDIT("cafe","ap")}`},
-    {step:3, html:`<div class="kicker">Uitleg</div><h1>Oppervlakte groeit met het kwadraat</h1>
+    {step:2, html:`<div class="kicker">Uitleg</div><h1>Oppervlakte groeit met het kwadraat</h1>
       <div class="row"><div class="col">
         ${R(`<p>Omtrek = rand (<b>m</b>) · oppervlakte = vlak (<b>m²</b>)</p>`)}
         ${R(`<p><span class="hl">Driehoek</span> ${C("(b × h) : 2")}</p>`)}
@@ -484,6 +474,16 @@ const LESSONS = {
         <p class="ok">≈ 27% meer scherm, geen 12%!</p>
         <p class="muted" style="font-size:24px">2× zo breed én 2× zo hoog = 4× zoveel oppervlakte.</p></div>`)}
       </div></div>`},
+    {step:3, html:`<div class="kicker">Netwerkontwerp</div><h1>Vraag van de klant</h1>
+      <div class="ticket" style="max-width:930px"><div class="hd"><span>DESIGN-REQUEST #0815</span><span>Wifi kantine</span><span class="st">ANALYSE</span></div>
+      <h3>Is één access point genoeg?</h3>
+      <p>Kantine: <b>20 m × 15 m</b>.</p>
+      <p>Eén access point <b>midden in de ruimte</b>.</p>
+      <p>Bereik volgens leverancier: <b>10 m</b>.</p>
+      <p class="muted" style="font-size:24px">Vereenvoudigd: in het echt hangt bereik af van muren,<br>materialen en storing.</p></div>
+      ${PH_IMG("cafe",480,320,"position:absolute;right:60px;top:20px;transform:rotate(2deg)")}
+      ${R(PH_IMG("ap",250,250,"transform:rotate(-3deg)"),"","position:absolute;right:300px;top:370px")}
+      ${CREDIT("cafe","ap")}`},
     {step:4, phased:true, html:`<div class="kicker">Samen oplossen · design-request #0815</div>${phases()}
       <div class="row" style="gap:30px"><div class="col"><div class="think">
         ${PH(1)}${L("q","Welke berekeningen passen hierbij?")}
@@ -512,7 +512,7 @@ const LESSONS = {
   slides:[
     {step:0, html:`${BG("monitors")}<div class="kicker">Klopt dit?</div><h1>27 inch is 3 inch meer dan 24 inch…</h1>${SVG_MONITORS}
       <p class="big">…dus het scherm is ongeveer <span class="hl">12% groter</span>.</p>
-      <p class="muted">Klopt dit? Ja of nee? Het antwoord komt bij stap 4.</p>${CREDIT("monitors")}`},
+      <p class="muted">Klopt dit? Ja of nee? Het antwoord komt bij de uitleg.</p>${CREDIT("monitors")}`},
     {step:1, html:`<div class="kicker">Hersenen aan</div><h1>Opwarmen ${TIMER}</h1>
       <div class="qa">
         ${Q("1","Straal 5 cm. Diameter?","10 cm")}
@@ -521,15 +521,7 @@ const LESSONS = {
         ${Q("4","Hoeveel m² is 1 ha?","10.000")}
         ${Q("5","3,14 × 100","314")}
       </div>`},
-    {step:2, html:`${BG("code")}<div class="kicker">Backlog</div><h1>Nieuwe user story</h1>
-      <div class="row"><div class="col"><div class="ticket"><div class="hd"><span>STORY #142</span><span>Profiel</span><span class="st">TO DO</span></div>
-      <h3>Als gebruiker wil ik een ronde profielfoto</h3>
-      <p>Upload: <b>400 × 400 px</b>.</p>
-      <p>De cirkel past <b>precies</b> in het vierkant.</p>
-      <p class="hl">Hoeveel pixels gooien we weg? Welk deel van de foto is dat?</p>
-      <p class="muted" style="font-size:24px">Game dev? Zelfde som: een ronde hitbox in een vierkant sprite-vak.</p></div></div>
-      <div>${SVG_AVATAR}</div></div>${CREDIT("code")}`},
-    {step:3, html:`<div class="kicker">Uitleg</div><h1>Oppervlakte groeit met het kwadraat</h1>
+    {step:2, html:`<div class="kicker">Uitleg</div><h1>Oppervlakte groeit met het kwadraat</h1>
       <div class="row"><div class="col">
         ${R(`<p>Omtrek = rand (<b>m</b>) · oppervlakte = vlak (<b>m²</b>)</p>`)}
         ${R(`<p><span class="hl">Driehoek</span> ${C("(b × h) : 2")}</p>`)}
@@ -540,6 +532,14 @@ const LESSONS = {
         <p class="ok">Nee, het klopt niet: ≈ 27% meer scherm, geen 12%.</p>
         <p class="muted" style="font-size:24px">Breedte én hoogte worden groter. Dus de oppervlakte groeit dubbel mee.</p></div>`)}
       </div></div>`},
+    {step:3, html:`${BG("code")}<div class="kicker">Backlog</div><h1>Nieuwe user story</h1>
+      <div class="row"><div class="col"><div class="ticket"><div class="hd"><span>STORY #142</span><span>Profiel</span><span class="st">TO DO</span></div>
+      <h3>Als gebruiker wil ik een ronde profielfoto</h3>
+      <p>Upload: <b>400 × 400 px</b>.</p>
+      <p>De cirkel past <b>precies</b> in het vierkant.</p>
+      <p class="hl">Hoeveel pixels gooien we weg? Welk deel van de foto is dat?</p>
+      <p class="muted" style="font-size:24px">Game dev? Zelfde som: een ronde hitbox in een vierkant sprite-vak.</p></div></div>
+      <div>${SVG_AVATAR}</div></div>${CREDIT("code")}`},
     {step:4, phased:true, html:`<div class="kicker">Samen oplossen · story #142</div>${phases()}
       <div class="row" style="gap:30px"><div class="col"><div class="think">
         ${PH(1)}${L("q","Wat is hier de straal?")}
