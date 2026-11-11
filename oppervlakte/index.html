@@ -108,6 +108,15 @@
   .photo{display:block;object-fit:cover;border-radius:16px;border:1px solid var(--line);box-shadow:0 18px 40px rgba(0,0,0,.45);background:var(--panel)}
   .pz{border-radius:50%;overflow:hidden;box-shadow:0 16px 36px rgba(0,0,0,.55);background:#d99a3e;flex:none}
   .pz img{width:100%;height:100%;object-fit:cover;transform:scale(1.08);display:block}
+  .flow{display:flex;align-items:stretch;gap:8px}
+  .fs{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 20px;display:flex;flex-direction:column;gap:4px}
+  .fs b{font-family:var(--mono);color:var(--accent);font-size:24px}
+  .fs span{font-size:31px;font-weight:700;line-height:1.2}
+  .fs small{font-size:23px;color:var(--muted);line-height:1.35}
+  .fs small span{font-size:23px}
+  .fs.choice{border-color:var(--accent2);flex:1.25}
+  .fs.auto{border-style:dashed}
+  .fa{align-self:center;color:var(--muted);font-size:34px}
   .credit{position:absolute !important;left:60px;bottom:4px;font-size:13px;color:#6f819f;z-index:2}
   .credit a{color:#6f819f}
 </style>
@@ -264,16 +273,27 @@ const SVG_FIELD = `<svg viewBox="0 0 640 420" width="640" height="420">
 /* ============ lesson content per klas ============ */
 const COMMON_FF = (niv, onderdeel, items, letop, extra="") => `
   <div class="kicker">Aan de slag</div>
-  <h1>ffRekenen · MBO niveau ${niv}</h1>
-  <div class="card" style="margin-bottom:22px">
-    <p style="margin:0;font-family:var(--mono);font-size:26px;color:var(--muted)">Oriëntatie in de twee- en driedimensionale wereld › <span class="hl">${onderdeel}</span></p>
+  <h1 style="margin-bottom:12px">ffRekenen · MBO niveau ${niv}</h1>
+  <div class="card" style="margin-bottom:18px;padding:14px 26px">
+    <p style="margin:0;font-family:var(--mono);font-size:24px;color:var(--muted)">Oriëntatie in de twee- en driedimensionale wereld › <span class="hl">${onderdeel}</span></p>
   </div>
-  <div class="row">
+  <div class="flow">
+    <div class="fs"><b>1</b><span>Start de les</span><small>${items.length>1?"per onderdeel":"in ffRekenen"}</small></div>
+    <div class="fa">→</div>
+    <div class="fs"><b>2</b><span>Bekijk de video</span><small>advies: altijd even doen</small></div>
+    <div class="fa">→</div>
+    <div class="fs choice"><b>3</b><span>Jij kiest</span>
+      <small><span class="ok">Snap ik het?</span> → toets</small>
+      <small><span class="hl">Twijfel?</span> → lesopgaves</small></div>
+    <div class="fa">→</div>
+    <div class="fs auto"><b>4</b><span>ffRekenen kiest</span><small>extra opgaves als dat nodig is</small></div>
+  </div>
+  <div class="row" style="gap:40px;margin-top:22px">
     <div class="col">
-      ${items.map((t,i)=>`<p style="margin:6px 0"><span class="ok">${i+1}.</span> ${t}</p>`).join("")}
-      <p class="muted" style="font-size:26px;margin-top:14px">Per onderdeel: Introductie → Verdieping → Toets.<br>Fout bij de introductie? Doe eerst <b>Extra oefenen</b>.</p>
+      <p class="muted" style="margin:0 0 4px;font-size:22px">Deze week:</p>
+      ${items.map((t,i)=>`<p style="margin:2px 0;font-size:28px"><span class="ok">${i+1}.</span> ${t}</p>`).join("")}
     </div>
-    <div class="col">${R(`<div class="card" style="border-color:var(--accent2)"><p style="margin:0" class="hl">Let op</p><p style="margin:6px 0 0">${letop}</p></div>`)}${extra}</div>
+    <div class="col">${R(`<div class="card" style="border-color:var(--accent2);padding:18px 26px"><p style="margin:0" class="hl">Let op</p><p style="margin:4px 0 0;font-size:27px;line-height:1.35">${letop}</p></div>`)}${extra}</div>
   </div>`;
 
 const LESSONS = {
