@@ -123,6 +123,8 @@
   <div id="bottom">
     <div id="words"></div>
     <div id="nav">
+      <button class="btn" id="homeBtn" title="Terug naar klaskeuze (Home)">⌂ klassen</button>
+      <button class="btn" id="restartBtn" title="Deze les opnieuw vanaf het begin (R)">↺ opnieuw</button>
       <button class="btn" id="fsBtn" title="Volledig scherm (F)">⛶</button>
       <button class="btn" id="prevBtn">← terug</button>
       <button class="btn primary" id="nextBtn">verder →</button>
@@ -551,9 +553,10 @@ const START_HTML = `<div id="start">
     <button class="cls" data-go="sd"><div class="c">25998 · niveau 4 · 3F</div><div class="t">Software developer</div><div class="s">ID.26SD.A · software · full stack · game</div></button>
     <button class="cls" data-go="sd" data-en="1"><div class="c">25998 · niveau 4 · 3F · TTO</div><div class="t">Software developer (EN)</div><div class="s">ID.26SD.E · met Engelse vaktermen</div></button>
   </div>
+  <button class="btn" id="resetAll" style="position:absolute;left:60px;bottom:90px">↺ alles resetten</button>
   <div class="help">
     <kbd>→</kbd> / <kbd>spatie</kbd> / klik: volgende stap &nbsp; <kbd>←</kbd>: terug<br>
-    <kbd>F</kbd>: volledig scherm &nbsp; <kbd>T</kbd>: timer &nbsp; <kbd>Home</kbd>: klas kiezen
+    <kbd>F</kbd>: volledig scherm &nbsp; <kbd>T</kbd>: timer &nbsp; <kbd>R</kbd>: les opnieuw &nbsp; <kbd>Home</kbd>: klas kiezen
   </div>
 </div>`;
 
@@ -587,12 +590,24 @@ function showStart(){
   document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",e=>{
     e.stopPropagation(); en = b.dataset.en==="1"; startLesson(b.dataset.go);
   }));
-  try{ if(location.hash) history.replaceState(null,"",location.pathname); }catch(e){}
+  $("#resetAll").addEventListener("click",e=>{ e.stopPropagation(); resetAll(); });
+  $("#homeBtn").style.display="none"; $("#restartBtn").style.display="none";
+  $("#nextBtn").textContent="verder →";
+  try{ if(location.hash) history.replaceState(null,"",location.pathname+location.search); }catch(e){}
+}
+function resetAll(){
+  clearInterval(tInt); en=false; lesson=null;
+  try{ location.replace(location.pathname); }catch(e){ showStart(); }
+}
+function restartLesson(){
+  if(!lesson) return; clearInterval(tInt);
+  slideIdx=0; revIdx=0; renderSlide();
 }
 
 function startLesson(key){
   lesson = LESSONS[key]; lesson.key=key; slideIdx=0; revIdx=0;
   $("#classTag").textContent = lesson.code + (en?" · TTO":"");
+  $("#homeBtn").style.display=""; $("#restartBtn").style.display="";
   renderWords(); renderSlide();
   try{ location.hash = key + (en?"-en":""); }catch(e){}
 }
@@ -634,7 +649,7 @@ function applyReveal(){
     });
   }
   const last = slideIdx===lesson.slides.length-1 && revIdx>=list.length;
-  $("#nextBtn").textContent = last ? "klaar ✓" : "verder →";
+  $("#nextBtn").textContent = last ? "klaar ✓ → klassen" : "verder →";
 }
 function next(){
   if(!lesson) return;
@@ -643,6 +658,7 @@ function next(){
     const el=list[revIdx-1]; const inp=el.querySelector && el.querySelector("input"); if(inp) setTimeout(()=>inp.focus(),50);
     return; }
   if(slideIdx<lesson.slides.length-1){ slideIdx++; renderSlide(); }
+  else showStart();
 }
 function prev(){
   if(!lesson) return;
@@ -678,6 +694,7 @@ document.addEventListener("keydown",e=>{
   else if(e.key==="Home"||e.key==="Escape"&&!document.fullscreenElement){ showStart(); }
   else if(e.key==="f"||e.key==="F"){ toggleFS(); }
   else if(e.key==="t"||e.key==="T"){ runTimer(); }
+  else if(e.key==="r"||e.key==="R"){ restartLesson(); }
 });
 $("#content").addEventListener("click",e=>{
   if(e.target.closest("input,button,.btn,[data-timer],.cls")) return;
@@ -687,6 +704,8 @@ $("#nextBtn").addEventListener("click",next);
 $("#prevBtn").addEventListener("click",prev);
 $("#fsBtn").addEventListener("click",toggleFS);
 $("#classTag").addEventListener("click",showStart);
+$("#homeBtn").addEventListener("click",showStart);
+$("#restartBtn").addEventListener("click",restartLesson);
 
 /* deep link via #mi-1, #st, #se, #sd, #sd-en */
 function fromHash(){
