@@ -592,11 +592,12 @@ const LESSONS = {
 "sd": {
   code:"ID.26SD · 25998 Software developer",
   words:["inhoud","m³","dm³ = liter","cm³ = ml = cc"],
+  wordsEN:["volume","cubic metre","litre","millilitre","cuboid"],
   slides:[
     {step:0, html:`<div class="kicker">Klopt dit?</div><h1>"De grote doos is 2× zo groot, dus er past 2 liter in."</h1>
       <div class="row"><div>${SVG_CUBES(false)}</div>
       <div class="col" style="padding-top:60px"><p class="big">Klopt dit?</p><p class="muted">Ja of nee? Het antwoord komt bij de uitleg.</p></div></div>`,
-     notes:N(NH("Deur"),NL("Antwoord: 2 × 2 × 2 = <b>8 liter</b>."))},
+     notes:N(NH("Deur"),NL("Antwoord: 2 × 2 × 2 = <b>8 liter</b>.","TTO: 'Is the big box really twice as big?'"))},
     {step:1, html:`<div class="kicker">Hersenen aan</div><h1>Opwarmen ${TIMER()}</h1>
       <div class="row"><div class="col"><div class="qa">
         ${Q("1","1 m³ = … dm³","1.000")}
@@ -647,7 +648,7 @@ const LESSONS = {
       </div></div><div style="padding-top:30px">${SVG_AQUA.replace('width="486" height="270"','width="380" height="211"')}</div></div>`,
      notes:N(NH("Samen oplossen · 4 min · hardop denken"),
       "<p><b>Zeg:</b> 'Voordat ik code ga aanpassen, wil ik eerst weten wat het goede antwoord is. Anders kan ik mijn fix niet testen.'</p>",
-      NL("<b>Valkuil 1:</b> delen door 100 of door 10 (dan 2.000 L of 20.000 L).","<b>Valkuil 2:</b> de fix zonder test opleveren. Het testgeval 10 × 10 × 10 = 1 L is makkelijk te onthouden.","Extra vraag: 200 L water weegt ongeveer 200 kg. Kan je bureau dat hebben?","Laat studenten zelf een tweede testgeval bedenken."))},
+      NL("<b>Valkuil 1:</b> delen door 100 of door 10 (dan 2.000 L of 20.000 L).","<b>Valkuil 2:</b> de fix zonder test opleveren. Het testgeval 10 × 10 × 10 = 1 L is makkelijk te onthouden.","Extra vraag: 200 L water weegt ongeveer 200 kg. Kan je bureau dat hebben?","TTO: 'unit test', 'expected value', 'cubic centimetre'."))},
     {step:5, html: COMMON_FF(4,"Kubieke inhoud",["Liters en kubieke decimeters","Kubieke meters","cc en milliliters"],
       "Elke stap op de trap is <b>× 1.000</b>.<br>Test je antwoord: kán het eigenlijk wel?"), notes:NOTE_FF}
   ]
