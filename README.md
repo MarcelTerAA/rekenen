@@ -7,5 +7,6 @@ Online: https://marcelteraa.github.io/rekenen/
 | Onderwerp | Pagina |
 | --- | --- |
 | Oppervlakte (niveau 2, 3 en 4) | [oppervlakte/](https://marcelteraa.github.io/rekenen/oppervlakte/) |
+| Oppervlakte 2 (niveau 2) & kubieke inhoud (niveau 3 en 4) | [kubieke-inhoud/](https://marcelteraa.github.io/rekenen/kubieke-inhoud/) |
 
-Elke lesintro is één zelfstandig HTML-bestand. Bediening: pijltjestoetsen / spatie / klikken, `F` volledig scherm, `T` timer, `Home` klas kiezen.
+Elke lesintro is één zelfstandig HTML-bestand. Bediening: pijltjestoetsen / spatie / klikken, `F` volledig scherm, `T` timer, `Home` klas kiezen, `N` docentnotities (alleen in de nieuwere intro's).

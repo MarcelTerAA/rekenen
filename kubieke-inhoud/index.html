@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rekenen – Oppervlakte 2 &amp; kubieke inhoud | Lesintro digibord</title>
+<style>
+  :root{
+    --bg:#0e1626; --panel:#16223a; --panel2:#1d2c4a; --line:#2c3f63;
+    --ink:#eef3fb; --muted:#9fb0cc; --accent:#3ee0b0; --accent2:#ffcf4a;
+    --warn:#ff6b6b; --blue:#5aa9ff;
+    --mono: ui-monospace, "Cascadia Code", "Consolas", "SFMono-Regular", monospace;
+    --sans: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:#070c16;color:var(--ink);font-family:var(--sans);overflow:hidden}
+  #viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+  #stage{width:1600px;height:900px;position:relative;background:var(--bg);transform-origin:center center;
+    background-image:radial-gradient(circle at 85% 10%, rgba(62,224,176,.08), transparent 40%),
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size:auto,40px 40px,40px 40px;overflow:hidden}
+
+  /* top bar */
+  #top{position:absolute;left:0;right:0;top:0;height:76px;display:flex;align-items:center;gap:18px;padding:0 40px;border-bottom:1px solid var(--line)}
+  #classTag{white-space:nowrap;font-family:var(--mono);font-size:18px;color:var(--accent);background:rgba(62,224,176,.1);border:1px solid rgba(62,224,176,.35);padding:6px 12px;border-radius:8px;cursor:pointer}
+  #steps{display:flex;gap:6px;margin-left:auto}
+  .stp{font-size:16px;color:var(--muted);padding:7px 14px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
+  .stp.on{color:#06121f;background:var(--accent);border-color:var(--accent);font-weight:700}
+  .stp.done{color:var(--ink);border-color:#3b5482}
+
+  #content{position:absolute;left:0;right:0;top:76px;bottom:64px;padding:28px 60px}
+  #bottom{position:absolute;left:0;right:0;bottom:0;height:64px;display:flex;align-items:center;padding:0 40px;gap:16px;border-top:1px solid var(--line);color:var(--muted);font-size:17px}
+  #words{display:flex;gap:10px;flex-wrap:wrap}
+  .word{background:var(--panel2);border:1px solid var(--line);color:var(--ink);padding:4px 12px;border-radius:6px;font-size:18px}
+  .word i{color:var(--accent2);font-style:normal}
+  #nav{margin-left:auto;display:flex;gap:10px}
+  .btn{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 16px;font-size:18px;cursor:pointer;font-family:var(--sans)}
+  .btn:hover{border-color:var(--accent)}
+  .btn.primary{background:var(--accent);color:#06121f;border-color:var(--accent);font-weight:700}
+
+  h1{font-size:60px;margin:0 0 18px;line-height:1.1;letter-spacing:-.5px}
+  h2{font-size:44px;margin:0 0 20px;line-height:1.15}
+  .kicker{font-family:var(--mono);color:var(--accent);font-size:22px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  p,li{font-size:30px;line-height:1.4}
+  .muted{color:var(--muted)}
+  .big{font-size:40px}
+  .hl{color:var(--accent2);font-weight:700}
+  .ok{color:var(--accent);font-weight:700}
+  .bad{color:var(--warn);font-weight:700}
+  .row{display:flex;gap:40px;align-items:flex-start}
+  .col{flex:1}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px 30px}
+  .rev{opacity:0;transform:translateY(10px);transition:opacity .35s, transform .35s;pointer-events:none}
+  .rev.show{opacity:1;transform:none;pointer-events:auto}
+  .rev.dim{opacity:.45}
+
+  /* ticket */
+  .ticket{background:var(--panel);border:1px solid var(--line);border-left:8px solid var(--accent2);border-radius:14px;padding:26px 34px;max-width:1300px}
+  .ticket .hd{font-family:var(--mono);font-size:22px;color:var(--accent2);display:flex;gap:18px;margin-bottom:10px}
+  .ticket .hd span.st{margin-left:auto;color:#06121f;background:var(--accent2);padding:2px 10px;border-radius:6px;font-weight:700}
+  .ticket h3{font-size:38px;margin:0 0 12px}
+  .ticket p{margin:8px 0;font-size:31px}
+
+  /* warm-up list */
+  .qa{display:flex;flex-direction:column;gap:14px}
+  .q{display:flex;align-items:center;gap:22px;font-size:34px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 24px}
+  .q .n{font-family:var(--mono);color:var(--accent);font-size:26px;width:34px}
+  .q .a{margin-left:auto;color:var(--accent2);font-weight:700;font-family:var(--mono)}
+
+  /* phases (stap 5) */
+  .phases{display:flex;gap:12px;margin-bottom:14px}
+  .ph{flex:1;border:2px solid var(--line);border-radius:14px;padding:10px 18px;color:var(--muted);font-size:24px;font-weight:700;display:flex;gap:12px;align-items:center}
+  .ph b{font-family:var(--mono);font-size:28px}
+  .ph.on{border-color:var(--accent);color:var(--ink);background:rgba(62,224,176,.08)}
+  .ph.done{border-color:#3b5482;color:var(--ink)}
+  .ph small{font-weight:400;font-size:18px;color:var(--muted);display:block}
+  .think{display:flex;flex-direction:column;gap:8px}
+  .line{display:flex;gap:16px;align-items:flex-start;font-size:27px;line-height:1.3}
+  .line .tag{font-family:var(--mono);font-size:17px;padding:3px 9px;border-radius:6px;white-space:nowrap;margin-top:3px}
+  .tag.tq{background:rgba(255,207,74,.15);color:var(--accent2);border:1px solid rgba(255,207,74,.4)}
+  .tag.td{background:rgba(90,169,255,.15);color:var(--blue);border:1px solid rgba(90,169,255,.4)}
+  .tag.r{background:rgba(62,224,176,.15);color:var(--accent);border:1px solid rgba(62,224,176,.4)}
+  .calc{white-space:nowrap;font-family:var(--mono);color:var(--ink);background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:2px 10px}
+  .answer{font-size:31px;border:2px solid var(--accent);background:rgba(62,224,176,.08);border-radius:14px;padding:14px 22px;margin-top:6px}
+  .est{display:flex;gap:12px;align-items:center;font-size:24px;color:var(--muted)}
+  .est input{font-size:26px;font-family:var(--mono);background:#0b1220;color:var(--accent2);border:1px solid var(--line);border-radius:8px;padding:6px 12px;width:520px}
+
+  /* start screen */
+  #start h1{font-size:72px}
+  .classes{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:26px}
+  .cls{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px 26px;cursor:pointer;text-align:left;color:var(--ink);font-family:var(--sans)}
+  .cls:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .cls .c{font-family:var(--mono);color:var(--accent);font-size:20px}
+  .cls .t{font-size:30px;font-weight:700;margin:6px 0}
+  .cls .s{font-size:20px;color:var(--muted)}
+  .lesbtns{display:flex;gap:10px;margin-top:12px}
+  .lesbtns .btn{font-size:18px}
+
+  .help{position:absolute;right:60px;bottom:90px;font-size:18px;color:var(--muted);text-align:right;line-height:1.6}
+  kbd{font-family:var(--mono);background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:1px 7px;color:var(--ink)}
+  .timer{font-family:var(--mono);font-size:30px;color:var(--accent2);border:1px solid var(--line);border-radius:10px;padding:4px 14px;cursor:pointer;background:var(--panel)}
+  .term{font-family:var(--mono);font-size:20px;color:var(--blue)}
+  svg text{font-family:var(--sans)}
+  .bgphoto{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.22;z-index:0;pointer-events:none}
+  .bgphoto::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--bg) 0%,rgba(14,22,38,.4) 60%,rgba(14,22,38,.1) 100%)}
+  #content > *{position:relative;z-index:1}
+  #content > .bgphoto{position:absolute;z-index:0}
+  .photo{display:block;object-fit:cover;border-radius:16px;border:1px solid var(--line);box-shadow:0 18px 40px rgba(0,0,0,.45);background:var(--panel)}
+  .pz{border-radius:50%;overflow:hidden;box-shadow:0 16px 36px rgba(0,0,0,.55);background:#d99a3e;flex:none}
+  .pz img{width:100%;height:100%;object-fit:cover;transform:scale(1.08);display:block}
+  .flow{display:flex;align-items:stretch;gap:8px}
+  .fs{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 20px;display:flex;flex-direction:column;gap:4px}
+  .fs b{font-family:var(--mono);color:var(--accent);font-size:24px}
+  .fs span{font-size:31px;font-weight:700;line-height:1.2}
+  .fs small{font-size:23px;color:var(--muted);line-height:1.35}
+  .fs small span{font-size:23px}
+  .fs.choice{border-color:var(--accent2);flex:1.25}
+  .fs.auto{border-style:dashed}
+  .fa{align-self:center;color:var(--muted);font-size:34px}
+  .credit{position:absolute !important;left:60px;bottom:4px;font-size:13px;color:#6f819f;z-index:2}
+  .credit a{color:#6f819f}
+  .code{font-family:var(--mono);font-size:24px;line-height:1.5;background:#0b1220;border:1px solid var(--line);border-radius:12px;padding:16px 22px;white-space:pre;color:#cfe0ff}
+  .code .k{color:#c792ea}.code .c{color:#6f819f}.code .f{color:var(--accent2)}.code .bug{background:rgba(255,107,107,.25);border-radius:4px}.code .fix{background:rgba(62,224,176,.25);border-radius:4px}
+  .ladder{display:flex;align-items:center;gap:10px}
+  .lb{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:12px 20px;text-align:center;min-width:190px}
+  .lb b{display:block;font-size:36px;font-family:var(--mono);color:var(--accent2)}
+  .lb span{font-size:22px;color:var(--muted)}
+  .la{display:flex;flex-direction:column;align-items:center;font-family:var(--mono);font-size:20px;color:var(--accent)}
+  .la .back{color:var(--blue)}
+  .opts{display:flex;gap:18px;margin-top:10px}
+  .opt{font-size:40px;font-weight:700;font-family:var(--mono);background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:10px 26px}
+  .bubble{position:relative;background:#fff;color:#0e1626;border-radius:18px;padding:14px 24px;font-size:34px;font-weight:700;display:inline-block}
+  .bubble::after{content:"";position:absolute;left:40px;bottom:-18px;border:12px solid transparent;border-top:12px solid #fff;border-bottom:0;border-width:18px 14px 0}
+  #notes{position:absolute;right:24px;top:90px;width:600px;max-height:730px;overflow:auto;background:#fffbe8;color:#1b2333;border-radius:14px;padding:18px 22px;font-size:19px;line-height:1.45;box-shadow:0 20px 50px rgba(0,0,0,.6);z-index:20;display:none}
+  #notes.on{display:block}
+  #notes h4{margin:0 0 6px;font-size:16px;letter-spacing:1px;text-transform:uppercase;color:#8a6d00}
+  #notes ul{margin:4px 0 8px 18px;padding:0}
+  #notes li{font-size:19px;line-height:1.4}
+  #notes b{color:#000}
+  #notes p{font-size:19px;line-height:1.45;margin:4px 0 8px}
+  .la{white-space:nowrap;font-size:17px}
+  .lb{min-width:150px;padding:10px 14px}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+  <div id="top">
+    <div id="classTag" title="Andere klas kiezen (Home)">kies een klas</div>
+    <div id="title" style="font-size:20px;color:var(--muted);white-space:nowrap">Rekenen</div>
+    <div id="steps"></div>
+  </div>
+  <div id="content"></div>
+  <div id="notes"></div>
+  <div id="bottom">
+    <div id="words"></div>
+    <div id="nav">
+      <button class="btn" id="notesBtn" title="Docentnotities (N)">📝</button>
+      <button class="btn" id="homeBtn" title="Terug naar klaskeuze (Home)">⌂ klassen</button>
+      <button class="btn" id="restartBtn" title="Deze les opnieuw vanaf het begin (R)">↺ opnieuw</button>
+      <button class="btn" id="fsBtn" title="Volledig scherm (F)">⛶</button>
+      <button class="btn" id="prevBtn">← terug</button>
+      <button class="btn primary" id="nextBtn">verder →</button>
+    </div>
+  </div>
+</div></div>
+
+<script>
+/* ============ helpers ============ */
+const STEPS = ["Deur","Opwarmen","ICT-koppeling","Uitleg","Samen oplossen","Aan de slag"];
+const $ = s => document.querySelector(s);
+const R = (html, cls="", style="") => `<div class="rev ${cls}" style="${style}">${html}</div>`;
+const Q = (n, q, a) => R(`<div class="q"><span class="n">${n}</span><span>${q}</span><span class="a rev">${a}</span></div>`);
+const L = (tag, txt) => {
+  const lab = {d:"ik denk", q:"vraag"}[tag];
+  return R(`<div class="line"><span class="tag t${tag}">${lab}</span><span>${txt}</span></div>`);
+};
+const C = t => `<span class="calc">${t}</span>`;
+const PH = (k) => `<!--phase:${k}-->`;
+const TIMER = (s=10) => `<span class="timer" data-timer="${s}">⏱ ${s} s</span>`;
+const N = (...parts) => parts.join("");           // docentnotities
+const NH = t => `<h4>${t}</h4>`;
+const NL = (...li) => `<ul>${li.map(x=>`<li>${x}</li>`).join("")}</ul>`;
+
+/* ============ foto's (Wikimedia Commons) ============ */
+const WM = "https://upload.wikimedia.org/wikipedia/commons/thumb/";
+const PHOTOS = {
+  dc:   {src:WM+"0/0c/Google_Data_Center%2C_Council_Bluffs_Iowa_%2849062863796%29.jpg/1280px-Google_Data_Center%2C_Council_Bluffs_Iowa_%2849062863796%29.jpg", by:"Chad Davis", lic:"CC BY 2.0", page:"https://commons.wikimedia.org/wiki/File:Google_Data_Center,_Council_Bluffs_Iowa_(49062863796).jpg"},
+  code: {src:WM+"7/7f/Code_on_computer_monitor_%28Unsplash%29.jpg/1280px-Code_on_computer_monitor_%28Unsplash%29.jpg", by:"Markus Spiske", lic:"CC0", page:"https://commons.wikimedia.org/wiki/File:Code_on_computer_monitor_(Unsplash).jpg"},
+  lab:  {src:WM+"4/40/Computer_lab_showing_desktop_PCs_warwick.jpg/1280px-Computer_lab_showing_desktop_PCs_warwick.jpg", by:"Mike1024", lic:"publiek domein", page:"https://commons.wikimedia.org/wiki/File:Computer_lab_showing_desktop_PCs_warwick.jpg"}
+};
+const BG = k => `<div class="bgphoto" style="background-image:url('${PHOTOS[k].src}')"></div>`;
+const PH_IMG = (k, w, h, extra="") => `<img class="photo" src="${PHOTOS[k].src}" alt="" style="width:${w}px;height:${h}px;${extra}" onerror="this.style.display='none'">`;
+const CREDIT = (...ks) => `<div class="credit">Foto's via Wikimedia Commons: ${ks.map(k=>`<a href="${PHOTOS[k].page}" target="_blank" rel="noopener">${PHOTOS[k].by}</a> (${PHOTOS[k].lic})`).join(" · ")}</div>`;
+
+function phases(){
+  return `<div class="phases">
+    <div class="ph" data-ph="1"><b>1</b><span>Analyseren<small>Wat is het probleem? Wat weet ik al?</small></span></div>
+    <div class="ph" data-ph="2"><b>2</b><span>Uitvoeren<small>Wat reken ik eerst uit?</small></span></div>
+    <div class="ph" data-ph="3"><b>3</b><span>Testen<small>Klopt mijn antwoord?</small></span></div>
+  </div>`;
+}
+function estimateBox(){
+  return R(`<div class="est">Schattingen van de klas: <input type="text" placeholder="typ hier de schattingen…" autocomplete="off"></div>`);
+}
+
+/* ============ SVG: L-vormige ruimte ============
+   W×H buitenmaat, rechtsboven een stuk cw×ch eruit. */
+function lroom(o){
+  const {W,H,cw,ch,s=50,ox=90,oy=60,cutName="",showQ=true,hulp=false,grid=false,pieces=false,edge=false,fill="rgba(90,169,255,.22)"} = o;
+  const X=v=>ox+v*s, Y=v=>oy+v*s, a=W-cw;
+  const pts=[[0,0],[a,0],[a,ch],[W,ch],[W,H],[0,H]].map(([x,y])=>`${X(x)},${Y(y)}`).join(" ");
+  let g=`<rect x="${X(a)}" y="${Y(0)}" width="${cw*s}" height="${ch*s}" fill="rgba(159,176,204,.08)" stroke="#9fb0cc" stroke-dasharray="8 6" stroke-width="2"/>`;
+  if(cutName) g+=`<text x="${X(a+cw/2)}" y="${Y(ch/2)+9}" fill="#9fb0cc" font-size="24" text-anchor="middle">${cutName}</text>`;
+  g+=`<polygon points="${pts}" fill="${fill}" stroke="${edge?'#ffcf4a':'#eef3fb'}" stroke-width="${edge?6:4}"/>`;
+  if(grid){
+    for(let i=1;i<W;i++){ const y0 = i<a?0:ch; g+=`<line x1="${X(i)}" y1="${Y(y0)}" x2="${X(i)}" y2="${Y(H)}" stroke="rgba(255,255,255,.15)"/>`; }
+    for(let j=1;j<H;j++){ const x1 = j<ch?a:W; g+=`<line x1="${X(0)}" y1="${Y(j)}" x2="${X(x1)}" y2="${Y(j)}" stroke="rgba(255,255,255,.15)"/>`; }
+  }
+  if(hulp) g+=`<line x1="${X(a)}" y1="${Y(ch)}" x2="${X(a)}" y2="${Y(H)}" stroke="#ffcf4a" stroke-width="4" stroke-dasharray="12 8"/>`;
+  if(pieces){
+    g+=`<text x="${X(a/2)}" y="${Y(H/2)+12}" fill="#ffcf4a" font-size="34" font-weight="700" text-anchor="middle">${a*H} m²</text>`;
+    g+=`<text x="${X(a+cw/2)}" y="${Y(ch+(H-ch)/2)+12}" fill="#ffcf4a" font-size="34" font-weight="700" text-anchor="middle">${cw*(H-ch)} m²</text>`;
+  }
+  const t=(x,y,txt,anchor="middle",col="#9fb0cc")=>`<text x="${x}" y="${y}" fill="${col}" font-size="28" text-anchor="${anchor}">${txt}</text>`;
+  g+=t(X(W/2),Y(H)+40,`${W} m`);
+  g+=t(X(0)-14,Y(H/2)+10,`${H} m`,"end");
+  g+=t(X(a+cw/2),Y(0)-14,`${cw} m`);
+  g+=t(X(W)+14,Y(ch/2)+10,`${ch} m`,"start");
+  g+=t(X(a/2),Y(0)-14, showQ?"?":`${a} m`,"middle", showQ?"#ffcf4a":"#9fb0cc");
+  g+=t(X(W)+14,Y(ch+(H-ch)/2)+10, showQ?"?":`${H-ch} m`,"start", showQ?"#ffcf4a":"#9fb0cc");
+  const vw = ox+W*s+90, vh = oy+H*s+60;
+  return `<svg viewBox="0 0 ${vw} ${vh}" width="${vw}" height="${vh}">${g}</svg>`;
+}
+
+/* twee kamers met omtrek 20 m */
+const SVG_TWO_ROOMS = (ans=false) => `<svg viewBox="0 0 900 360" width="900" height="360">
+  <text x="200" y="40" fill="#ffcf4a" font-size="34" font-weight="700" text-anchor="middle">Kamer A</text>
+  <rect x="20" y="150" width="360" height="40" fill="rgba(90,169,255,.25)" stroke="#eef3fb" stroke-width="3"/>
+  <text x="200" y="230" fill="#9fb0cc" font-size="28" text-anchor="middle">9 m</text>
+  <text x="392" y="180" fill="#9fb0cc" font-size="28">1 m</text>
+  ${ans?`<text x="200" y="290" fill="#3ee0b0" font-size="34" font-weight="700" text-anchor="middle">9 m²</text>`:""}
+  <text x="660" y="40" fill="#ffcf4a" font-size="34" font-weight="700" text-anchor="middle">Kamer B</text>
+  <rect x="560" y="70" width="200" height="200" fill="rgba(62,224,176,.22)" stroke="#eef3fb" stroke-width="3"/>
+  <text x="660" y="310" fill="#9fb0cc" font-size="28" text-anchor="middle">5 m</text>
+  <text x="772" y="180" fill="#9fb0cc" font-size="28">5 m</text>
+  ${ans?`<text x="660" y="182" fill="#3ee0b0" font-size="40" font-weight="700" text-anchor="middle">25 m²</text>`:""}
+</svg>`;
+
+/* pc-kast 45 × 21 × 45 cm (schuin aanzicht, 7 px/cm) */
+const SVG_CASE = `<svg viewBox="0 0 560 520" width="560" height="520">
+  <g stroke="#eef3fb" stroke-width="3" stroke-linejoin="round">
+    <polygon points="130,160 277,160 388,49 241,49" fill="#2c3f63"/>
+    <polygon points="277,160 388,49 388,364 277,475" fill="#1d2c4a"/>
+    <rect x="130" y="160" width="147" height="315" fill="#16223a"/>
+  </g>
+  <circle cx="203" cy="250" r="44" fill="none" stroke="#5aa9ff" stroke-width="4"/>
+  <circle cx="203" cy="250" r="8" fill="#5aa9ff"/>
+  <circle cx="203" cy="360" r="44" fill="none" stroke="#5aa9ff" stroke-width="4"/>
+  <circle cx="203" cy="360" r="8" fill="#5aa9ff"/>
+  <circle cx="250" cy="185" r="7" fill="#3ee0b0"/>
+  <text x="112" y="325" fill="#ffcf4a" font-size="30" font-weight="700" text-anchor="end">45 cm</text>
+  <text x="203" y="510" fill="#ffcf4a" font-size="30" font-weight="700" text-anchor="middle">21 cm</text>
+  <text x="352" y="440" fill="#ffcf4a" font-size="30" font-weight="700" transform="rotate(-45 352 440)">45 cm</text>
+</svg>`;
+
+/* twee kubussen 10 en 20 cm */
+function cube(x,y,a,fill,label,sub){
+  const d=a*0.45;
+  return `<g stroke="#eef3fb" stroke-width="3" stroke-linejoin="round">
+    <polygon points="${x},${y} ${x+a},${y} ${x+a+d},${y-d} ${x+d},${y-d}" fill="#2c3f63"/>
+    <polygon points="${x+a},${y} ${x+a+d},${y-d} ${x+a+d},${y+a-d} ${x+a},${y+a}" fill="#1d2c4a"/>
+    <rect x="${x}" y="${y}" width="${a}" height="${a}" fill="${fill}"/></g>
+    <text x="${x+a/2}" y="${y+a+38}" fill="#9fb0cc" font-size="28" text-anchor="middle">${label}</text>
+    <text x="${x+a/2}" y="${y+a/2+12}" fill="#ffcf4a" font-size="${a>150?40:30}" font-weight="700" text-anchor="middle">${sub}</text>`;
+}
+const SVG_CUBES = (ans=false) => `<svg viewBox="0 0 760 420" width="760" height="420">
+  ${cube(40,190,120,"rgba(90,169,255,.3)","10 × 10 × 10 cm","1 L")}
+  ${cube(330,130,240,"rgba(62,224,176,.25)","20 × 20 × 20 cm", ans?"8 L":"? L")}
+  ${ans?`<g stroke="rgba(255,255,255,.35)" stroke-width="2"><line x1="450" y1="130" x2="450" y2="370"/><line x1="330" y1="250" x2="570" y2="250"/></g>`:""}
+</svg>`;
+
+/* serverruimte 4 × 3 × 2,5 m */
+const SVG_SERVERROOM = `<svg viewBox="-60 0 620 420" width="560" height="420">
+  <g stroke="#eef3fb" stroke-width="3" stroke-linejoin="round">
+    <polygon points="60,140 380,140 470,60 150,60" fill="#2c3f63"/>
+    <polygon points="380,140 470,60 470,260 380,340" fill="#1d2c4a"/>
+    <rect x="60" y="140" width="320" height="200" fill="rgba(90,169,255,.12)"/>
+  </g>
+  <g fill="#0b1220" stroke="#5aa9ff" stroke-width="2">
+    <rect x="100" y="190" width="60" height="150"/><rect x="175" y="190" width="60" height="150"/>
+  </g>
+  <g fill="#3ee0b0">${[0,1,2,3,4,5].map(i=>`<rect x="108" y="${200+i*22}" width="44" height="6"/><rect x="183" y="${200+i*22}" width="44" height="6"/>`).join("")}</g>
+  <circle cx="320" cy="200" r="30" fill="none" stroke="#ffcf4a" stroke-width="4"/>
+  <path d="M320 200 L320 174 M320 200 L343 213 M320 200 L297 213" stroke="#ffcf4a" stroke-width="4"/>
+  <text x="220" y="380" fill="#ffcf4a" font-size="30" font-weight="700" text-anchor="middle">4 m</text>
+  <text x="440" y="320" fill="#ffcf4a" font-size="30" font-weight="700">3 m</text>
+  <text x="44" y="250" fill="#ffcf4a" font-size="30" font-weight="700" text-anchor="end">2,5 m</text>
+</svg>`;
+
+/* immersion-koelbak, vooraanzicht: 2,5 m breed, 1,1 m hoog, vloeistof tot 1,0 m (200 px/m) */
+const SVG_TANK = `<svg viewBox="0 0 680 360" width="680" height="360">
+  <rect x="80" y="40" width="500" height="220" fill="#0b1220" stroke="#eef3fb" stroke-width="4"/>
+  <rect x="82" y="60" width="496" height="198" fill="rgba(90,169,255,.35)"/>
+  <line x1="82" y1="60" x2="578" y2="60" stroke="#5aa9ff" stroke-width="3"/>
+  <g fill="#16223a" stroke="#9fb0cc" stroke-width="2">${Array.from({length:12},(_,i)=>`<rect x="${110+i*38}" y="80" width="20" height="170" rx="3"/>`).join("")}</g>
+  <text x="330" y="300" fill="#ffcf4a" font-size="30" font-weight="700" text-anchor="middle">2,5 m</text>
+  <text x="596" y="165" fill="#5aa9ff" font-size="26" font-weight="700">1,0 m</text>
+  <text x="596" y="195" fill="#9fb0cc" font-size="20">vloeistof</text>
+  <text x="330" y="340" fill="#9fb0cc" font-size="24" text-anchor="middle">diepte van de bak: 0,8 m</text>
+</svg>`;
+
+/* aquarium 100 × 40 × 50 cm */
+const SVG_AQUA = `<svg viewBox="-80 0 540 300" width="486" height="270">
+  <g stroke="#eef3fb" stroke-width="3" stroke-linejoin="round">
+    <polygon points="40,90 320,90 380,40 100,40" fill="rgba(90,169,255,.15)"/>
+    <polygon points="320,90 380,40 380,180 320,230" fill="rgba(90,169,255,.3)"/>
+    <rect x="40" y="90" width="280" height="140" fill="rgba(90,169,255,.4)"/>
+  </g>
+  <path d="M120 160 q20 -20 40 0 q-20 20 -40 0 l-14 -10 v20 z" fill="#ffcf4a"/>
+  <path d="M220 190 q15 -14 30 0 q-15 14 -30 0 l-10 -8 v16 z" fill="#ff6b6b"/>
+  <text x="180" y="268" fill="#ffcf4a" font-size="26" font-weight="700" text-anchor="middle">100 cm</text>
+  <text x="24" y="168" fill="#ffcf4a" font-size="26" font-weight="700" text-anchor="end">50 cm</text>
+  <text x="362" y="232" fill="#ffcf4a" font-size="26" font-weight="700">40 cm</text>
+</svg>`;
+
+/* trap m³ → dm³ → cm³ */
+const LADDER = (lit=true) => `<div class="ladder">
+  <div class="lb"><b>m³</b><span>kubieke meter</span></div>
+  <div class="la"><span>× 1.000 →</span><span class="back">← : 1.000</span></div>
+  <div class="lb"><b>dm³</b><span>${lit?"= liter (L)":"kubieke decimeter"}</span></div>
+  <div class="la"><span>× 1.000 →</span><span class="back">← : 1.000</span></div>
+  <div class="lb"><b>cm³</b><span>${lit?"= ml = cc":"kubieke centimeter"}</span></div>
+</div>`;
+
+/* ============ Aan de slag ============ */
+const COMMON_FF = (niv, onderdeel, items, letop, extra="") => `
+  <div class="kicker">Aan de slag</div>
+  <h1 style="margin-bottom:12px">ffRekenen · MBO niveau ${niv}</h1>
+  <div class="card" style="margin-bottom:18px;padding:14px 26px">
+    <p style="margin:0;font-family:var(--mono);font-size:24px;color:var(--muted)">Oriëntatie in de twee- en driedimensionale wereld › <span class="hl">${onderdeel}</span></p>
+  </div>
+  <div class="flow">
+    <div class="fs"><b>1</b><span>Start de les</span><small>${items.length>1?"per onderdeel":"in ffRekenen"}</small></div>
+    <div class="fa">→</div>
+    <div class="fs"><b>2</b><span>Bekijk de video</span><small>advies: altijd even doen</small></div>
+    <div class="fa">→</div>
+    <div class="fs choice"><b>3</b><span>Jij kiest</span>
+      <small><span class="ok">Snap ik het?</span> → toets</small>
+      <small><span class="hl">Twijfel?</span> → lesopgaves</small></div>
+    <div class="fa">→</div>
+    <div class="fs auto"><b>4</b><span>ffRekenen kiest</span><small>extra opgaves als dat nodig is</small></div>
+  </div>
+  <div class="row" style="gap:40px;margin-top:22px">
+    <div class="col">
+      <p class="muted" style="margin:0 0 4px;font-size:22px">Deze week:</p>
+      ${items.map((t,i)=>`<p style="margin:2px 0;font-size:28px"><span class="ok">${i+1}.</span> ${t}</p>`).join("")}
+    </div>
+    <div class="col">${R(`<div class="card" style="border-color:var(--accent2);padding:18px 26px"><p style="margin:0" class="hl">Let op</p><p style="margin:4px 0 0;font-size:27px;line-height:1.35">${letop}</p></div>`)}${extra}</div>
+  </div>`;
+
+const NOTE_FF = N(NH("Aan de slag · ± 1 min"),NL("Wijs de onderdelen aan in ffRekenen. Herhaal: video kijken, dan zelf kiezen tussen toets of lesopgaves.","Daarna rondlopen en het werk van vorige week bespreken."));
+
+/* ============ lessen per klas ============ */
+const LESSONS = {
+
+/* ---------------- NIVEAU 2 – les 1 ---------------- */
+"mi-1": {
+  code:"ID.26MI.A · 25999 Medewerker ICT · les 1",
+  words:["oppervlakte <i>m²</i>","hulplijn","lengte × breedte","afronden"],
+  slides:[
+    {step:0, html:`<div class="kicker">Klopt dit?</div><h1>Een collega rekent de vloer uit…</h1>
+      <div class="row"><div>${lroom({W:8,H:6,cw:3,ch:2,s:52,cutName:"trap",showQ:false})}</div>
+      <div class="col" style="padding-top:30px"><div class="bubble">8 × 6 = 48 m²</div>
+      <p class="big" style="margin-top:50px">Klopt dit?</p><p class="muted">Ja of nee? Waarom?</p></div></div>`,
+     notes:N(NH("Deur · bij binnenkomst"),NL("Laat studenten bij de deur reageren: <b>nee</b>, de trap hoort er niet bij.","Goed antwoord: 48 − 6 = <b>42 m²</b>. Nog niet verklappen, komt terug bij opwarmen (vraag 5)."))},
+    {step:1, html:`<div class="kicker">Hersenen aan</div><h1>Opwarmen ${TIMER()}</h1>
+      <div class="qa">
+        ${Q("1","7 × 4","28")}
+        ${Q("2","12 × 5","60")}
+        ${Q("3","25 × 4","100")}
+        ${Q("4","Vloer van 3 m bij 5 m. Hoeveel m²?","15 m²")}
+        ${Q("5","De trap is 3 m bij 2 m. Dus de vloer is… 48 − ?","48 − 6 = 42 m²")}
+      </div>`,
+     notes:N(NH("Opwarmen · 3 min"),NL("Iedereen schrijft het antwoord op (wisbordje of kladblok). Pas daarna het antwoord laten zien.","Vraag 4: let op de eenheid. Zegt iemand '15 meter'? Vraag dan: is dat de rand of de vloer?","Vraag 5 lost het raadsel van de deur op. Laat iemand uitleggen waarom je 6 eraf haalt."))},
+    {step:2, html:`<div class="kicker">Servicedesk</div><h1>Er komt een ticket binnen…</h1>
+      <div class="row" style="gap:30px"><div class="col"><div class="ticket"><div class="hd"><span>TICKET #2702</span><span>Facilitair</span><span class="st">NIEUW</span></div>
+      <h3>Nieuwe vloer reparatieruimte</h3>
+      <p>In de reparatieruimte maken wij laptops open.</p>
+      <p>Er komt een <b>antistatische vloer</b>. Die beschermt de onderdelen.</p>
+      <p>De <b>opslag</b> krijgt géén nieuwe vloer.</p>
+      <p><b>1 doos</b> vloertegels = <b>4 m²</b>.</p>
+      <p class="hl">Hoeveel dozen moeten wij bestellen?</p></div></div>
+      <div>${lroom({W:7,H:5,cw:3,ch:2,s:62,cutName:"opslag"})}</div></div>`,
+     notes:N(NH("ICT-koppeling · 1 min"),NL("Antistatisch of ESD: statische elektriciteit kan chips kapotmaken. Daarom heeft een reparatieruimte vaak een speciale vloer en polsbandjes.","Lees het ticket samen. Vraag: wat zie je op de tekening? Twee maten ontbreken (de vraagtekens)."))},
+    {step:3, html:`<div class="kicker">Uitleg</div><h1>Geen rechthoek? Maak er rechthoeken van!</h1>
+      <div class="row"><div>${lroom({W:7,H:5,cw:3,ch:2,s:58,cutName:"opslag",showQ:false,hulp:true,grid:true})}</div>
+      <div class="col">
+        ${R(`<p><span class="hl">Rechthoek</span>: lengte × breedte = m²</p>`)}
+        ${R(`<p><span class="hl">Hulplijn</span>: knip de vorm in rechthoeken.</p>`)}
+        ${R(`<p><span class="hl">Maat mist?</span> Reken hem uit.<br>${C("7 − 3 = 4 m")} &nbsp; ${C("5 − 2 = 3 m")}</p>`)}
+        ${R(`<p class="muted">Of: de grote rechthoek <b>min</b> het stuk dat eruit is.</p>`)}
+        ${R(`<p>Waar heb je dit nodig? Vloer, tapijt of verf voor <b>je eigen kamer</b>. Een kamer is bijna nooit een perfecte rechthoek.</p>`)}
+      </div></div>`,
+     notes:N(NH("Uitleg · 2 min"),NL("De gele stippellijn is de hulplijn. Die mag ook horizontaal: dan krijg je 7 × 3 = 21 en 4 × 2 = 8, samen ook 29.","Rekentaal: lengte, breedte, oppervlakte, vierkante meter, hulplijn.","Studenten van de Entree en anderstalige studenten: wijs bij elk woord iets aan in de tekening."))},
+    {step:4, phased:true, html:`<div class="kicker">Samen oplossen · ticket #2702</div>${phases()}
+      <div class="row" style="gap:20px"><div class="col"><div class="think">
+        ${PH(1)}${L("q","Wat moeten we weten?")}
+        ${L("d","Het aantal <b>dozen</b>, niet het aantal m².")}
+        ${L("d","De vorm is geen rechthoek. Ik trek een <b>hulplijn</b>.")}
+        ${L("q","Wat schatten jullie: hoeveel m²? Hoeveel dozen?")}
+        ${estimateBox()}
+        ${PH(2)}${L("d",`Links: ${C("4 × 5 = 20 m²")} &nbsp; Rechts: ${C("3 × 3 = 9 m²")}`)}
+        ${L("d",`Samen: ${C("20 + 9 = 29 m²")} &nbsp;<span class="muted">(of ${C("35 − 6 = 29")})</span>`)}
+        ${L("d",`Dozen: ${C("29 : 4 = 7,25")}`)}
+        ${PH(3)}${L("q","7 of 8 dozen?")}
+        ${L("d",`7 dozen = 28 m². Dan mis ik 1 m². Dus <b>naar boven</b>: 8 dozen.`)}
+        ${R(`<div class="answer">✔ Bestellen: <b>8 dozen</b> (32 m², er blijft 3 m² over)</div>`)}
+      </div></div><div>${lroom({W:7,H:5,cw:3,ch:2,s:44,ox:60,cutName:"opslag",showQ:false,hulp:true,pieces:true})}</div></div>`,
+     notes:N(NH("Samen oplossen · 4 min · hardop denken"),
+      "<p><b>Zeg:</b> 'Eerst lees ik goed wat de klant wil weten. Dozen! Niet m².'</p>",
+      NL("Laat de klas schatten voordat je rekent. Rond 30 m² is goed, dat is ongeveer 7 à 8 dozen.","<b>Valkuil 1:</b> 7 × 5 = 35. Dan reken je de opslag mee.","<b>Valkuil 2:</b> verkeerde maat gebruiken, bijvoorbeeld 7 × 5 en 3 × 2 optellen (41).","<b>Valkuil 3:</b> naar beneden afronden. Vorige week moest het wél naar beneden (werkplekken). Vraag: waarom nu naar boven? Je kunt geen halve doos kopen en je hebt genoeg tegels nodig.","Strategie: hoofdrekenen gaat prima. 29 : 4 kun je controleren met 7 × 4 = 28."))},
+    {step:5, html: COMMON_FF(2,"Oppervlakte 2",["Oppervlakte van rechthoeken","Hulplijnen trekken","Gecombineerde rechthoeken","(les 2) Omtrek en oppervlakte"],
+      "Mist er een maat? <b>Eerst uitrekenen.</b><br>Zet <b>m²</b> achter je antwoord."), notes:NOTE_FF}
+  ]
+},
+
+/* ---------------- NIVEAU 2 – les 2 (mini-intro) ---------------- */
+"mi-2": {
+  code:"ID.26MI.A · 25999 Medewerker ICT · les 2",
+  words:["omtrek <i>m</i>","oppervlakte <i>m²</i>","rand","vlak"],
+  slides:[
+    {step:0, html:`<div class="kicker">Raadsel</div><h1>Allebei een omtrek van 20 m. Even groot?</h1>
+      <div class="row"><div>${SVG_TWO_ROOMS(false)}</div>
+      <div class="col" style="padding-top:80px"><p class="big">Ja of nee?</p><p class="muted">In welke kamer zou jij willen gamen?</p></div></div>`,
+     notes:N(NH("Deur"),NL("Check eerst de omtrek: A = 9 + 1 + 9 + 1 = 20 m, B = 5 + 5 + 5 + 5 = 20 m.","Oppervlakte: A = 9 m², B = 25 m². Zelfde rand, heel andere vloer!"))},
+    {step:3, html:`<div class="kicker">Uitleg</div><h1>Rand of vlak?</h1>
+      <div class="row"><div>${SVG_TWO_ROOMS(true).replace('viewBox="0 0 900 360" width="900" height="360"','viewBox="0 0 900 360" width="700" height="280"')}</div>
+      <div class="col">
+        ${R(`<p><span class="hl">Omtrek</span> = de rand.<br>Alle zijden optellen → <b>m</b></p>`)}
+        ${R(`<p><span class="hl">Oppervlakte</span> = het vlak.<br>lengte × breedte → <b>m²</b></p>`)}
+        ${R(`<p class="muted">Kabel, plint, hek: <b>omtrek</b>.<br>Vloer, tapijt, verf: <b>oppervlakte</b>.</p>`)}
+      </div></div>`,
+     notes:N(NH("Uitleg · 2 min"),NL("Laat studenten zelf voorbeelden noemen van omtrek en oppervlakte uit het dagelijks leven.","Rekentaal: omtrek, zijde, oppervlakte."))},
+    {step:4, phased:true, html:`<div class="kicker">Samen oplossen · reparatieruimte</div>${phases()}
+      <div class="row" style="gap:20px"><div class="col"><div class="think">
+        ${PH(1)}${L("q","Langs de rand van de nieuwe vloer komt een <b>plintgoot</b> voor kabels. De deur (1 m) gaat eraf. Eén stuk is 2,4 m. Hoeveel stukken?")}
+        ${L("d","Langs de rand → <b>omtrek</b>. Alle zijden, ook de twee vraagtekens!")}
+        ${estimateBox()}
+        ${PH(2)}${L("d",`${C("7 + 5 + 4 + 2 + 3 + 3 = 24 m")}`)}
+        ${L("d",`Deur eraf: ${C("24 − 1 = 23 m")}`)}
+        ${L("d",`${C("9 × 2,4 = 21,6 m")} → te kort. &nbsp; ${C("10 × 2,4 = 24 m")} → past!`)}
+        ${PH(3)}${L("q","Wat valt je op aan 24 m?")}
+        ${L("d","Dat is dezelfde omtrek als de hele rechthoek van 7 bij 5. De hoek die eruit is, verandert de omtrek niet!")}
+        ${R(`<div class="answer">✔ Bestellen: <b>10 stukken plintgoot</b></div>`)}
+      </div></div><div>${lroom({W:7,H:5,cw:3,ch:2,s:44,ox:60,cutName:"opslag",showQ:false,edge:true})}</div></div>`,
+     notes:N(NH("Samen oplossen · 4 min"),NL("Strategie: met de rekenmachine 23 : 2,4 = 9,58. Zonder rekenmachine kun je proberen: 9 × 2,4 en 10 × 2,4.","<b>Valkuil:</b> alleen de 4 zijden met een getal optellen (7 + 5 + 3 + 2 = 17).","<b>Valkuil:</b> oppervlakte (29 m²) gebruiken in plaats van omtrek.","Afronden: naar boven, anders is de plintgoot te kort."))},
+    {step:5, html: COMMON_FF(2,"Oppervlakte 2",["Omtrek en oppervlakte"],"Omtrek → <b>m</b> (de rand)<br>Oppervlakte → <b>m²</b> (het vlak)"), notes:NOTE_FF}
+  ]
+},
+
+/* ---------------- NIVEAU 3 – ST ---------------- */
+"st": {
+  code:"ID.26ST.A · 27015 ICT support technician",
+  words:["inhoud","kubieke meter <i>m³</i>","liter <i>L</i> = dm³","ml = cm³"],
+  slides:[
+    {step:0, html:`<div class="kicker">Schatvraag</div><h1>Hoeveel liter past er in deze pc-kast?</h1>
+      <div class="row"><div>${SVG_CASE}</div>
+      <div class="col" style="padding-top:50px">
+        <div class="opts"><span class="opt">4 L</span><span class="opt">40 L</span><span class="opt">400 L</span></div>
+        <p class="muted" style="margin-top:30px">Pc-kasten worden echt verkocht met een inhoud in liters.<br>Kies er één. Waarom?</p></div></div>`,
+     notes:N(NH("Deur"),NL("Midi-tower van 45 × 21 × 45 cm. Antwoord komt bij de uitleg: ongeveer <b>42 L</b>.","Leuk weetje: kleine kasten (small form factor) worden aangeprezen met '10 liter' of '13 liter'."))},
+    {step:1, html:`<div class="kicker">Hersenen aan</div><h1>Opwarmen ${TIMER()}</h1>
+      <div class="row"><div class="col"><div class="qa">
+        ${Q("1","10 × 10 × 10","1.000")}
+        ${Q("2","2 × 3 × 4","24")}
+        ${Q("3","1 liter = … ml","1.000 ml")}
+      </div></div><div class="col"><div class="qa">
+        ${Q("4","0,5 L = … ml","500 ml")}
+        ${Q("5","Pak van 1 L. Hoeveel glazen van 250 ml?","4")}
+        ${Q("6","Blikje energydrink: welke vorm?","cilinder")}
+      </div></div></div>`,
+     notes:N(NH("Opwarmen · 3 min"),NL("Vraag 1 komt terug bij de uitleg: 10 × 10 × 10 cm = 1.000 cm³ = 1 liter.","Vraag 6: ruimtelijke figuren noemen. Wat nog meer? Kubus (dobbelsteen), balk (pc-kast), bol, piramide."))},
+    {step:2, html:`<div class="kicker">Werkorder</div><h1>De serverruimte wordt te warm</h1>
+      <div class="row" style="gap:30px"><div class="col"><div class="ticket"><div class="hd"><span>WERKORDER #4502</span><span>Serverruimte</span><span class="st">OPEN</span></div>
+      <h3>Is deze ventilator genoeg?</h3>
+      <p>Ruimte: <b>4 m × 3 m</b>, <b>2,5 m</b> hoog.</p>
+      <p>Alle lucht moet <b>10 keer per uur</b> vervangen worden.</p>
+      <p>Ventilator op voorraad: <b>250 m³ per uur</b>.</p>
+      <p class="muted" style="font-size:24px">Vereenvoudigd. In het echt rekent een installateur ook met de warmte van de servers.</p></div></div>
+      <div>${SVG_SERVERROOM}</div></div>`,
+     notes:N(NH("ICT-koppeling · 1 min"),NL("Echte ventilatoren staan in de webshop met 'm³/h'. Dat is de hoeveelheid lucht per uur.","Vraag: wie heeft weleens een serverkast of switchkast gezien die heet werd?"))},
+    {step:3, html:`<div class="kicker">Uitleg</div><h1>Inhoud = hoeveel past erin?</h1>
+      <div class="row"><div class="col">
+        ${R(`<p><span class="hl">Balk</span>: lengte × breedte × hoogte</p>`)}
+        ${R(LADDER(true))}
+        ${R(`<p class="muted" style="margin-top:14px">Elke stap is <b>× 1.000</b>. Niet × 10!</p>`)}
+        ${R(`<p>Een doos van 10 × 10 × 10 cm = 1.000 cm³ = <span class="hl">precies 1 liter</span></p>`)}
+      </div><div class="col" style="flex:.85">
+        ${R(`<div class="card"><p style="margin:0" class="hl">En de pc-kast?</p>
+        <p>${C("45 × 21 × 45 = 42.525 cm³")}</p>
+        <p>${C("42.525 : 1.000 ≈ 42,5 L")}</p>
+        <p class="ok">Ongeveer 40 liter!</p>
+        <p class="muted" style="font-size:24px">Waar je dit nodig hebt: koelvloeistof (ml), een blikje (330 ml), verzenddozen, een airco (m³).</p></div>`)}
+      </div></div>`,
+     notes:N(NH("Uitleg · 2 min"),NL("Teken de trap op het bord als dat helpt. Laat zien: 1 m = 10 dm, maar 1 m³ = 10 × 10 × 10 = 1.000 dm³.","Handige truc: reken de maten eerst om naar dm. Dan krijg je meteen liters.","Rekentaal: inhoud, kubieke meter, kubieke decimeter, liter, milliliter."))},
+    {step:4, phased:true, html:`<div class="kicker">Samen oplossen · werkorder #4502</div>${phases()}
+      <div class="row" style="gap:20px"><div class="col"><div class="think">
+        ${PH(1)}${L("q","Wat moeten we weten?")}
+        ${L("d","Ja of nee: is 250 m³ per uur genoeg?")}
+        ${L("d","Ik heb de <b>inhoud</b> van de ruimte nodig, in m³. Daarna × 10.")}
+        ${estimateBox()}
+        ${PH(2)}${L("d",`Vloer: ${C("4 × 3 = 12 m²")}`)}
+        ${L("d",`Inhoud: ${C("12 × 2,5 = 30 m³")}`)}
+        ${L("d",`10 keer per uur: ${C("30 × 10 = 300 m³ per uur")}`)}
+        ${PH(3)}${L("q","300 of 250: wat is meer? Is de ventilator genoeg?")}
+        ${L("d",`<span class="bad">Nee.</span> 250 is minder dan 300. Klopt de eenheid? m³ per uur, ja.`)}
+        ${R(`<div class="answer">✔ Advies: ventilator van <b>minstens 300 m³ per uur</b></div>`)}
+      </div></div><div>${SVG_SERVERROOM.replace('width="560" height="420"','width="460" height="345"')}</div></div>`,
+     notes:N(NH("Samen oplossen · 4 min · hardop denken"),
+      "<p><b>Zeg:</b> 'Ik lees: 10 keer per uur alle lucht. Dan moet ik eerst weten hoeveel lucht er is. Dat is de inhoud.'</p>",
+      NL("<b>Valkuil 1:</b> alleen de vloer (12 m²) gebruiken.","<b>Valkuil 2:</b> 4 + 3 + 2,5 optellen.","<b>Valkuil 3:</b> 10 keer vergeten, dan is 250 > 30 'ruim genoeg'.","Strategie: 12 × 2,5 uit je hoofd: 12 × 2 = 24, plus 12 × 0,5 = 6, samen 30.","Extra vraag voor snelle studenten: hoeveel liter lucht is 30 m³? (30.000 L)"))},
+    {step:5, html: COMMON_FF(3,"Kubieke inhoud",["Ruimtelijke figuren","Kubieke decimeters en liters","Kubieke meters","Kubieke centimeters en milliliters"],
+      "Maak eerst alle maten <b>dezelfde eenheid</b>.<br>Handig: reken in dm, dan krijg je meteen <b>liters</b>."), notes:NOTE_FF}
+  ]
+},
+
+/* ---------------- NIVEAU 4 – SE ---------------- */
+"se": {
+  code:"ID.26SE.A · 27016 ICT system engineer",
+  words:["inhoud","m³","dm³ = liter","cm³ = ml = cc"],
+  slides:[
+    {step:0, html:`<div class="kicker">Klopt dit?</div><h1>"De grote doos is 2× zo groot, dus er past 2 liter in."</h1>
+      <div class="row"><div>${SVG_CUBES(false)}</div>
+      <div class="col" style="padding-top:60px"><p class="big">Klopt dit?</p><p class="muted">Tip: denk aan vorige week en de monitor.</p></div></div>`,
+     notes:N(NH("Deur"),NL("Vorige week: 2× zo breed en 2× zo hoog = 4× zoveel oppervlakte. Nu komt er een derde richting bij.","Antwoord: 2 × 2 × 2 = <b>8 liter</b>. Komt terug bij de uitleg."))},
+    {step:1, html:`<div class="kicker">Hersenen aan · eerst stil opschrijven</div><h1>Opwarmen ${TIMER()}</h1>
+      <div class="row"><div class="col"><div class="qa">
+        ${Q("1","1 m³ = … dm³","1.000")}
+        ${Q("2","1 dm³ = … liter","1")}
+        ${Q("3","250 cc = … ml","250")}
+      </div></div><div class="col"><div class="qa">
+        ${Q("4","0,75 m³ = … liter","750")}
+        ${Q("5","3 L = … cm³","3.000")}
+        ${Q("6","2³","8")}
+      </div></div></div>`,
+     notes:N(NH("Opwarmen · 3 min"),NL("Vraag 3: cc = kubieke centimeter. Een scooter van 50 cc heeft een cilinderinhoud van 50 ml.","Vraag 6 is de sleutel voor de deurvraag."))},
+    {step:2, html:`${BG("dc")}<div class="kicker">Datacenter</div><h1>Servers in een bad</h1>
+      <div class="row" style="gap:30px"><div class="col"><div class="ticket"><div class="hd"><span>CHANGE #7731</span><span>Koeling</span><span class="st">PLAN</span></div>
+      <h3>Immersion cooling: hoeveel vloeistof?</h3>
+      <p>Servers hangen in een bak met <b>koelvloeistof</b>. Die geleidt geen stroom.</p>
+      <p>Bak: <b>2,5 m × 0,8 m</b>. Vloeistof tot <b>1,0 m</b> hoog.</p>
+      <p>De servers nemen samen <b>0,4 m³</b> in.</p>
+      <p>Vloeistof komt in <b>vaten van 200 liter</b>.</p>
+      <p class="hl">Hoeveel vaten bestel je?</p></div></div>
+      <div style="padding-top:60px">${SVG_TANK}</div></div>${CREDIT("dc")}`,
+     notes:N(NH("ICT-koppeling · 1 min"),NL("Immersion cooling bestaat echt. Het wordt steeds vaker gebruikt voor servers met veel rekenkracht, zoals AI-servers. Lucht kan die warmte niet meer goed afvoeren.","Vraag aan cloud- en networkstudenten: waarom zou je dit willen? (stiller, minder energie voor koeling, meer servers per m²)"))},
+    {step:3, html:`<div class="kicker">Uitleg</div><h1>Inhoud groeit met de derde macht</h1>
+      <div class="row"><div class="col">
+        ${R(`<p><span class="hl">Balk</span> ${C("l × b × h")}</p>`)}
+        ${R(LADDER(true))}
+        ${R(`<p class="muted" style="margin-top:14px">1 m³ = 1.000 L. Dat is zo'n grote plastic watertank op een pallet (IBC).</p>`)}
+      </div><div class="col" style="flex:.85">
+        ${R(`<div class="card"><p style="margin:0" class="hl">En de doos?</p>${SVG_CUBES(true).replace('width="760" height="420"','width="460" height="254"')}
+        <p>${C("2 × 2 × 2 = 8")}</p>
+        <p class="ok">Nee: 8 liter, geen 2!</p></div>`)}
+      </div></div>`,
+     notes:N(NH("Uitleg · 2 min"),NL("Lengte ×2 → oppervlakte ×4 → inhoud ×8. Daarom is de stap tussen m³ en dm³ ×1.000 (10³) en niet ×10.","Rekentaal: kubieke meter, kubieke decimeter, liter, cc, milliliter."))},
+    {step:4, phased:true, html:`<div class="kicker">Samen oplossen · change #7731</div>${phases()}
+      <div class="row" style="gap:20px"><div class="col"><div class="think">
+        ${PH(1)}${L("q","Wat moeten we weten? Welke gegevens hebben we niet nodig?")}
+        ${L("d","Aantal <b>vaten</b>. De bak is 1,1 m hoog, maar de vloeistof komt tot <b>1,0 m</b>.")}
+        ${L("d","En de servers nemen ruimte in. Die gaan eraf.")}
+        ${estimateBox()}
+        ${PH(2)}${L("d",`Bak tot 1,0 m: ${C("2,5 × 0,8 × 1,0 = 2,0 m³")}`)}
+        ${L("d",`Min servers: ${C("2,0 − 0,4 = 1,6 m³")}`)}
+        ${L("d",`In liters: ${C("1,6 × 1.000 = 1.600 L")}`)}
+        ${L("d",`Vaten: ${C("1.600 : 200 = 8")}`)}
+        ${PH(3)}${L("q","Klopt dit? Wat als je de servers vergeet? En wat als je × 100 doet?")}
+        ${L("d",`Zonder servers: 2.000 L = 10 vaten → 2 vaten te veel. Met × 100: 160 L → <span class="bad">nog geen vat. Kan niet!</span>`)}
+        ${R(`<div class="answer">✔ Bestellen: <b>8 vaten van 200 L</b> (1.600 liter)</div>`)}
+      </div></div><div style="padding-top:40px">${SVG_TANK.replace('width="680" height="360"','width="460" height="244"')}</div></div>`,
+     notes:N(NH("Samen oplossen · 4 min · hardop denken"),
+      "<p><b>Zeg:</b> 'Ik zie drie getallen voor de bak, maar de hoogte van de bak heb ik niet nodig. Ik reken met de hoogte van de vloeistof.'</p>",
+      NL("<b>Valkuil 1:</b> met 1,1 m rekenen: 2,2 m³.","<b>Valkuil 2:</b> servers vergeten.","<b>Valkuil 3:</b> m³ naar liter met × 10 of × 100.","Strategie: 2,5 × 0,8 = 2 kun je uit je hoofd (2,5 × 4 = 10, dus 2,5 × 0,8 = 2).","Extra vraag voor snelle studenten: de vloeistof weegt ongeveer 0,8 kg per liter. Hoe zwaar is dat? (ongeveer 1.300 kg) Kan de vloer dat hebben?"))},
+    {step:5, html: COMMON_FF(4,"Kubieke inhoud",["Liters en kubieke decimeters","Kubieke meters","cc en milliliters"],
+      "Elke stap op de trap is <b>× 1.000</b>.<br>En test je antwoord: kán het eigenlijk wel?"), notes:NOTE_FF}
+  ]
+},
+
+/* ---------------- NIVEAU 4 – SD ---------------- */
+"sd": {
+  code:"ID.26SD · 25998 Software developer",
+  words:["inhoud","m³","dm³ = liter","cm³ = ml = cc"],
+  wordsEN:["volume","cubic metre","litre","millilitre","cuboid"],
+  slides:[
+    {step:0, html:`<div class="kicker">Klopt dit?</div><h1>"De grote doos is 2× zo groot, dus er past 2 liter in."</h1>
+      <div class="row"><div>${SVG_CUBES(false)}</div>
+      <div class="col" style="padding-top:60px"><p class="big">Klopt dit?</p><p class="muted">Ja of nee? Het antwoord komt bij stap 4.</p></div></div>`,
+     notes:N(NH("Deur"),NL("Antwoord: 2 × 2 × 2 = <b>8 liter</b>.","TTO: 'Is the big box really twice as big?'"))},
+    {step:1, html:`<div class="kicker">Hersenen aan</div><h1>Opwarmen ${TIMER()}</h1>
+      <div class="row"><div class="col"><div class="qa">
+        ${Q("1","1 m³ = … dm³","1.000")}
+        ${Q("2","1 dm³ = … liter","1")}
+        ${Q("3","250 cc = … ml","250")}
+      </div></div><div class="col"><div class="qa">
+        ${Q("4","0,75 m³ = … liter","750")}
+        ${Q("5","3 L = … cm³","3.000")}
+        ${Q("6","2³","8")}
+      </div></div></div>`,
+     notes:N(NH("Opwarmen · 3 min"),NL("Eerst stil voor zichzelf opschrijven, dan pas antwoorden laten zien. Dat geeft rust en voorspelbaarheid in de klas.","Vraag 6 is de sleutel voor de deurvraag."))},
+    {step:2, html:`${BG("code")}<div class="kicker">Bugreport</div><h1>"Mijn aquarium is een zwembad?!"</h1>
+      <div class="row" style="gap:30px"><div class="col">
+      <div class="ticket"><div class="hd"><span>BUG #318</span><span>AquaCalc-app</span><span class="st">OPEN</span></div>
+      <p>Mijn aquarium is <b>100 × 40 × 50 cm</b>.</p>
+      <p>De app zegt: <span class="bad">200.000 liter</span>.</p></div>
+      <div class="code" style="margin-top:16px"><span class="c">// maten in cm, uitkomst in liter</span>
+<span class="k">function</span> <span class="f">inhoudLiter</span>(l, b, h) {
+  <span class="k">return</span> l * b * h;
+}</div>
+      <p class="muted" style="font-size:24px">Game dev? Dezelfde bug krijg je als je cm en m door elkaar gebruikt in je engine.</p></div>
+      <div style="padding-top:20px">${SVG_AQUA}</div></div>${CREDIT("code")}`,
+     notes:N(NH("ICT-koppeling · 1 min"),NL("De app is verzonnen, de bug niet. Een fout met eenheden is een klassieker in software.","Vraag: wie ziet de bug al? Nog niet verklappen. Eerst het rekenwerk, dan de fix."))},
+    {step:3, html:`<div class="kicker">Uitleg</div><h1>Inhoud groeit met de derde macht</h1>
+      <div class="row"><div class="col">
+        ${R(`<p><span class="hl">Balk</span> ${C("l × b × h")}</p>`)}
+        ${R(LADDER(true))}
+        ${R(`<p class="muted" style="margin-top:14px">cm × cm × cm = <b>cm³</b>. Dat is ml, nog geen liter.</p>`)}
+      </div><div class="col" style="flex:.85">
+        ${R(`<div class="card"><p style="margin:0" class="hl">Antwoord deurvraag</p>${SVG_CUBES(true).replace('width="760" height="420"','width="460" height="254"')}
+        <p>${C("2 × 2 × 2 = 8")}</p>
+        <p class="ok">Nee: 8 liter, geen 2!</p></div>`)}
+      </div></div>`,
+     notes:N(NH("Uitleg · 2 min"),NL("Koppel aan vorige week: lengte ×2 → oppervlakte ×4 → inhoud ×8.","De eenheid van een uitkomst volgt uit de eenheden die je vermenigvuldigt: cm · cm · cm = cm³."))},
+    {step:4, phased:true, html:`<div class="kicker">Samen oplossen · bug #318</div>${phases()}
+      <div class="row" style="gap:20px"><div class="col"><div class="think">
+        ${PH(1)}${L("q","Wat is het probleem? Welke eenheid geeft de functie nu terug?")}
+        ${L("d","l × b × h in cm geeft <b>cm³</b>, maar de app zegt 'liter'.")}
+        ${L("q","Wat schatten jullie: hoeveel liter is dit aquarium echt?")}
+        ${estimateBox()}
+        ${PH(2)}${L("d",`${C("100 × 40 × 50 = 200.000 cm³")}`)}
+        ${L("d",`cm³ → liter: ${C("200.000 : 1.000 = 200 L")}`)}
+        ${R(`<div class="code" style="font-size:22px;padding:8px 18px">  <span class="k">return</span> l * b * h <span class="fix">/ 1000</span>;</div>`)}
+        ${PH(3)}${L("q","Hoe test je dit? Bedenk een testgeval waarvan je het antwoord zeker weet.")}
+        ${L("d",`${C("inhoudLiter(10, 10, 10)")} moet <b>1</b> zijn. Dat is de doos van 1 liter!`)}
+        ${L("d",`Controle in meters: ${C("1 × 0,4 × 0,5 = 0,2 m³ = 200 L")} ✔`)}
+        ${R(`<div class="answer">✔ Fix: <b>delen door 1.000</b>. Het aquarium is <b>200 liter</b>.</div>`)}
+      </div></div><div style="padding-top:30px">${SVG_AQUA.replace('width="486" height="270"','width="380" height="211"')}</div></div>`,
+     notes:N(NH("Samen oplossen · 4 min · hardop denken"),
+      "<p><b>Zeg:</b> 'Voordat ik code ga aanpassen, wil ik eerst weten wat het goede antwoord is. Anders kan ik mijn fix niet testen.'</p>",
+      NL("<b>Valkuil 1:</b> delen door 100 of door 10 (dan 2.000 L of 20.000 L).","<b>Valkuil 2:</b> de fix zonder test opleveren. Het testgeval 10 × 10 × 10 = 1 L is makkelijk te onthouden.","Extra vraag: 200 L water weegt ongeveer 200 kg. Kan je bureau dat hebben?","TTO: 'unit test', 'expected value', 'cubic centimetre'."))},
+    {step:5, html: COMMON_FF(4,"Kubieke inhoud",["Liters en kubieke decimeters","Kubieke meters","cc en milliliters"],
+      "Elke stap op de trap is <b>× 1.000</b>.<br>Test je antwoord: kán het eigenlijk wel?"), notes:NOTE_FF}
+  ]
+}
+};
+
+/* ============ start screen ============ */
+const START_HTML = `<div id="start">
+  <div class="kicker">Rekenen · Oriëntatie in de twee- en driedimensionale wereld · periode 2 week 2</div>
+  <h1>Oppervlakte 2 &amp; kubieke inhoud</h1>
+  <p class="muted" style="margin:0">Kies de klas. De opgaven passen zich aan de opleiding aan.</p>
+  <div class="classes">
+    <div class="cls" style="cursor:default"><div class="c">25999 · niveau 2 · 2F</div><div class="t">Medewerker ICT</div><div class="s">ID.26MI.A · Oppervlakte 2</div>
+      <div class="lesbtns"><button class="btn primary" data-go="mi-1">Les 1 · hulplijnen</button><button class="btn" data-go="mi-2">Les 2 · omtrek</button></div></div>
+    <button class="cls" data-go="st"><div class="c">27015 · niveau 3 · 2F</div><div class="t">ICT support technician</div><div class="s">ID.26ST.A · Kubieke inhoud</div></button>
+    <button class="cls" data-go="se"><div class="c">27016 · niveau 4 · 3F</div><div class="t">ICT system engineer</div><div class="s">ID.26SE.A · Kubieke inhoud</div></button>
+    <button class="cls" data-go="sd"><div class="c">25998 · niveau 4 · 3F</div><div class="t">Software developer</div><div class="s">ID.26SD.A · Kubieke inhoud</div></button>
+    <button class="cls" data-go="sd" data-en="1"><div class="c">25998 · niveau 4 · 3F · TTO</div><div class="t">Software developer (EN)</div><div class="s">ID.26SD.E · met Engelse vaktermen</div></button>
+  </div>
+  <button class="btn" id="resetAll" style="position:absolute;left:60px;bottom:90px">↺ alles resetten</button>
+  <div class="help">
+    <kbd>→</kbd> / <kbd>spatie</kbd> / klik: volgende stap &nbsp; <kbd>←</kbd>: terug<br>
+    <kbd>F</kbd>: volledig scherm &nbsp; <kbd>T</kbd>: timer &nbsp; <kbd>N</kbd>: docentnotities<br>
+    <kbd>R</kbd>: les opnieuw &nbsp; <kbd>Home</kbd>: klas kiezen
+  </div>
+</div>`;
+
+/* ============ engine ============ */
+let lesson=null, slideIdx=0, revIdx=0, en=false, notesOn=false;
+
+function fit(){
+  const s=Math.min(innerWidth/1600, innerHeight/900);
+  $("#stage").style.transform=`scale(${s})`;
+}
+addEventListener("resize",fit); fit();
+
+function renderSteps(active){
+  $("#steps").innerHTML = STEPS.map((s,i)=>{
+    const c = active<0 ? "" : (i===active?"on":(i<active?"done":""));
+    return `<span class="stp ${c}">${i+1}. ${s}</span>`;
+  }).join("");
+}
+function renderWords(){
+  if(!lesson){ $("#words").innerHTML=""; return; }
+  let w = lesson.words.map(t=>`<span class="word">${t}</span>`).join("");
+  if(en && lesson.wordsEN) w += lesson.wordsEN.map(t=>`<span class="word term">${t}</span>`).join("");
+  $("#words").innerHTML = w;
+}
+function renderNotes(){
+  const el=$("#notes");
+  const s = lesson && lesson.slides[slideIdx];
+  el.innerHTML = s && s.notes ? s.notes : "<h4>Docentnotities</h4><p>Geen notities bij dit scherm.</p>";
+  el.classList.toggle("on", notesOn && !!lesson);
+}
+function toggleNotes(){ notesOn=!notesOn; renderNotes(); }
+
+function showStart(){
+  lesson=null; slideIdx=0; revIdx=0;
+  $("#classTag").textContent="kies een klas"; $("#title").textContent="Rekenen";
+  renderSteps(-1); renderWords(); renderNotes();
+  $("#content").innerHTML = START_HTML;
+  document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",e=>{
+    e.stopPropagation(); en = b.dataset.en==="1"; startLesson(b.dataset.go);
+  }));
+  $("#resetAll").addEventListener("click",e=>{ e.stopPropagation(); resetAll(); });
+  $("#homeBtn").style.display="none"; $("#restartBtn").style.display="none";
+  $("#nextBtn").textContent="verder →";
+  try{ if(location.hash) history.replaceState(null,"",location.pathname+location.search); }catch(e){}
+}
+function resetAll(){
+  clearInterval(tInt); en=false; lesson=null; notesOn=false;
+  try{ location.replace(location.pathname); }catch(e){ showStart(); }
+}
+function restartLesson(){
+  if(!lesson) return; clearInterval(tInt);
+  slideIdx=0; revIdx=0; renderSlide();
+}
+function startLesson(key){
+  lesson = LESSONS[key]; lesson.key=key; slideIdx=0; revIdx=0;
+  $("#classTag").textContent = lesson.code + (en?" · TTO":"");
+  $("#title").textContent = key.startsWith("mi") ? "Rekenen · Oppervlakte 2" : "Rekenen · Kubieke inhoud";
+  $("#homeBtn").style.display=""; $("#restartBtn").style.display="";
+  renderWords(); renderSlide();
+  try{ location.hash = key + (en?"-en":""); }catch(e){}
+}
+function renderSlide(){
+  const s = lesson.slides[slideIdx];
+  renderSteps(s.step);
+  $("#content").innerHTML = s.html;
+  if(s.phased){
+    let ph=0;
+    const walker = document.createTreeWalker($("#content"), NodeFilter.SHOW_COMMENT|NodeFilter.SHOW_ELEMENT);
+    let n; while((n=walker.nextNode())){
+      if(n.nodeType===8){ const m=n.nodeValue.match(/phase:(\d)/); if(m) ph=+m[1]; }
+      else if(n.classList && n.classList.contains("rev")) n.dataset.phase = n.dataset.phase || ph;
+    }
+  }
+  revIdx=0; applyReveal(); renderNotes();
+  bindTimers();
+}
+function revList(){ return Array.from($("#content").querySelectorAll(".rev")); }
+function applyReveal(){
+  const list=revList();
+  list.forEach((el,i)=>el.classList.toggle("show", i<revIdx));
+  const s=lesson.slides[slideIdx];
+  if(s.phased){
+    let cur=0; list.forEach((el,i)=>{ if(i<revIdx) cur=Math.max(cur,+el.dataset.phase||0); });
+    document.querySelectorAll(".ph").forEach(p=>{
+      const k=+p.dataset.ph; p.classList.toggle("on",k===cur); p.classList.toggle("done",k<cur);
+    });
+  }
+  const last = slideIdx===lesson.slides.length-1 && revIdx>=list.length;
+  $("#nextBtn").textContent = last ? "klaar ✓ → klassen" : "verder →";
+}
+function next(){
+  if(!lesson) return;
+  const list=revList();
+  if(revIdx<list.length){ revIdx++; applyReveal();
+    const el=list[revIdx-1]; const inp=el.querySelector && el.querySelector("input"); if(inp) setTimeout(()=>inp.focus(),50);
+    return; }
+  if(slideIdx<lesson.slides.length-1){ slideIdx++; renderSlide(); }
+  else showStart();
+}
+function prev(){
+  if(!lesson) return;
+  if(revIdx>0){ revIdx--; applyReveal(); return; }
+  if(slideIdx>0){ slideIdx--; renderSlide(); revIdx=revList().length; applyReveal(); }
+  else showStart();
+}
+
+/* timer */
+let tInt=null;
+function bindTimers(){
+  document.querySelectorAll("[data-timer]").forEach(t=>t.addEventListener("click",e=>{e.stopPropagation();runTimer(t);}));
+}
+function runTimer(t){
+  t = t || document.querySelector("[data-timer]"); if(!t) return;
+  clearInterval(tInt); let left=+t.dataset.timer; t.textContent=`⏱ ${left} s`; t.style.color="var(--accent2)";
+  tInt=setInterval(()=>{ left--; t.textContent = left>0?`⏱ ${left} s`:"⏱ tijd!"; if(left<=0){clearInterval(tInt); t.style.color="var(--warn)";} },1000);
+}
+
+/* fullscreen */
+function toggleFS(){
+  try{
+    if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+    else document.exitFullscreen().catch(()=>{});
+  }catch(e){}
+}
+
+/* input */
+document.addEventListener("keydown",e=>{
+  if(e.target.tagName==="INPUT"){ if(e.key==="Escape"||e.key==="Enter") e.target.blur(); return; }
+  if(["ArrowRight","PageDown"," ","Enter"].includes(e.key)){ e.preventDefault(); next(); }
+  else if(["ArrowLeft","PageUp","Backspace"].includes(e.key)){ e.preventDefault(); prev(); }
+  else if(e.key==="Home"||e.key==="Escape"&&!document.fullscreenElement){ showStart(); }
+  else if(e.key==="f"||e.key==="F"){ toggleFS(); }
+  else if(e.key==="t"||e.key==="T"){ runTimer(); }
+  else if(e.key==="n"||e.key==="N"){ toggleNotes(); }
+  else if(e.key==="r"||e.key==="R"){ restartLesson(); }
+});
+$("#content").addEventListener("click",e=>{
+  if(e.target.closest("input,button,.btn,[data-timer],.cls")) return;
+  next();
+});
+$("#nextBtn").addEventListener("click",next);
+$("#prevBtn").addEventListener("click",prev);
+$("#fsBtn").addEventListener("click",toggleFS);
+$("#notesBtn").addEventListener("click",toggleNotes);
+$("#classTag").addEventListener("click",showStart);
+$("#homeBtn").addEventListener("click",showStart);
+$("#restartBtn").addEventListener("click",restartLesson);
+
+/* deep link via #mi-1, #mi-2, #st, #se, #sd, #sd-en */
+function fromHash(){
+  const h=(location.hash||"").slice(1);
+  if(!h){ showStart(); return; }
+  const isEn = h.endsWith("-en"); const key = isEn? h.slice(0,-3) : h;
+  if(LESSONS[key]){ en=isEn; if(!lesson||lesson.key!==key){ startLesson(key);} }
+  else showStart();
+}
+addEventListener("hashchange", fromHash);
+fromHash();
+</script>
+</body>
+</html>
