@@ -279,49 +279,45 @@ const SVG_CUBES = (ans=false) => `<svg viewBox="0 0 760 420" width="760" height=
   ${ans?`<g stroke="rgba(255,255,255,.35)" stroke-width="2"><line x1="450" y1="130" x2="450" y2="370"/><line x1="330" y1="250" x2="570" y2="250"/></g>`:""}
 </svg>`;
 
-/* serverruimte 4 × 3 × 2,5 m */
-const SVG_SERVERROOM = `<svg viewBox="-60 0 620 420" width="560" height="420">
+/* doos (schuin aanzicht), maten in cm of mm; s = px per eenheid */
+const SVG_BOX = (l,b,h,unit="cm",s=4) => {
+  const w=l*s, hh=h*s, d=b*s*0.45, x=120, y=420-60-hh;
+  return `<svg viewBox="0 0 560 420" width="560" height="420">
   <g stroke="#eef3fb" stroke-width="3" stroke-linejoin="round">
-    <polygon points="60,140 380,140 470,60 150,60" fill="#2c3f63"/>
-    <polygon points="380,140 470,60 470,260 380,340" fill="#1d2c4a"/>
-    <rect x="60" y="140" width="320" height="200" fill="rgba(90,169,255,.12)"/>
+    <polygon points="${x},${y} ${x+w},${y} ${x+w+d},${y-d} ${x+d},${y-d}" fill="#c89b63"/>
+    <polygon points="${x+w},${y} ${x+w+d},${y-d} ${x+w+d},${y+hh-d} ${x+w},${y+hh}" fill="#8e6638"/>
+    <rect x="${x}" y="${y}" width="${w}" height="${hh}" fill="#b5844f"/>
+  </g>
+  <line x1="${x+w/2}" y1="${y}" x2="${x+w/2+d}" y2="${y-d}" stroke="#e8d3a8" stroke-width="10"/>
+  <line x1="${x+w/2}" y1="${y}" x2="${x+w/2}" y2="${y+hh*0.3}" stroke="#e8d3a8" stroke-width="10"/>
+  <text x="${x+w/2}" y="${y+hh+42}" fill="#ffcf4a" font-size="30" font-weight="700" text-anchor="middle">${l} ${unit}</text>
+  <text x="${x-12}" y="${y+hh/2+10}" fill="#ffcf4a" font-size="30" font-weight="700" text-anchor="end">${h} ${unit}</text>
+  <text x="${x+d/2-12}" y="${y-d/2-12}" fill="#ffcf4a" font-size="30" font-weight="700" text-anchor="middle" transform="rotate(-45 ${x+d/2-12} ${y-d/2-12})">${b} ${unit}</text>
+</svg>`;};
+
+/* serverruimte vooraanzicht: 6 m breed, 3 m hoog + verhoogde vloer 0,4 m (80 px/m) */
+const SVG_GASROOM = `<svg viewBox="0 0 600 380" width="600" height="380">
+  <rect x="50" y="40" width="420" height="210" fill="rgba(90,169,255,.12)" stroke="#eef3fb" stroke-width="4"/>
+  <rect x="50" y="250" width="420" height="28" fill="rgba(255,107,107,.18)" stroke="#eef3fb" stroke-width="3"/>
+  <line x1="50" y1="250" x2="470" y2="250" stroke="#eef3fb" stroke-width="5"/>
+  <g stroke="#ffcf4a" stroke-width="3" fill="none">
+    <path d="M58 268 q35 -12 70 0 t70 0 t70 0 t70 0 t70 0 t60 0"/>
+    <path d="M58 260 q35 9 70 0 t70 0 t70 0 t70 0 t70 0 t60 0" stroke="#5aa9ff"/>
   </g>
   <g fill="#0b1220" stroke="#5aa9ff" stroke-width="2">
-    <rect x="100" y="190" width="60" height="150"/><rect x="175" y="190" width="60" height="150"/>
+    <rect x="130" y="110" width="60" height="140"/><rect x="205" y="110" width="60" height="140"/><rect x="280" y="110" width="60" height="140"/>
   </g>
-  <g fill="#3ee0b0">${[0,1,2,3,4,5].map(i=>`<rect x="108" y="${200+i*22}" width="44" height="6"/><rect x="183" y="${200+i*22}" width="44" height="6"/>`).join("")}</g>
-  <circle cx="320" cy="200" r="30" fill="none" stroke="#ffcf4a" stroke-width="4"/>
-  <path d="M320 200 L320 174 M320 200 L343 213 M320 200 L297 213" stroke="#ffcf4a" stroke-width="4"/>
-  <text x="220" y="380" fill="#ffcf4a" font-size="30" font-weight="700" text-anchor="middle">4 m</text>
-  <text x="440" y="320" fill="#ffcf4a" font-size="30" font-weight="700">3 m</text>
-  <text x="44" y="250" fill="#ffcf4a" font-size="30" font-weight="700" text-anchor="end">2,5 m</text>
+  <g fill="#3ee0b0">${[0,1,2,3,4,5].map(i=>[137,212,287].map(x=>`<rect x="${x}" y="${120+i*20}" width="46" height="6"/>`).join("")).join("")}</g>
+  <g fill="#ff6b6b" stroke="#eef3fb" stroke-width="2">
+    <rect x="392" y="135" width="24" height="115" rx="11"/><rect x="424" y="135" width="24" height="115" rx="11"/>
+  </g>
+  <text x="420" y="124" fill="#ff6b6b" font-size="20" text-anchor="middle">blusgas</text>
+  <text x="260" y="316" fill="#ffcf4a" font-size="30" font-weight="700" text-anchor="middle">6 m</text>
+  <text x="484" y="155" fill="#ffcf4a" font-size="30" font-weight="700">3 m</text>
+  <text x="484" y="274" fill="#ff6b6b" font-size="26" font-weight="700">0,4 m</text>
+  <text x="260" y="356" fill="#9fb0cc" font-size="24" text-anchor="middle">diepte van de ruimte: 4 m</text>
 </svg>`;
 
-/* immersion-koelbak, vooraanzicht: 2,5 m breed, 1,1 m hoog, vloeistof tot 1,0 m (200 px/m) */
-const SVG_TANK = `<svg viewBox="0 0 680 360" width="680" height="360">
-  <rect x="80" y="40" width="500" height="220" fill="#0b1220" stroke="#eef3fb" stroke-width="4"/>
-  <rect x="82" y="60" width="496" height="198" fill="rgba(90,169,255,.35)"/>
-  <line x1="82" y1="60" x2="578" y2="60" stroke="#5aa9ff" stroke-width="3"/>
-  <g fill="#16223a" stroke="#9fb0cc" stroke-width="2">${Array.from({length:12},(_,i)=>`<rect x="${110+i*38}" y="80" width="20" height="170" rx="3"/>`).join("")}</g>
-  <text x="330" y="300" fill="#ffcf4a" font-size="30" font-weight="700" text-anchor="middle">2,5 m</text>
-  <text x="596" y="165" fill="#5aa9ff" font-size="26" font-weight="700">1,0 m</text>
-  <text x="596" y="195" fill="#9fb0cc" font-size="20">vloeistof</text>
-  <text x="330" y="340" fill="#9fb0cc" font-size="24" text-anchor="middle">diepte van de bak: 0,8 m</text>
-</svg>`;
-
-/* aquarium 100 × 40 × 50 cm */
-const SVG_AQUA = `<svg viewBox="-80 0 540 300" width="486" height="270">
-  <g stroke="#eef3fb" stroke-width="3" stroke-linejoin="round">
-    <polygon points="40,90 320,90 380,40 100,40" fill="rgba(90,169,255,.15)"/>
-    <polygon points="320,90 380,40 380,180 320,230" fill="rgba(90,169,255,.3)"/>
-    <rect x="40" y="90" width="280" height="140" fill="rgba(90,169,255,.4)"/>
-  </g>
-  <path d="M120 160 q20 -20 40 0 q-20 20 -40 0 l-14 -10 v20 z" fill="#ffcf4a"/>
-  <path d="M220 190 q15 -14 30 0 q-15 14 -30 0 l-10 -8 v16 z" fill="#ff6b6b"/>
-  <text x="180" y="268" fill="#ffcf4a" font-size="26" font-weight="700" text-anchor="middle">100 cm</text>
-  <text x="24" y="168" fill="#ffcf4a" font-size="26" font-weight="700" text-anchor="end">50 cm</text>
-  <text x="362" y="232" fill="#ffcf4a" font-size="26" font-weight="700">40 cm</text>
-</svg>`;
 
 /* trap m³ → dm³ → cm³ */
 const LADDER = (lit=true) => `<div class="ladder">
@@ -383,15 +379,15 @@ const LESSONS = {
       </div>`,
      notes:N(NH("Opwarmen · 3 min"),NL("Iedereen schrijft het antwoord op (wisbordje of kladblok). Pas daarna het antwoord laten zien.","Vraag 4: let op de eenheid. Zegt iemand '15 meter'? Vraag dan: is dat de rand of de vloer?","Vraag 5 lost het raadsel van de deur op. Laat iemand uitleggen waarom je 6 eraf haalt."))},
     {step:3, html:`<div class="kicker">Servicedesk</div><h1>Er komt een ticket binnen…</h1>
-      <div class="row" style="gap:30px"><div class="col"><div class="ticket"><div class="hd"><span>TICKET #2702</span><span>Facilitair</span><span class="st">NIEUW</span></div>
-      <h3>Nieuwe vloer reparatieruimte</h3>
-      <p>In de reparatieruimte maken wij laptops open.</p>
-      <p>Er komt een <b>antistatische vloer</b>. Die beschermt de onderdelen.</p>
-      <p>De <b>opslag</b> krijgt géén nieuwe vloer.</p>
-      <p><b>1 doos</b> vloertegels = <b>4 m²</b>.</p>
-      <p class="hl">Hoeveel dozen moeten wij bestellen?</p></div></div>
-      <div>${lroom({W:7,H:5,cw:3,ch:2,s:62,cutName:"opslag"})}</div></div>`,
-     notes:N(NH("ICT-koppeling · 1 min"),NL("Antistatisch of ESD: statische elektriciteit kan chips kapotmaken. Daarom heeft een reparatieruimte vaak een speciale vloer en polsbandjes.","Lees het ticket samen. Vraag: wat zie je op de tekening? Twee maten ontbreken (de vraagtekens)."))},
+      <div class="row" style="gap:30px"><div class="col"><div class="ticket"><div class="hd"><span>TICKET #2702</span><span>Netwerk</span><span class="st">NIEUW</span></div>
+      <h3>Netwerkaansluitingen nieuw kantoor</h3>
+      <p>Wij krijgen een nieuw kantoor. De <b>trap</b> hoort er niet bij.</p>
+      <p>De installateur zegt: <b>1 dubbele netwerkaansluiting per 10 m²</b>.</p>
+      <p>Een dubbele aansluiting = <b>2 poorten</b> op de switch.</p>
+      <p>De <b>printer</b> en het <b>access point</b> krijgen ook een poort.</p>
+      <p class="hl">Is onze switch met 8 poorten groot genoeg?</p></div></div>
+      <div>${lroom({W:9,H:6,cw:3,ch:4,s:52,cutName:"trap"})}</div></div>`,
+     notes:N(NH("ICT-koppeling · 1 min"),NL("Een dubbele wandcontactdoos (wcd) heeft twee netwerkpoorten. Elke poort gaat via de patchkast naar één poort op de switch.","Lees het ticket samen. Vraag: wat zie je op de tekening? Twee maten ontbreken (de vraagtekens).","De vuistregel is vereenvoudigd. In het echt kijkt de installateur ook naar het aantal werkplekken."))},
     {step:2, html:`<div class="kicker">Uitleg</div><h1>Geen rechthoek? Maak er rechthoeken van!</h1>
       <div class="row"><div>${lroom({W:8,H:6,cw:3,ch:2,s:52,cutName:"trap",showQ:false,hulp:true,grid:true})}</div>
       <div class="col">
@@ -400,26 +396,26 @@ const LESSONS = {
         ${R(`<p><span class="hl">Maat mist?</span> Reken hem uit.<br>${C("8 − 3 = 5 m")} &nbsp; ${C("6 − 2 = 4 m")}</p>`)}
         ${R(`<p>${C("5 × 6 = 30")} + ${C("3 × 4 = 12")} = <span class="ok">42 m²</span></p>`)}
         ${R(`<p class="muted">Of: de grote rechthoek <b>min</b> het stuk dat eruit is: ${C("48 − 6 = 42")}</p>`)}
-        ${R(`<p>Waar heb je dit nodig? Vloer, tapijt of verf voor <b>je eigen kamer</b>. Een kamer is bijna nooit een perfecte rechthoek.</p>`)}
+        ${R(`<p>Een kantoor is bijna nooit een rechthoek. Toch heb je de m² nodig, bijvoorbeeld voor <b>netwerkaansluitingen</b>.</p>`)}
       </div></div>`,
      notes:N(NH("Uitleg · 2 min"),NL("De gele stippellijn is de hulplijn. Dit is de vorm van de deurvraag. De hulplijn mag ook horizontaal: 8 × 4 = 32 en 5 × 2 = 10, samen ook 42.","Rekentaal: lengte, breedte, oppervlakte, vierkante meter, hulplijn.","Studenten van de Entree en anderstalige studenten: wijs bij elk woord iets aan in de tekening."))},
     {step:4, phased:true, html:`<div class="kicker">Samen oplossen · ticket #2702</div>${phases()}
       <div class="row" style="gap:20px"><div class="col"><div class="think">
         ${PH(1)}${L("q","Wat moeten we weten?")}
-        ${L("d","Het aantal <b>dozen</b>, niet het aantal m².")}
+        ${L("d","Ja of nee: zijn <b>8 poorten</b> genoeg? Daarvoor moet ik eerst de m² weten.")}
         ${L("d","De vorm is geen rechthoek. Ik trek een <b>hulplijn</b>.")}
-        ${L("q","Wat schatten jullie: hoeveel m²? Hoeveel dozen?")}
+        ${L("q","Wat schatten jullie: hoeveel m²? Hoeveel poorten?")}
         ${estimateBox()}
-        ${PH(2)}${L("d",`Links: ${C("4 × 5 = 20 m²")} &nbsp; Rechts: ${C("3 × 3 = 9 m²")}`)}
-        ${L("d",`Samen: ${C("20 + 9 = 29 m²")} &nbsp;<span class="muted">(of ${C("35 − 6 = 29")})</span>`)}
-        ${L("d",`Dozen: ${C("29 : 4 = 7,25")}`)}
-        ${PH(3)}${L("q","7 of 8 dozen?")}
-        ${L("d",`7 dozen = 28 m². Dan mis ik 1 m². Dus <b>naar boven</b>: 8 dozen.`)}
-        ${R(`<div class="answer">✔ Bestellen: <b>8 dozen</b> (32 m², er blijft 3 m² over)</div>`)}
-      </div></div><div>${lroom({W:7,H:5,cw:3,ch:2,s:44,ox:60,cutName:"opslag",showQ:false,hulp:true,pieces:true})}</div></div>`,
+        ${PH(2)}${L("d",`Links: ${C("6 × 6 = 36 m²")} &nbsp; Rechts: ${C("3 × 2 = 6 m²")} &nbsp; Samen: ${C("42 m²")}`)}
+        ${L("d",`Aansluitingen: ${C("42 : 10 = 4,2")} → 4 is te weinig, dus <b>5</b>`)}
+        ${L("d",`Poorten: ${C("5 × 2 = 10")} + printer + access point = ${C("12 poorten")}`)}
+        ${PH(3)}${L("q","Is de switch met 8 poorten genoeg?")}
+        ${L("d",`<span class="bad">Nee.</span> 12 is meer dan 8. Switches zijn er met 8, 16 of 24 poorten.`)}
+        ${R(`<div class="answer">✔ Advies: <b>switch met 16 poorten</b> (12 nodig, 4 over voor later)</div>`)}
+      </div></div><div>${lroom({W:9,H:6,cw:3,ch:4,s:40,ox:60,cutName:"trap",showQ:false,hulp:true,pieces:true})}</div></div>`,
      notes:N(NH("Samen oplossen · 4 min · hardop denken"),
-      "<p><b>Zeg:</b> 'Eerst lees ik goed wat de klant wil weten. Dozen! Niet m².'</p>",
-      NL("Laat de klas schatten voordat je rekent. Rond 30 m² is goed, dat is ongeveer 7 à 8 dozen.","<b>Valkuil 1:</b> 7 × 5 = 35. Dan reken je de opslag mee.","<b>Valkuil 2:</b> verkeerde maat gebruiken, bijvoorbeeld 7 × 5 en 3 × 2 optellen (41).","<b>Valkuil 3:</b> naar beneden afronden. Vorige week moest het wél naar beneden (werkplekken). Vraag: waarom nu naar boven? Je kunt geen halve doos kopen en je hebt genoeg tegels nodig.","Strategie: hoofdrekenen gaat prima. 29 : 4 kun je controleren met 7 × 4 = 28."))},
+      "<p><b>Zeg:</b> 'Eerst lees ik goed wat de klant wil weten. Of de switch groot genoeg is! Maar daarvoor heb ik eerst de m² nodig.'</p>",
+      NL("Laat de klas schatten voordat je rekent. Rond 40 m² is goed.","<b>Valkuil 1:</b> 9 × 6 = 54. Dan reken je de trap mee (6 aansluitingen, 14 poorten).","<b>Valkuil 2:</b> naar beneden afronden: 4 aansluitingen. Dan heeft een stuk van het kantoor geen aansluiting. Net als vorige week bij de access points: naar boven.","<b>Valkuil 3:</b> vergeten dat een dubbele aansluiting 2 poorten nodig heeft, of de printer en het access point vergeten.","Extra voor snelle studenten: de switch heeft ook een poort nodig naar de router (uplink). Verandert dat je advies? (nee, 16 is nog steeds genoeg)"))},
     {step:5, html: COMMON_FF(2,"Oppervlakte 2",["Oppervlakte van rechthoeken","Hulplijnen trekken","Gecombineerde rechthoeken","(les 2) Omtrek en oppervlakte"],
       "Mist er een maat? <b>Eerst uitrekenen.</b><br>Zet <b>m²</b> achter je antwoord."), notes:NOTE_FF}
   ]
@@ -442,19 +438,19 @@ const LESSONS = {
         ${R(`<p class="muted">Kabel, plint, hek: <b>omtrek</b>.<br>Vloer, tapijt, verf: <b>oppervlakte</b>.</p>`)}
       </div></div>`,
      notes:N(NH("Uitleg · 2 min"),NL("Laat studenten zelf voorbeelden noemen van omtrek en oppervlakte uit het dagelijks leven.","Rekentaal: omtrek, zijde, oppervlakte."))},
-    {step:4, phased:true, html:`<div class="kicker">Samen oplossen · reparatieruimte</div>${phases()}
+    {step:4, phased:true, html:`<div class="kicker">Samen oplossen · nieuw kantoor</div>${phases()}
       <div class="row" style="gap:20px"><div class="col"><div class="think">
-        ${PH(1)}${L("q","Langs de rand van de nieuwe vloer komt een <b>plintgoot</b> voor kabels. De deur (1 m) gaat eraf. Eén stuk is 2,4 m. Hoeveel stukken?")}
+        ${PH(1)}${L("q","De netwerkkabels gaan in een <b>plintgoot</b> langs de muren. De deur (1 m) gaat eraf. Eén stuk is 2 m. Hoeveel stukken?")}
         ${L("d","Langs de rand → <b>omtrek</b>. Alle zijden, ook de twee vraagtekens!")}
         ${estimateBox()}
-        ${PH(2)}${L("d",`${C("7 + 5 + 4 + 2 + 3 + 3 = 24 m")}`)}
-        ${L("d",`Deur eraf: ${C("24 − 1 = 23 m")}`)}
-        ${L("d",`${C("9 × 2,4 = 21,6 m")} → te kort. &nbsp; ${C("10 × 2,4 = 24 m")} → past!`)}
-        ${PH(3)}${L("q","Wat valt je op aan 24 m?")}
-        ${L("d","Dat is dezelfde omtrek als de hele rechthoek van 7 bij 5. De hoek die eruit is, verandert de omtrek niet!")}
-        ${R(`<div class="answer">✔ Bestellen: <b>10 stukken plintgoot</b></div>`)}
-      </div></div><div>${lroom({W:7,H:5,cw:3,ch:2,s:44,ox:60,cutName:"opslag",showQ:false,edge:true})}</div></div>`,
-     notes:N(NH("Samen oplossen · 4 min"),NL("Strategie: met de rekenmachine 23 : 2,4 = 9,58. Zonder rekenmachine kun je proberen: 9 × 2,4 en 10 × 2,4.","<b>Valkuil:</b> alleen de 4 zijden met een getal optellen (7 + 5 + 3 + 2 = 17).","<b>Valkuil:</b> oppervlakte (29 m²) gebruiken in plaats van omtrek.","Afronden: naar boven, anders is de plintgoot te kort."))},
+        ${PH(2)}${L("d",`${C("6 + 4 + 3 + 2 + 9 + 6 = 30 m")}`)}
+        ${L("d",`Deur eraf: ${C("30 − 1 = 29 m")}`)}
+        ${L("d",`${C("14 × 2 = 28 m")} → te kort. &nbsp; ${C("15 × 2 = 30 m")} → past!`)}
+        ${PH(3)}${L("q","Wat valt je op aan 30 m?")}
+        ${L("d","Dat is dezelfde omtrek als de hele rechthoek van 9 bij 6. De hoek die eruit is, verandert de omtrek niet!")}
+        ${R(`<div class="answer">✔ Bestellen: <b>15 stukken plintgoot</b></div>`)}
+      </div></div><div>${lroom({W:9,H:6,cw:3,ch:4,s:40,ox:60,cutName:"trap",showQ:false,edge:true})}</div></div>`,
+     notes:N(NH("Samen oplossen · 4 min"),NL("Plintgoot en kabelgoot worden meestal per 2 m verkocht.","Strategie: 29 : 2 = 14,5 kun je uit je hoofd. Of probeer 14 × 2 en 15 × 2.","<b>Valkuil:</b> alleen de 4 zijden met een getal uit het ticket optellen (9 + 6 + 3 + 4 = 22).","<b>Valkuil:</b> oppervlakte (42 m²) gebruiken in plaats van omtrek.","Afronden: naar boven, anders is de plintgoot te kort."))},
     {step:5, html: COMMON_FF(2,"Oppervlakte 2",["Omtrek en oppervlakte"],"Omtrek → <b>m</b> (de rand)<br>Oppervlakte → <b>m²</b> (het vlak)"), notes:NOTE_FF}
   ]
 },
@@ -481,15 +477,15 @@ const LESSONS = {
         ${Q("6","Blikje energydrink: welke vorm?","cilinder")}
       </div></div></div>`,
      notes:N(NH("Opwarmen · 3 min"),NL("Vraag 1 komt terug bij de uitleg: 10 × 10 × 10 cm = 1.000 cm³ = 1 liter.","Vraag 6: ruimtelijke figuren noemen. Wat nog meer? Kubus (dobbelsteen), balk (pc-kast), bol, piramide."))},
-    {step:3, html:`<div class="kicker">Werkorder</div><h1>De serverruimte wordt te warm</h1>
-      <div class="row" style="gap:30px"><div class="col"><div class="ticket"><div class="hd"><span>WERKORDER #4502</span><span>Serverruimte</span><span class="st">OPEN</span></div>
-      <h3>Is deze ventilator genoeg?</h3>
-      <p>Ruimte: <b>4 m × 3 m</b>, <b>2,5 m</b> hoog.</p>
-      <p>Alle lucht moet <b>10 keer per uur</b> vervangen worden.</p>
-      <p>Ventilator op voorraad: <b>250 m³ per uur</b>.</p>
-      <p class="muted" style="font-size:24px">Vereenvoudigd. In het echt rekent een installateur ook met de warmte van de servers.</p></div></div>
-      <div>${SVG_SERVERROOM}</div></div>`,
-     notes:N(NH("ICT-koppeling · 1 min"),NL("Echte ventilatoren staan in de webshop met 'm³/h'. Dat is de hoeveelheid lucht per uur.","Vraag: wie heeft weleens een serverkast of switchkast gezien die heet werd?"))},
+    {step:3, html:`<div class="kicker">Retour (RMA)</div><h1>Defecte laptops terugsturen</h1>
+      <div class="row" style="gap:30px"><div class="col"><div class="ticket"><div class="hd"><span>RMA #4502</span><span>Leverancier</span><span class="st">OPEN</span></div>
+      <h3>Met welk gewicht rekent de vervoerder?</h3>
+      <p>10 laptops gaan terug. Samen wegen ze <b>18 kg</b>.</p>
+      <p>Doos uit het magazijn: <b>80 × 60 × 50 cm</b>.</p>
+      <p>De vervoerder rekent met het <b>volumegewicht</b> als dat hoger is:<br>${C("inhoud in cm³ : 5.000 = kg")}</p>
+      <p class="hl">Wat betaal je? En met een doos van 60 × 40 × 40 cm?</p></div></div>
+      <div>${SVG_BOX(80,60,50)}</div></div>`,
+     notes:N(NH("ICT-koppeling · 1 min"),NL("RMA = Return Merchandise Authorization: toestemming van de leverancier om defecte hardware terug te sturen. Dat regelt een support technician echt.","Volumegewicht bestaat echt: een grote, lichte doos neemt veel plek in de vrachtwagen in. De deler verschilt per vervoerder (4.000, 5.000 of 6.000).","Vraag: wie heeft weleens iets besteld dat in een veel te grote doos kwam?"))},
     {step:2, html:`<div class="kicker">Uitleg</div><h1>Inhoud = hoeveel past erin?</h1>
       <div class="row"><div class="col">
         ${R(`<p><span class="hl">Balk</span>: lengte × breedte × hoogte</p>`)}
@@ -504,22 +500,22 @@ const LESSONS = {
         <p class="muted" style="font-size:24px">Waar je dit nodig hebt: koelvloeistof (ml), een blikje (330 ml), verzenddozen, een airco (m³).</p></div>`)}
       </div></div>`,
      notes:N(NH("Uitleg · 2 min"),NL("Teken de trap op het bord als dat helpt. Laat zien: 1 m = 10 dm, maar 1 m³ = 10 × 10 × 10 = 1.000 dm³.","Handige truc: reken de maten eerst om naar dm. Dan krijg je meteen liters.","Rekentaal: inhoud, kubieke meter, kubieke decimeter, liter, milliliter."))},
-    {step:4, phased:true, html:`<div class="kicker">Samen oplossen · werkorder #4502</div>${phases()}
+    {step:4, phased:true, html:`<div class="kicker">Samen oplossen · RMA #4502</div>${phases()}
       <div class="row" style="gap:20px"><div class="col"><div class="think">
         ${PH(1)}${L("q","Wat moeten we weten?")}
-        ${L("d","Ja of nee: is 250 m³ per uur genoeg?")}
-        ${L("d","Ik heb de <b>inhoud</b> van de ruimte nodig, in m³. Daarna × 10.")}
+        ${L("d","Met welk gewicht de vervoerder rekent: 18 kg óf het volumegewicht. Het <b>hoogste</b> telt.")}
+        ${L("d","Ik heb de <b>inhoud</b> van de doos nodig, in cm³.")}
         ${estimateBox()}
-        ${PH(2)}${L("d",`Vloer: ${C("4 × 3 = 12 m²")}`)}
-        ${L("d",`Inhoud: ${C("12 × 2,5 = 30 m³")}`)}
-        ${L("d",`10 keer per uur: ${C("30 × 10 = 300 m³ per uur")}`)}
-        ${PH(3)}${L("q","300 of 250: wat is meer? Is de ventilator genoeg?")}
-        ${L("d",`<span class="bad">Nee.</span> 250 is minder dan 300. Klopt de eenheid? m³ per uur, ja.`)}
-        ${R(`<div class="answer">✔ Advies: ventilator van <b>minstens 300 m³ per uur</b></div>`)}
-      </div></div><div>${SVG_SERVERROOM.replace('width="560" height="420"','width="460" height="345"')}</div></div>`,
+        ${PH(2)}${L("d",`Inhoud: ${C("80 × 60 × 50 = 240.000 cm³")} = ${C("240 L")}`)}
+        ${L("d",`Volumegewicht: ${C("240.000 : 5.000 = 48 kg")}`)}
+        ${L("d",`Kleine doos: ${C("60 × 40 × 40 = 96.000 cm³")} → ${C("96.000 : 5.000 = 19,2 kg")}`)}
+        ${PH(3)}${L("q","48 kg voor een doos met 18 kg erin. Kan dat?")}
+        ${L("d","Ja. Je betaalt voor de <b>ruimte</b> in de vrachtwagen. Grote doos = lucht versturen.")}
+        ${R(`<div class="answer">✔ Advies: <b>kleine doos</b> → 19,2 kg in plaats van 48 kg</div>`)}
+      </div></div><div>${SVG_BOX(80,60,50).replace('width="560" height="420"','width="470" height="352"')}</div></div>`,
      notes:N(NH("Samen oplossen · 4 min · hardop denken"),
-      "<p><b>Zeg:</b> 'Ik lees: 10 keer per uur alle lucht. Dan moet ik eerst weten hoeveel lucht er is. Dat is de inhoud.'</p>",
-      NL("<b>Valkuil 1:</b> alleen de vloer (12 m²) gebruiken.","<b>Valkuil 2:</b> 4 + 3 + 2,5 optellen.","<b>Valkuil 3:</b> 10 keer vergeten, dan is 250 > 30 'ruim genoeg'.","Strategie: 12 × 2,5 uit je hoofd: 12 × 2 = 24, plus 12 × 0,5 = 6, samen 30.","Extra vraag voor snelle studenten: hoeveel liter lucht is 30 m³? (30.000 L)"))},
+      "<p><b>Zeg:</b> 'Ik zie twee gewichten. Welke telt? De hoogste. Dus ik moet het volumegewicht uitrekenen, en daarvoor heb ik de inhoud nodig.'</p>",
+      NL("<b>Valkuil 1:</b> 80 + 60 + 50 optellen.","<b>Valkuil 2:</b> de echte 18 kg gebruiken, omdat de laptops 'toch maar 18 kg wegen'.","<b>Valkuil 3:</b> bij de kleine doos niet checken welk gewicht telt: 19,2 kg is meer dan 18 kg, dus je betaalt 19,2 kg.","Handige truc: cm³ : 5.000 is hetzelfde als liters : 5. Dus 240 L : 5 = 48 kg.","Extra vraag voor snelle studenten: passen de laptops in de kleine doos? 10 laptops van 36 × 25 × 3 cm op elkaar = 30 cm hoog. (ja)"))},
     {step:5, html: COMMON_FF(3,"Kubieke inhoud",["Ruimtelijke figuren","Kubieke decimeters en liters","Kubieke meters","Kubieke centimeters en milliliters"],
       "Maak eerst alle maten <b>dezelfde eenheid</b>.<br>Handig: reken in dm, dan krijg je meteen <b>liters</b>."), notes:NOTE_FF}
   ]
@@ -545,16 +541,17 @@ const LESSONS = {
         ${Q("6","2³","8")}
       </div></div></div>`,
      notes:N(NH("Opwarmen · 3 min"),NL("Vraag 3: cc = kubieke centimeter. Een scooter van 50 cc heeft een cilinderinhoud van 50 ml.","Vraag 6 is de sleutel voor de deurvraag."))},
-    {step:3, html:`${BG("dc")}<div class="kicker">Datacenter</div><h1>Servers in een bad</h1>
-      <div class="row" style="gap:30px"><div class="col"><div class="ticket"><div class="hd"><span>CHANGE #7731</span><span>Koeling</span><span class="st">PLAN</span></div>
-      <h3>Immersion cooling: hoeveel vloeistof?</h3>
-      <p>Servers hangen in een bak met <b>koelvloeistof</b>. Die geleidt geen stroom.</p>
-      <p>Bak: <b>2,5 m × 0,8 m</b>. Vloeistof tot <b>1,0 m</b> hoog.</p>
-      <p>De servers nemen samen <b>0,4 m³</b> in.</p>
-      <p>Vloeistof komt in <b>vaten van 200 liter</b>.</p>
-      <p class="hl">Hoeveel vaten bestel je?</p></div></div>
-      <div style="padding-top:60px">${SVG_TANK}</div></div>${CREDIT("dc")}`,
-     notes:N(NH("ICT-koppeling · 1 min"),NL("Immersion cooling bestaat echt. Het wordt steeds vaker gebruikt voor servers met veel rekenkracht, zoals AI-servers. Lucht kan die warmte niet meer goed afvoeren.","Vraag aan cloud- en networkstudenten: waarom zou je dit willen? (stiller, minder energie voor koeling, meer servers per m²)"))},
+    {step:3, html:`${BG("dc")}<div class="kicker">Serverruimte</div><h1>Blussen zonder water</h1>
+      <div class="row" style="gap:30px"><div class="col"><div class="ticket"><div class="hd"><span>CHANGE #7731</span><span>Brandveiligheid</span><span class="st">PLAN</span></div>
+      <h3>Blusgas: hoeveel cilinders?</h3>
+      <p>Water maakt servers kapot. Daarom komt er een <b>blusgasinstallatie</b>.</p>
+      <p>Serverruimte: <b>6 m × 4 m</b>, <b>3 m</b> hoog.</p>
+      <p>Daaronder: een <b>verhoogde vloer</b> van <b>0,4 m</b>, vol kabels.</p>
+      <p>Per m³ ruimte is <b>0,6 m³ gas</b> nodig. 1 cilinder = <b>24 m³ gas</b>.</p>
+      <p class="hl">Hoeveel cilinders bestel je?</p>
+      <p class="muted" style="font-size:24px">Vereenvoudigd. In het echt rekent de leverancier dit precies uit.</p></div></div>
+      <div style="padding-top:40px">${SVG_GASROOM}</div></div>${CREDIT("dc")}`,
+     notes:N(NH("ICT-koppeling · 1 min"),NL("Blusgas (bijvoorbeeld Inergen: stikstof, argon en een beetje CO₂) verlaagt de hoeveelheid zuurstof, zodat het vuur dooft. De servers blijven heel. Je ziet het in veel serverruimtes: cilinders in de hoek en een waarschuwingsbord op de deur.","Vraag: waarom geen sprinklers? (water + stroom, en alle hardware is daarna kapot)","Veiligheid: bij alarm moet iedereen de ruimte uit. De deur moet dicht, anders lekt het gas weg."))},
     {step:2, html:`<div class="kicker">Uitleg</div><h1>Inhoud groeit met de derde macht</h1>
       <div class="row"><div class="col">
         ${R(`<p><span class="hl">Balk</span> ${C("l × b × h")}</p>`)}
@@ -568,21 +565,19 @@ const LESSONS = {
      notes:N(NH("Uitleg · 2 min"),NL("Lengte ×2 → oppervlakte ×4 → inhoud ×8. Daarom is de stap tussen m³ en dm³ ×1.000 (10³) en niet ×10.","Rekentaal: kubieke meter, kubieke decimeter, liter, cc, milliliter."))},
     {step:4, phased:true, html:`<div class="kicker">Samen oplossen · change #7731</div>${phases()}
       <div class="row" style="gap:20px"><div class="col"><div class="think">
-        ${PH(1)}${L("q","Wat moeten we weten? Welke gegevens hebben we niet nodig?")}
-        ${L("d","Aantal <b>vaten</b>. De bak is 1,1 m hoog, maar de vloeistof komt tot <b>1,0 m</b>.")}
-        ${L("d","En de servers nemen ruimte in. Die gaan eraf.")}
+        ${PH(1)}${L("q","Wat moeten we weten? Welke ruimte moet vol met gas?")}
+        ${L("d","Aantal <b>cilinders</b>. Eerst de inhoud in m³, dan × 0,6, dan : 24.")}
         ${estimateBox()}
-        ${PH(2)}${L("d",`Bak tot 1,0 m: ${C("2,5 × 0,8 × 1,0 = 2,0 m³")}`)}
-        ${L("d",`Min servers: ${C("2,0 − 0,4 = 1,6 m³")}`)}
-        ${L("d",`In liters: ${C("1,6 × 1.000 = 1.600 L")}`)}
-        ${L("d",`Vaten: ${C("1.600 : 200 = 8")}`)}
-        ${PH(3)}${L("q","Klopt dit? Wat als je de servers vergeet? En wat als je × 100 doet?")}
-        ${L("d",`Zonder servers: 2.000 L = 10 vaten → 2 vaten te veel. Met × 100: 160 L → <span class="bad">nog geen vat. Kan niet!</span>`)}
-        ${R(`<div class="answer">✔ Bestellen: <b>8 vaten van 200 L</b> (1.600 liter)</div>`)}
-      </div></div><div style="padding-top:40px">${SVG_TANK.replace('width="680" height="360"','width="460" height="244"')}</div></div>`,
+        ${PH(2)}${L("d",`Ruimte: ${C("6 × 4 × 3 = 72 m³")}`)}
+        ${L("d",`Gas: ${C("72 × 0,6 = 43,2 m³")} → ${C("43,2 : 24 = 1,8")} → 2 cilinders`)}
+        ${PH(3)}${L("q","Klopt dit? Heb ik de hele ruimte meegenomen?")}
+        ${L("d",`<span class="bad">Nee!</span> De verhoogde vloer: ${C("6 × 4 × 0,4 = 9,6 m³")}`)}
+        ${L("d",`${C("72 + 9,6 = 81,6 m³")} → ${C("81,6 × 0,6 ≈ 49 m³")} → ${C("49 : 24 ≈ 2,04")}`)}
+        ${R(`<div class="answer">✔ Bestellen: <b>3 cilinders</b>. Met 2 is de ruimte onder de vloer niet veilig.</div>`)}
+      </div></div><div style="padding-top:40px">${SVG_GASROOM.replace('width="600" height="380"','width="480" height="304"')}</div></div>`,
      notes:N(NH("Samen oplossen · 4 min · hardop denken"),
-      "<p><b>Zeg:</b> 'Ik zie drie getallen voor de bak, maar de hoogte van de bak heb ik niet nodig. Ik reken met de hoogte van de vloeistof.'</p>",
-      NL("<b>Valkuil 1:</b> met 1,1 m rekenen: 2,2 m³.","<b>Valkuil 2:</b> servers vergeten.","<b>Valkuil 3:</b> m³ naar liter met × 10 of × 100.","Strategie: 2,5 × 0,8 = 2 kun je uit je hoofd (2,5 × 4 = 10, dus 2,5 × 0,8 = 2).","Extra vraag voor snelle studenten: de vloeistof weegt ongeveer 0,8 kg per liter. Hoe zwaar is dat? (ongeveer 1.300 kg) Kan de vloer dat hebben?"))},
+      "<p><b>Zeg:</b> 'Ik heb een antwoord: 2 cilinders. Maar voordat ik bestel, check ik: heb ik écht de hele ruimte meegenomen?'</p>",
+      NL("<b>Valkuil 1:</b> de verhoogde vloer vergeten. Juist daar liggen de kabels, en kabelbrand is een echt risico.","<b>Valkuil 2:</b> 2,04 afronden naar 2. Bij veiligheid rond je altijd naar boven.","<b>Valkuil 3:</b> 0,4 m als 40 gebruiken (cm en m door elkaar).","Strategie: 81,6 × 0,6 → 80 × 0,6 = 48, plus 1,6 × 0,6 ≈ 1, samen ongeveer 49.","Extra vraag voor snelle studenten: een cilinder is maar 80 liter, maar er zit 24 m³ gas in. Hoe kan dat? (24 m³ = 24.000 L, dus het gas is 300× samengeperst: 300 bar)"))},
     {step:5, html: COMMON_FF(4,"Kubieke inhoud",["Liters en kubieke decimeters","Kubieke meters","cc en milliliters"],
       "Elke stap op de trap is <b>× 1.000</b>.<br>En test je antwoord: kán het eigenlijk wel?"), notes:NOTE_FF}
   ]
@@ -609,23 +604,24 @@ const LESSONS = {
         ${Q("6","2³","8")}
       </div></div></div>`,
      notes:N(NH("Opwarmen · 3 min"),NL("Eerst stil voor zichzelf opschrijven, dan pas antwoorden laten zien. Dat geeft rust en voorspelbaarheid in de klas.","Vraag 6 is de sleutel voor de deurvraag."))},
-    {step:3, html:`${BG("code")}<div class="kicker">Bugreport</div><h1>"Mijn aquarium is een zwembad?!"</h1>
+    {step:3, html:`${BG("code")}<div class="kicker">Bugreport</div><h1>"Een doos van 4.800 kg?!"</h1>
       <div class="row" style="gap:30px"><div class="col">
-      <div class="ticket"><div class="hd"><span>BUG #318</span><span>AquaCalc-app</span><span class="st">OPEN</span></div>
-      <p>Mijn aquarium is <b>100 × 40 × 50 cm</b>.</p>
-      <p>De app zegt: <span class="bad">200.000 liter</span>.</p></div>
-      <div class="code" style="margin-top:16px"><span class="c">// maten in cm, uitkomst in liter</span>
-<span class="k">function</span> <span class="f">inhoudLiter</span>(l, b, h) {
-  <span class="k">return</span> l * b * h;
+      <div class="ticket"><div class="hd"><span>BUG #318</span><span>Webshop · verzendmodule</span><span class="st">OPEN</span></div>
+      <p>Klant bestelt een doos van <b>40 × 30 × 20 cm</b>.</p>
+      <p>De webshop rekent met <span class="bad">4.800 kg</span> volumegewicht.</p></div>
+      <div class="code" style="margin-top:16px"><span class="c">// maten komen uit de product-API, in mm</span>
+<span class="c">// volumegewicht (kg) = inhoud in cm³ : 5000</span>
+<span class="k">function</span> <span class="f">volumegewicht</span>(l, b, h) {
+  <span class="k">return</span> l * b * h / 5000;
 }</div>
       <p class="muted" style="font-size:24px">Game dev? Dezelfde bug krijg je als je cm en m door elkaar gebruikt in je engine.</p></div>
-      <div style="padding-top:20px">${SVG_AQUA}</div></div>${CREDIT("code")}`,
-     notes:N(NH("ICT-koppeling · 1 min"),NL("De app is verzonnen, de bug niet. Een fout met eenheden is een klassieker in software.","Vraag: wie ziet de bug al? Nog niet verklappen. Eerst het rekenwerk, dan de fix."))},
+      <div style="padding-top:20px">${SVG_BOX(400,300,200,"mm",0.8)}</div></div>${CREDIT("code")}`,
+     notes:N(NH("ICT-koppeling · 1 min"),NL("Echt probleem: leveranciers en product-API's geven maten vaak in mm, vervoerders rekenen in cm. Volumegewicht (inhoud in cm³ : 5.000) bestaat echt.","Beroemd voorbeeld van een eenhedenbug: de Mars Climate Orbiter (1999) ging verloren doordat twee teams verschillende eenheden gebruikten.","Vraag: wie ziet de bug al? Nog niet verklappen. Eerst het rekenwerk, dan de fix."))},
     {step:2, html:`<div class="kicker">Uitleg</div><h1>Inhoud groeit met de derde macht</h1>
       <div class="row"><div class="col">
         ${R(`<p><span class="hl">Balk</span> ${C("l × b × h")}</p>`)}
         ${R(LADDER(true))}
-        ${R(`<p class="muted" style="margin-top:14px">cm × cm × cm = <b>cm³</b>. Dat is ml, nog geen liter.</p>`)}
+        ${R(`<p class="muted" style="margin-top:14px">De trap gaat verder: 1 cm³ = 10 × 10 × 10 = <b>1.000 mm³</b>.</p>`)}
       </div><div class="col" style="flex:.85">
         ${R(`<div class="card"><p style="margin:0" class="hl">Antwoord deurvraag</p>${SVG_CUBES(true).replace('width="760" height="420"','width="460" height="254"')}
         <p>${C("2 × 2 × 2 = 8")}</p>
@@ -634,21 +630,21 @@ const LESSONS = {
      notes:N(NH("Uitleg · 2 min"),NL("Koppel aan vorige week: lengte ×2 → oppervlakte ×4 → inhoud ×8.","De eenheid van een uitkomst volgt uit de eenheden die je vermenigvuldigt: cm · cm · cm = cm³."))},
     {step:4, phased:true, html:`<div class="kicker">Samen oplossen · bug #318</div>${phases()}
       <div class="row" style="gap:20px"><div class="col"><div class="think">
-        ${PH(1)}${L("q","Wat is het probleem? Welke eenheid geeft de functie nu terug?")}
-        ${L("d","l × b × h in cm geeft <b>cm³</b>, maar de app zegt 'liter'.")}
-        ${L("q","Wat schatten jullie: hoeveel liter is dit aquarium echt?")}
+        ${PH(1)}${L("q","Wat is het probleem? In welke eenheid komen de maten binnen?")}
+        ${L("d","In <b>mm</b>. Dan geeft l × b × h <b>mm³</b>, maar de formule verwacht cm³.")}
+        ${L("q","Wat schatten jullie: wat is het echte volumegewicht?")}
         ${estimateBox()}
-        ${PH(2)}${L("d",`${C("100 × 40 × 50 = 200.000 cm³")}`)}
-        ${L("d",`cm³ → liter: ${C("200.000 : 1.000 = 200 L")}`)}
-        ${R(`<div class="code" style="font-size:22px;padding:8px 18px">  <span class="k">return</span> l * b * h <span class="fix">/ 1000</span>;</div>`)}
+        ${PH(2)}${L("d",`In cm: ${C("40 × 30 × 20 = 24.000 cm³")} → ${C("24.000 : 5.000 = 4,8 kg")}`)}
+        ${L("d",`De bug: ${C("400 × 300 × 200 = 24.000.000 mm³")} → <b>1.000×</b> te veel`)}
+        ${R(`<div class="code" style="font-size:22px;padding:8px 18px">  <span class="k">return</span> (l<span class="fix">/10</span>) * (b<span class="fix">/10</span>) * (h<span class="fix">/10</span>) / 5000;</div>`)}
         ${PH(3)}${L("q","Hoe test je dit? Bedenk een testgeval waarvan je het antwoord zeker weet.")}
-        ${L("d",`${C("inhoudLiter(10, 10, 10)")} moet <b>1</b> zijn. Dat is de doos van 1 liter!`)}
-        ${L("d",`Controle in meters: ${C("1 × 0,4 × 0,5 = 0,2 m³ = 200 L")} ✔`)}
-        ${R(`<div class="answer">✔ Fix: <b>delen door 1.000</b>. Het aquarium is <b>200 liter</b>.</div>`)}
-      </div></div><div style="padding-top:30px">${SVG_AQUA.replace('width="486" height="270"','width="380" height="211"')}</div></div>`,
+        ${L("d",`${C("volumegewicht(100, 100, 100)")}: doos van 1 liter → ${C("1.000 : 5.000 = 0,2 kg")}`)}
+        ${L("d",`Controle in liters: ${C("24 L : 5 = 4,8 kg")} ✔`)}
+        ${R(`<div class="answer">✔ Fix: <b>mm eerst naar cm</b>. Volumegewicht = <b>4,8 kg</b>.</div>`)}
+      </div></div><div style="padding-top:30px">${SVG_BOX(400,300,200,"mm",0.8).replace('width="560" height="420"','width="420" height="315"')}</div></div>`,
      notes:N(NH("Samen oplossen · 4 min · hardop denken"),
       "<p><b>Zeg:</b> 'Voordat ik code ga aanpassen, wil ik eerst weten wat het goede antwoord is. Anders kan ik mijn fix niet testen.'</p>",
-      NL("<b>Valkuil 1:</b> delen door 100 of door 10 (dan 2.000 L of 20.000 L).","<b>Valkuil 2:</b> de fix zonder test opleveren. Het testgeval 10 × 10 × 10 = 1 L is makkelijk te onthouden.","Extra vraag: 200 L water weegt ongeveer 200 kg. Kan je bureau dat hebben?","TTO: 'unit test', 'expected value', 'cubic centimetre'."))},
+      NL("<b>Valkuil 1:</b> het hele antwoord door 10 delen. Elke maat : 10, dus samen : 1.000.","<b>Valkuil 2:</b> de fix zonder test opleveren. Het testgeval 'doos van 1 liter' is makkelijk te onthouden.","Andere fix die ook goed is: l * b * h / 5000000. Maar leesbaarheid telt: wat snapt je collega straks?","TTO: 'unit test', 'expected value', 'cubic centimetre', 'unit conversion'."))},
     {step:5, html: COMMON_FF(4,"Kubieke inhoud",["Liters en kubieke decimeters","Kubieke meters","cc en milliliters"],
       "Elke stap op de trap is <b>× 1.000</b>.<br>Test je antwoord: kán het eigenlijk wel?"), notes:NOTE_FF}
   ]

@@ -119,6 +119,8 @@
   .fa{align-self:center;color:var(--muted);font-size:34px}
   .credit{position:absolute !important;left:60px;bottom:4px;font-size:13px;color:#6f819f;z-index:2}
   .credit a{color:#6f819f}
+  .code{font-family:var(--mono);font-size:24px;line-height:1.5;background:#0b1220;border:1px solid var(--line);border-radius:12px;padding:16px 22px;white-space:pre;color:#cfe0ff;margin:8px 0}
+  .code .f{color:var(--accent2)}
 </style>
 </head>
 <body>
@@ -246,17 +248,15 @@ function apSvg(two){
   </svg>`;
 }
 
-const SVG_AVATAR = `<svg viewBox="0 0 420 380" width="420" height="380">
-  <defs><pattern id="hatch" width="12" height="12" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
-    <rect width="12" height="12" fill="rgba(255,107,107,.15)"/><line x1="0" y1="0" x2="0" y2="12" stroke="#ff6b6b" stroke-width="4"/></pattern></defs>
-  <rect x="60" y="20" width="300" height="300" fill="url(#hatch)" stroke="#eef3fb" stroke-width="3"/>
-  <circle cx="210" cy="170" r="150" fill="#16223a" stroke="#3ee0b0" stroke-width="4"/>
-  <circle cx="210" cy="140" r="48" fill="#5aa9ff" opacity=".7"/>
-  <path d="M120 285 Q210 180 300 285 Z" fill="#5aa9ff" opacity=".7"/>
-  <line x1="210" y1="170" x2="360" y2="170" stroke="#ffcf4a" stroke-width="3"/>
-  <text x="285" y="160" fill="#ffcf4a" font-size="22" text-anchor="middle">r = ?</text>
-  <text x="210" y="355" fill="#9fb0cc" font-size="24" text-anchor="middle">400 px</text>
-</svg>`;
+const SVG_RING = (ans=false) => {
+  const r=150, c=2*Math.PI*r;
+  return `<svg viewBox="0 0 420 420" width="420" height="420">
+  <circle cx="210" cy="210" r="${r}" fill="none" stroke="#2c3f63" stroke-width="26"/>
+  <circle cx="210" cy="210" r="${r}" fill="none" stroke="#3ee0b0" stroke-width="26" stroke-linecap="round"
+    stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${(c*0.25).toFixed(1)}" transform="rotate(-90 210 210)"/>
+  <text x="210" y="232" fill="#eef3fb" font-size="72" font-weight="700" text-anchor="middle">75%</text>
+  <text x="210" y="285" fill="${ans?'#3ee0b0':'#ffcf4a'}" font-size="26" text-anchor="middle">${ans?'rand ≈ 339 px':'r = 54 px'}</text>
+</svg>`;};
 
 // voetbalveld 105 x 68 m, schaal 5 px/m; lokaal ~ 8 x 7 m
 const SVG_FIELD = `<svg viewBox="0 0 640 420" width="640" height="420">
@@ -319,30 +319,31 @@ const LESSONS = {
         ${R(`<p>1 vierkantje = 1 m bij 1 m = <span class="hl">1 m²</span></p>`)}
         ${R(`<p>Rechthoek: <span class="hl">lengte × breedte</span></p><p>${C("6 × 4 = 24 m²")}</p>`)}
         ${R(`<p class="muted">Langs de muren meten = <b>meter</b>.<br>De vloer = <b>vierkante meter (m²)</b>.</p>`)}
-        ${R(`<p>Waarom? Werkplekken inrichten · kabels en vloer bestellen · je eigen kamer.</p>`)}
+        ${R(`<p>In de ICT: een scherm is óók vierkantjes!<br>${C("1920 × 1080 = 2.073.600 pixels")}</p>`)}
       </div></div>`},
     {step:3, html:`<div class="kicker">Servicedesk</div><h1>Er komt een ticket binnen…</h1>
       <div class="ticket" style="max-width:1000px"><div class="hd"><span>TICKET #2611</span><span>Prioriteit: normaal</span><span class="st">NIEUW</span></div>
-      <h3>Nieuwe flexruimte</h3>
-      <p>Wij verhuizen naar een ruimte van <b>9 m bij 6 m</b>.</p>
-      <p>In een hoek komt een <b>printerhoek van 2 m bij 2 m</b>.</p>
-      <p>Per werkplek rekenen wij <b>6 m²</b>.</p>
-      <p class="hl">Hoeveel werkplekken kunnen jullie klaarmaken?</p></div>
+      <h3>Wifi in het nieuwe kantoor</h3>
+      <p>Wij verhuizen naar een kantoor van <b>18 m bij 12 m</b>.</p>
+      <p>Het is één open ruimte, zonder muren.</p>
+      <p>De leverancier zegt: reken <b>1 access point per 100 m²</b>.</p>
+      <p class="hl">Hoeveel access points moeten wij bestellen?</p>
+      <p class="muted" style="font-size:24px">Vuistregel, vereenvoudigd. In het echt meet een netwerkbeheerder het ook na.</p></div>
       ${R(PH_IMG("office",420,300,"transform:rotate(2deg)"),"","position:absolute;right:60px;top:20px")}
-      ${CREDIT("office")}`},
+      ${R(PH_IMG("ap",230,230,"transform:rotate(-3deg)"),"","position:absolute;right:250px;top:360px")}
+      ${CREDIT("office","ap")}`},
     {step:4, phased:true, html:`<div class="kicker">Samen oplossen · ticket #2611</div>${phases()}
       <div class="think">
         ${PH(1)}${L("q","Wat is het probleem?")}
-        ${L("d","Ze willen weten: <b>hoeveel werkplekken</b>. Niet hoeveel m².")}
-        ${L("d","Wat weet ik? 9 m en 6 m · printerhoek 2 m × 2 m · 6 m² per plek.")}
+        ${L("d","Ze willen weten: <b>hoeveel access points</b>. Niet hoeveel m².")}
+        ${L("d","Wat weet ik? 18 m en 12 m · 1 access point per 100 m².")}
         ${L("q","Wat schatten jullie?")}
         ${estimateBox()}
-        ${PH(2)}${L("d",`Ruimte: ${C("9 × 6 = 54 m²")}`)}
-        ${L("d",`Printerhoek: ${C("2 × 2 = 4 m²")} &nbsp;→&nbsp; ${C("54 − 4 = 50 m²")}`)}
-        ${L("d",`Werkplekken: ${C("50 : 6 = 8,33…")}`)}
-        ${PH(3)}${L("q","8,33 werkplekken? Naar boven of naar beneden?")}
-        ${L("d","Een 9e plek past niet. Dus <b>naar beneden</b>.")}
-        ${R(`<div class="answer">✔ Antwoord ticket: <b>8 werkplekken</b> → 8 laptops en 8 netwerkkabels</div>`)}
+        ${PH(2)}${L("d",`Kantoor: ${C("18 × 12 = 216 m²")}`)}
+        ${L("d",`Access points: ${C("216 : 100 = 2,16")}`)}
+        ${PH(3)}${L("q","2,16 access points? Naar boven of naar beneden?")}
+        ${L("d",`2 access points = 200 m². Dan heeft ${C("216 − 200 = 16 m²")} geen goede wifi. Dus <b>naar boven</b>.`)}
+        ${R(`<div class="answer">✔ Antwoord ticket: <b>3 access points</b></div>`)}
       </div>`},
     {step:5, html: COMMON_FF(2,"Oppervlakte 1",["Oppervlakte en vierkante meters","(les 2) Vierkante kilometers en hectares"],
       "Oppervlakte → <b>m²</b><br>Lengte → <b>m</b><br>Zet altijd de eenheid achter je antwoord!")}
@@ -363,19 +364,19 @@ const LESSONS = {
         ${R(`<p>Lokaal ≈ 56 m² → ruim <span class="hl">120 lokalen</span>!</p>`)}
         ${R(`<p><span class="hl">1 ha</span> = 100 m × 100 m = <b>10.000 m²</b></p>`)}
         ${R(`<p><span class="hl">1 km²</span> = 1.000 m × 1.000 m = <b>100 ha</b></p>`)}
-        ${R(`<p class="muted">ICT: een groot datacenter staat op tientallen hectares.</p>`)}
+        ${R(`<p class="muted">ICT: grote datacenters staan op tientallen of zelfs honderden hectares.</p>`)}
       </div></div>
       ${CREDIT("field")}`},
     {step:4, phased:true, html:`<div class="kicker">Samen oplossen</div>${phases()}
       <div class="think">
-        ${PH(1)}${L("q","Een terrein voor een datacenter is 300 m bij 200 m.<br>Hoeveel hectare is dat?")}
-        ${L("d","Ik weet: 1 ha = 10.000 m². Eerst m², dan delen.")}
+        ${PH(1)}${L("q","Meta (Facebook) wilde in Zeewolde een datacenter bouwen op <b>166 ha</b>.<br>Hoeveel voetbalvelden is dat?")}
+        ${L("d","Ik weet: 1 ha = 10.000 m² en 1 voetbalveld ≈ 7.000 m². Eerst naar m².")}
         ${estimateBox()}
-        ${PH(2)}${L("d",`${C("300 × 200 = 60.000 m²")}`)}
-        ${L("d",`${C("60.000 : 10.000 = 6")}`)}
-        ${PH(3)}${L("q","Klopt dat? Hoeveel voetbalvelden is dat ongeveer?")}
-        ${L("d","1 veld ≈ 0,7 ha → 6 ha ≈ 8 à 9 voetbalvelden. Dat kan kloppen.")}
-        ${R(`<div class="answer">✔ Het terrein is <b>6 ha</b></div>`)}
+        ${PH(2)}${L("d",`${C("166 × 10.000 = 1.660.000 m²")}`)}
+        ${L("d",`${C("1.660.000 : 7.000 ≈ 237")} voetbalvelden`)}
+        ${PH(3)}${L("q","Klopt dat? En hoeveel km² is het?")}
+        ${L("d","1 km² = 100 ha → 166 ha ≈ <b>1,7 km²</b>. Een terrein van ongeveer 1,3 km bij 1,3 km!")}
+        ${R(`<div class="answer">✔ 166 ha ≈ <b>237 voetbalvelden</b> ≈ 1,7 km² <span class="muted" style="font-size:22px">(het plan ging in 2022 niet door)</span></div>`)}
       </div>
       ${PH_IMG("dc",480,280,"position:absolute;right:60px;top:235px")}
       ${CREDIT("dc")}`},
@@ -424,8 +425,8 @@ const LESSONS = {
       <div class="ticket" style="max-width:1000px"><div class="hd"><span>WERKORDER #4471</span><span>Lokaal B2.14</span><span class="st">OPEN</span></div>
       <h3>Kabelgoot voor flexlokaal</h3>
       <p>Lokaal: <b>8 m × 6 m</b>.</p>
-      <p>Kabelgoot langs <b>alle muren</b>, behalve bij de dubbele deur (<b>2 m</b> breed).</p>
-      <p>Kabelgoot per stuk van <b>3 m</b>, <b>€ 12,50</b> per stuk.</p>
+      <p>Kabelgoot langs <b>alle muren</b>, behalve bij de dubbele deur (<b>1,5 m</b> breed).</p>
+      <p>Kabelgoot per stuk van <b>2 m</b>, <b>€ 8,50</b> per stuk.</p>
       <p class="hl">Hoeveel stukken bestel je? Wat kost dat?</p></div>
       ${R(PH_IMG("lab",440,310,"transform:rotate(2deg)"),"","position:absolute;right:60px;top:20px")}
       ${CREDIT("lab")}`},
@@ -435,12 +436,12 @@ const LESSONS = {
         ${L("d","Kabelgoot gaat langs de muur → de rand → <b>omtrek</b>.")}
         ${L("d","Wat is nieuw? Je kunt alleen <b>hele stukken</b> kopen.")}
         ${estimateBox()}
-        ${PH(2)}${L("d",`${C("8 + 6 + 8 + 6 = 28 m")} &nbsp;→ deur eraf: ${C("28 − 2 = 26 m")}`)}
-        ${L("d",`${C("26 : 3 = 8,67 stukken")}`)}
-        ${PH(3)}${L("q","8 of 9 stukken?")}
-        ${L("d",`8 stukken = 24 m → te kort! Dus <b>9 stukken</b> (27 m, 1 m over).`)}
-        ${L("d",`${C("9 × € 12,50 = € 112,50")} — klopt met mijn schatting?`)}
-        ${R(`<div class="answer">✔ Bestelbon: <b>9 stukken kabelgoot · € 112,50</b></div>`)}
+        ${PH(2)}${L("d",`${C("8 + 6 + 8 + 6 = 28 m")} &nbsp;→ deur eraf: ${C("28 − 1,5 = 26,5 m")}`)}
+        ${L("d",`${C("26,5 : 2 = 13,25 stukken")}`)}
+        ${PH(3)}${L("q","13 of 14 stukken?")}
+        ${L("d",`13 stukken = 26 m → te kort! Dus <b>14 stukken</b> (28 m, 1,5 m over).`)}
+        ${L("d",`${C("14 × € 8,50 = € 119,00")} — klopt met mijn schatting?`)}
+        ${R(`<div class="answer">✔ Bestelbon: <b>14 stukken kabelgoot · € 119,00</b></div>`)}
       </div>`},
     {step:5, html: COMMON_FF(3,"Oppervlakte 2",["Omtrek en oppervlakte","Oppervlakte driehoeken","Oppervlakte cirkel"],
       "<b>Straal of diameter?</b> Check dat eerst, voordat je gaat rekenen.")}
@@ -472,7 +473,8 @@ const LESSONS = {
         ${R(`<div class="card"><p style="margin:0" class="hl">En de monitor?</p>
         <p>${C("(27 : 24)² = 1,125² ≈ 1,27")}</p>
         <p class="ok">≈ 27% meer scherm, geen 12%!</p>
-        <p class="muted" style="font-size:24px">2× zo breed én 2× zo hoog = 4× zoveel oppervlakte.</p></div>`)}
+        <p class="muted" style="font-size:24px">2× zo breed én 2× zo hoog = 4× zoveel oppervlakte.</p>
+        <p class="muted" style="font-size:24px">Daarom zegt het kopieerapparaat bij A4 → A3: <b>141%</b>. ${C("1,41 × 1,41 ≈ 2")}</p></div>`)}
       </div></div>`},
     {step:3, html:`<div class="kicker">Netwerkontwerp</div><h1>Vraag van de klant</h1>
       <div class="ticket" style="max-width:930px"><div class="hd"><span>DESIGN-REQUEST #0815</span><span>Wifi kantine</span><span class="st">ANALYSE</span></div>
@@ -496,7 +498,7 @@ const LESSONS = {
         ${R(apSvg(false),"","position:absolute;right:50px;top:150px;background:var(--bg)")}
         ${L("d",`<span class="bad">Nee!</span> De cirkel raakt precies de korte muren → <b>de hoeken vallen erbuiten</b>.`)}
         ${R(apSvg(true),"","position:absolute;right:50px;top:150px;background:var(--bg)")}
-        ${R(`<div class="answer">✔ Advies: <b>2 access points</b>, elk midden in een helft van 10 × 15 m</div>`)}
+        ${R(`<div class="answer">✔ Advies: <b>2 access points</b>, elk midden in een helft van 10 × 15 m<br><span class="muted" style="font-size:24px">Maar in de pauze: 200 studenten, ± 30 apparaten per AP → ${C("200 : 30 ≈ 7")} AP's. Capaciteit telt ook!</span></div>`)}
       </div></div>
       <div style="width:520px"></div></div>`},
     {step:5, html: COMMON_FF(4,"Oppervlakte",["Omtrek en oppervlakte","Oppervlakte driehoeken","Oppervlakte cirkel"],
@@ -530,30 +532,33 @@ const LESSONS = {
         ${R(`<div class="card"><p style="margin:0" class="hl">Antwoord monitor-vraag</p>
         <p>${C("(27 : 24)² = 1,125² ≈ 1,27")}</p>
         <p class="ok">Nee, het klopt niet: ≈ 27% meer scherm, geen 12%.</p>
-        <p class="muted" style="font-size:24px">Breedte én hoogte worden groter. Dus de oppervlakte groeit dubbel mee.</p></div>`)}
+        <p class="muted" style="font-size:24px">Breedte én hoogte worden groter. Dus de oppervlakte groeit dubbel mee.</p>
+        <p class="muted" style="font-size:24px">Zelfde bij foto's: 4000 × 3000 → thumbnail 400 × 300 is 10× kleiner, maar <b>100× minder pixels</b>.</p></div>`)}
       </div></div>`},
     {step:3, html:`${BG("code")}<div class="kicker">Backlog</div><h1>Nieuwe user story</h1>
-      <div class="row"><div class="col"><div class="ticket"><div class="hd"><span>STORY #142</span><span>Profiel</span><span class="st">TO DO</span></div>
-      <h3>Als gebruiker wil ik een ronde profielfoto</h3>
-      <p>Upload: <b>400 × 400 px</b>.</p>
-      <p>De cirkel past <b>precies</b> in het vierkant.</p>
-      <p class="hl">Hoeveel pixels gooien we weg? Welk deel van de foto is dat?</p>
-      <p class="muted" style="font-size:24px">Game dev? Zelfde som: een ronde hitbox in een vierkant sprite-vak.</p></div></div>
-      <div>${SVG_AVATAR}</div></div>${CREDIT("code")}`},
+      <div class="row"><div class="col"><div class="ticket"><div class="hd"><span>STORY #142</span><span>Upload</span><span class="st">TO DO</span></div>
+      <h3>Als gebruiker wil ik zien hoe ver mijn upload is</h3>
+      <p>Ontwerp: een <b>ronde voortgangsbalk</b> met straal <b>54 px</b>.</p>
+      <p>In SVG teken je de rand als één lange streep:</p>
+      <div class="code" style="font-size:22px">&lt;circle r="54" stroke-dasharray="<span class="f">???</span>"
+        stroke-dashoffset="<span class="f">???</span>"/&gt;</div>
+      <p class="hl">Welke getallen horen erbij als de upload op 75% staat?</p>
+      <p class="muted" style="font-size:24px">dasharray = lengte van de hele rand · dashoffset = het stuk dat je (nog) niet tekent</p></div></div>
+      <div>${SVG_RING(false)}</div></div>${CREDIT("code")}`},
     {step:4, phased:true, html:`<div class="kicker">Samen oplossen · story #142</div>${phases()}
       <div class="row" style="gap:30px"><div class="col"><div class="think">
-        ${PH(1)}${L("q","Wat is hier de straal?")}
-        ${L("d","De cirkel past precies: diameter = 400 px → <b>straal = 200 px</b>.")}
-        ${L("q","Wat schatten jullie: welk deel valt weg?")}
+        ${PH(1)}${L("q","Omtrek of oppervlakte?")}
+        ${L("d","Ik teken alleen de <b>rand</b> → omtrek. Straal 54, dus diameter 108.")}
+        ${L("q","Wat schatten jullie: hoe lang is die rand?")}
         ${estimateBox()}
-        ${PH(2)}${L("d",`Vierkant: ${C("400 × 400 = 160.000 px")}`)}
-        ${L("d",`Cirkel: ${C("3,14 × 200 × 200 = 125.600 px")}`)}
-        ${L("d",`Weg: ${C("160.000 − 125.600 = 34.400 px")}`)}
-        ${L("d",`Deel: ${C("34.400 : 160.000 = 0,215")} → 21,5%`)}
-        ${PH(3)}${L("q","Klopt dit met de schatting? En wat als je 400 als straal neemt?")}
-        ${L("d",`${C("3,14 × 400 × 400 = 502.400 px")} → <span class="bad">groter dan de foto!</span>`)}
-        ${R(`<div class="answer">✔ <b>34.400 px</b> weg ≈ <b>21,5%</b>, ongeveer een vijfde van de foto</div>`)}
-      </div></div><div>${SVG_AVATAR.replace("r = ?","r = 200")}</div></div>`},
+        ${PH(2)}${L("d",`Omtrek: ${C("3,14 × 108 ≈ 339")} → ${C('dasharray="339"')}`)}
+        ${L("d",`75% tekenen: ${C("0,75 × 339 ≈ 254")}`)}
+        ${L("d",`Niet tekenen: ${C("339 − 254 = 85")} → ${C('dashoffset="85"')}`)}
+        ${PH(3)}${L("q","Hoe test je dit? Welke waarden horen bij 0% en 100%?")}
+        ${L("d","0% → offset 339 (niks te zien) · 100% → offset 0 (hele cirkel) ✔")}
+        ${L("d",`Met ${C("3,14 × 54 ≈ 170")} krijg je maar een <span class="bad">halve cirkel</span>. Straal of diameter!`)}
+        ${R(`<div class="answer">✔ <b>dasharray = 339</b> · bij 75%: <b>dashoffset = 85</b></div>`)}
+      </div></div><div>${SVG_RING(true)}</div></div>`},
     {step:5, html: COMMON_FF(4,"Oppervlakte",["Omtrek en oppervlakte","Oppervlakte driehoeken","Oppervlakte cirkel"],
       "<b>Straal of diameter?</b><br>En test je antwoord: kán het eigenlijk wel?")}
   ]
