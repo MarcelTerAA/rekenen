@@ -22,6 +22,8 @@
   .t{font-size:26px;font-weight:700;margin:6px 0}
   .s{color:var(--muted);font-size:16px}
   .soon{opacity:.45;pointer-events:none}
+  .s a{color:var(--muted)}
+  .s a:hover{color:var(--accent)}
   footer{margin-top:56px;color:var(--muted);font-size:14px}
 </style>
 </head>
@@ -29,23 +31,28 @@
 <main>
   <div class="kicker">ICT &amp; Design College · Ter AA Helmond</div>
   <h1>Rekenen</h1>
-  <p class="lead">Lesintro's voor het digibord. Kies het onderwerp en daarna de klas.</p>
+  <p class="lead">Lesintro's voor het digibord. Kies de opleiding en daarna het onderwerp.</p>
 
-  <h2>Periode 2 · Oriëntatie in de twee- en driedimensionale wereld</h2>
-  <div class="grid">
-    <a class="card" href="oppervlakte/">
-      <div class="meta">week 1 · niveau 2, 3 en 4</div>
-      <div class="t">Oppervlakte</div>
-      <div class="s">m², hectare en km² · omtrek · driehoek · cirkel</div>
-    </a>
-    <a class="card" href="kubieke-inhoud/">
-      <div class="meta">week 2 · niveau 2, 3 en 4</div>
-      <div class="t">Oppervlakte 2 &amp; kubieke inhoud</div>
-      <div class="s">niv. 2: hulplijnen · omtrek · niv. 3/4: m³, liter, ml, cc</div>
-    </a>
-  </div>
+  <h2>Opleidingen</h2>
+  <div class="grid" id="opleidingen"></div>
+
+  <h2>Alle onderwerpen</h2>
+  <p class="s" id="onderwerpen" style="margin:0"></p>
 
   <footer>Te gebruiken naast ffRekenen. Bediening op het digibord: pijltjestoetsen of klikken, F voor volledig scherm.</footer>
 </main>
+<script src="onderwerpen.js"></script>
+<script>
+document.getElementById("opleidingen").innerHTML = Object.entries(OPLEIDINGEN).map(([k,o]) => {
+  const n = ONDERWERPEN.filter(x => (x.lessen[k]||[]).length).length;
+  return `<a class="card" href="${k}/">
+      <div class="meta">${o.crebo} · niveau ${o.niveau} · ${o.ref}</div>
+      <div class="t">${o.naam}</div>
+      <div class="s">${k.toUpperCase()} · ${n} ${n===1?"week":"weken"} lesintro's${k==="sd"?" · tweetalig":""}</div>
+    </a>`;
+}).join("");
+document.getElementById("onderwerpen").innerHTML = "Alle klassen in één lesintro (met klaskeuze): " +
+  ONDERWERPEN.map(x => `<a href="${x.map}/">week ${x.week} · ${x.map.replace(/-/g," ")}</a>`).join(" · ");
+</script>
 </body>
 </html>

@@ -704,9 +704,12 @@ function renderNotes(){
 }
 function toggleNotes(){ notesOn=!notesOn; renderNotes(); }
 
-function showStart(){
+/* terug naar opleidingspagina via ?o=mi|st|se|sd */
+const TERUG = (()=>{ const o=new URLSearchParams(location.search).get("o"); return /^(mi|st|se|sd)$/.test(o||"") ? "../"+o+"/" : null; })();
+function showStart(init){
+  if(TERUG && init!==true){ clearInterval(tInt); location.href=TERUG; return; }
   lesson=null; slideIdx=0; revIdx=0;
-  $("#classTag").textContent="kies een klas"; $("#title").textContent="Rekenen";
+  $("#classTag").textContent= TERUG ? "← overzicht" : "kies een klas"; $("#title").textContent="Rekenen";
   renderSteps(-1); renderWords(); renderNotes();
   $("#content").innerHTML = START_HTML;
   document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",e=>{
@@ -760,7 +763,7 @@ function applyReveal(){
     });
   }
   const last = slideIdx===lesson.slides.length-1 && revIdx>=list.length;
-  $("#nextBtn").textContent = last ? "klaar ✓ → klassen" : "verder →";
+  $("#nextBtn").textContent = last ? (TERUG ? "klaar ✓ → overzicht" : "klaar ✓ → klassen") : "verder →";
 }
 function next(){
   if(!lesson) return;
@@ -816,17 +819,18 @@ $("#nextBtn").addEventListener("click",next);
 $("#prevBtn").addEventListener("click",prev);
 $("#fsBtn").addEventListener("click",toggleFS);
 $("#notesBtn").addEventListener("click",toggleNotes);
-$("#classTag").addEventListener("click",showStart);
-$("#homeBtn").addEventListener("click",showStart);
+$("#classTag").addEventListener("click",()=>showStart());
+$("#homeBtn").addEventListener("click",()=>showStart());
+if(TERUG){ $("#homeBtn").textContent="⌂ overzicht"; $("#homeBtn").title="Terug naar het overzicht van de opleiding (Home)"; }
 $("#restartBtn").addEventListener("click",restartLesson);
 
 /* deep link via #mi-1, #mi-2, #st, #se, #sd, #sd-en */
 function fromHash(){
   const h=(location.hash||"").slice(1);
-  if(!h){ showStart(); return; }
+  if(!h){ showStart(true); return; }
   const isEn = h.endsWith("-en"); const key = isEn? h.slice(0,-3) : h;
   if(LESSONS[key]){ en=isEn; if(!lesson||lesson.key!==key){ startLesson(key);} }
-  else showStart();
+  else showStart(true);
 }
 addEventListener("hashchange", fromHash);
 fromHash();
