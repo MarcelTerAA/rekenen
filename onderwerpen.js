@@ -59,5 +59,21 @@ const ONDERWERPEN = [
     lessen: {
       st: [ { hash: "st", titel: "Verhoudingen 1", sub: "per · verhoudingstabel · 1 : 3 = 1 op de 4" } ]
     }
+  },
+  {
+    periode: "Periode 2 · Verhoudingen herkennen en gebruiken",
+    week: 3,
+    map: "verhoudingen-niveau-4-se",
+    lessen: {
+      se: [ { hash: "se", titel: "Verhoudingen 1", sub: "per · verhoudingstabel · 3 : 1 en 1 op de 8" } ]
+    }
+  },
+  {
+    periode: "Periode 2 · Verhoudingen herkennen en gebruiken",
+    week: 3,
+    map: "verhoudingen-niveau-4-sd",
+    lessen: {
+      sd: [ { hash: "sd-en", titel: "Verhoudingen 1", sub: "per · beeldverhouding · 1 : 23 = 1 op de 24", en: "ratio · aspect ratio · conversion rate" } ]
+    }
   }
 ];
