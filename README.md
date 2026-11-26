@@ -21,5 +21,6 @@ De opleidingspagina's en de startpagina lezen hun inhoud uit `onderwerpen.js`. N
 | --- | --- |
 | Week 1 · Oppervlakte (niveau 2, 3 en 4) | [oppervlakte/](https://marcelteraa.github.io/rekenen/oppervlakte/) |
 | Week 2 · Oppervlakte 2 (niveau 2) & kubieke inhoud (niveau 3 en 4) | [kubieke-inhoud/](https://marcelteraa.github.io/rekenen/kubieke-inhoud/) |
+| Week 3 · Verhoudingen 1 (niveau 2) | [verhoudingen/](https://marcelteraa.github.io/rekenen/verhoudingen/) |
 
 Elke lesintro is één zelfstandig HTML-bestand. Geopend vanaf een opleidingspagina (`?o=mi` enz.) gaan `Home`, "⌂ overzicht" en "klaar ✓" terug naar die opleidingspagina. Bediening: pijltjestoetsen / spatie / klikken, `F` volledig scherm, `T` timer, `Home` klas kiezen / overzicht, `N` docentnotities (alleen in de nieuwere intro's).

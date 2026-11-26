@@ -40,5 +40,16 @@ const ONDERWERPEN = [
       se: [ { hash: "se",    titel: "Kubieke inhoud", sub: "m³ · dm³ = liter · cm³ = ml = cc" } ],
       sd: [ { hash: "sd-en", titel: "Kubieke inhoud", sub: "m³ · dm³ = liter · cm³ = ml = cc", en: "volume · cubic metre · litre · millilitre" } ]
     }
+  },
+  {
+    periode: "Periode 2 · Verhoudingen herkennen en gebruiken",
+    week: 3,
+    map: "verhoudingen",
+    lessen: {
+      mi: [
+        { hash: "mi-1", titel: "Les 1 · Het woordje per",       sub: "per · vaste verbanden · verhoudingstabel" },
+        { hash: "mi-2", titel: "Les 2 · Vaste verhoudingen",    sub: "in verhouding vergelijken · 1 op de 4" }
+      ]
+    }
   }
 ];

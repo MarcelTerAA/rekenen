@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rekenen – Verhoudingen 1 | Lesintro digibord</title>
+<style>
+  :root{
+    --bg:#0e1626; --panel:#16223a; --panel2:#1d2c4a; --line:#2c3f63;
+    --ink:#eef3fb; --muted:#9fb0cc; --accent:#3ee0b0; --accent2:#ffcf4a;
+    --warn:#ff6b6b; --blue:#5aa9ff;
+    --mono: ui-monospace, "Cascadia Code", "Consolas", "SFMono-Regular", monospace;
+    --sans: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:#070c16;color:var(--ink);font-family:var(--sans);overflow:hidden}
+  #viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+  #stage{width:1600px;height:900px;position:relative;background:var(--bg);transform-origin:center center;
+    background-image:radial-gradient(circle at 85% 10%, rgba(62,224,176,.08), transparent 40%),
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size:auto,40px 40px,40px 40px;overflow:hidden}
+
+  /* top bar */
+  #top{position:absolute;left:0;right:0;top:0;height:76px;display:flex;align-items:center;gap:18px;padding:0 40px;border-bottom:1px solid var(--line)}
+  #classTag{white-space:nowrap;font-family:var(--mono);font-size:18px;color:var(--accent);background:rgba(62,224,176,.1);border:1px solid rgba(62,224,176,.35);padding:6px 12px;border-radius:8px;cursor:pointer}
+  #steps{display:flex;gap:6px;margin-left:auto}
+  .stp{font-size:16px;color:var(--muted);padding:7px 14px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
+  .stp.on{color:#06121f;background:var(--accent);border-color:var(--accent);font-weight:700}
+  .stp.done{color:var(--ink);border-color:#3b5482}
+
+  #content{position:absolute;left:0;right:0;top:76px;bottom:64px;padding:28px 60px}
+  #bottom{position:absolute;left:0;right:0;bottom:0;height:64px;display:flex;align-items:center;padding:0 40px;gap:16px;border-top:1px solid var(--line);color:var(--muted);font-size:17px}
+  #words{display:flex;gap:10px;flex-wrap:wrap}
+  .word{background:var(--panel2);border:1px solid var(--line);color:var(--ink);padding:4px 12px;border-radius:6px;font-size:18px}
+  .word i{color:var(--accent2);font-style:normal}
+  #nav{margin-left:auto;display:flex;gap:10px}
+  .btn{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 16px;font-size:18px;cursor:pointer;font-family:var(--sans)}
+  .btn:hover{border-color:var(--accent)}
+  .btn.primary{background:var(--accent);color:#06121f;border-color:var(--accent);font-weight:700}
+
+  h1{font-size:60px;margin:0 0 18px;line-height:1.1;letter-spacing:-.5px}
+  h2{font-size:44px;margin:0 0 20px;line-height:1.15}
+  .kicker{font-family:var(--mono);color:var(--accent);font-size:22px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  p,li{font-size:30px;line-height:1.4}
+  .muted{color:var(--muted)}
+  .big{font-size:40px}
+  .hl{color:var(--accent2);font-weight:700}
+  .ok{color:var(--accent);font-weight:700}
+  .bad{color:var(--warn);font-weight:700}
+  .row{display:flex;gap:40px;align-items:flex-start}
+  .col{flex:1}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px 30px}
+  .rev{opacity:0;transform:translateY(10px);transition:opacity .35s, transform .35s;pointer-events:none}
+  .rev.show{opacity:1;transform:none;pointer-events:auto}
+  .rev.dim{opacity:.45}
+
+  /* ticket */
+  .ticket{background:var(--panel);border:1px solid var(--line);border-left:8px solid var(--accent2);border-radius:14px;padding:26px 34px;max-width:1300px}
+  .ticket .hd{font-family:var(--mono);font-size:22px;color:var(--accent2);display:flex;gap:18px;margin-bottom:10px}
+  .ticket .hd span.st{margin-left:auto;color:#06121f;background:var(--accent2);padding:2px 10px;border-radius:6px;font-weight:700}
+  .ticket h3{font-size:38px;margin:0 0 12px}
+  .ticket p{margin:8px 0;font-size:31px}
+
+  /* warm-up list */
+  .qa{display:flex;flex-direction:column;gap:14px}
+  .q{display:flex;align-items:center;gap:22px;font-size:34px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 24px}
+  .q .n{font-family:var(--mono);color:var(--accent);font-size:26px;width:34px}
+  .q .a{margin-left:auto;color:var(--accent2);font-weight:700;font-family:var(--mono)}
+
+  /* phases (stap 5) */
+  .phases{display:flex;gap:12px;margin-bottom:14px}
+  .ph{flex:1;border:2px solid var(--line);border-radius:14px;padding:10px 18px;color:var(--muted);font-size:24px;font-weight:700;display:flex;gap:12px;align-items:center}
+  .ph b{font-family:var(--mono);font-size:28px}
+  .ph.on{border-color:var(--accent);color:var(--ink);background:rgba(62,224,176,.08)}
+  .ph.done{border-color:#3b5482;color:var(--ink)}
+  .ph small{font-weight:400;font-size:18px;color:var(--muted);display:block}
+  .think{display:flex;flex-direction:column;gap:8px}
+  .line{display:flex;gap:16px;align-items:flex-start;font-size:27px;line-height:1.3}
+  .line .tag{font-family:var(--mono);font-size:17px;padding:3px 9px;border-radius:6px;white-space:nowrap;margin-top:3px}
+  .tag.tq{background:rgba(255,207,74,.15);color:var(--accent2);border:1px solid rgba(255,207,74,.4)}
+  .tag.td{background:rgba(90,169,255,.15);color:var(--blue);border:1px solid rgba(90,169,255,.4)}
+  .tag.r{background:rgba(62,224,176,.15);color:var(--accent);border:1px solid rgba(62,224,176,.4)}
+  .calc{white-space:nowrap;font-family:var(--mono);color:var(--ink);background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:2px 10px}
+  .answer{font-size:31px;border:2px solid var(--accent);background:rgba(62,224,176,.08);border-radius:14px;padding:14px 22px;margin-top:6px}
+  .est{display:flex;gap:12px;align-items:center;font-size:24px;color:var(--muted)}
+  .est input{font-size:26px;font-family:var(--mono);background:#0b1220;color:var(--accent2);border:1px solid var(--line);border-radius:8px;padding:6px 12px;width:520px}
+
+  /* start screen */
+  #start{height:100%}
+  #start h1{font-size:72px}
+  .classes{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:26px}
+  .cls{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px 26px;cursor:pointer;text-align:left;color:var(--ink);font-family:var(--sans)}
+  .cls:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .cls .c{font-family:var(--mono);color:var(--accent);font-size:20px}
+  .cls .t{font-size:30px;font-weight:700;margin:6px 0}
+  .cls .s{font-size:20px;color:var(--muted)}
+  .lesbtns{display:flex;gap:10px;margin-top:12px}
+  .lesbtns .btn{font-size:18px}
+
+  .help{position:absolute;right:60px;bottom:90px;font-size:18px;color:var(--muted);text-align:right;line-height:1.6}
+  kbd{font-family:var(--mono);background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:1px 7px;color:var(--ink)}
+  .timer{font-family:var(--mono);font-size:30px;color:var(--accent2);border:1px solid var(--line);border-radius:10px;padding:4px 14px;cursor:pointer;background:var(--panel)}
+  .term{font-family:var(--mono);font-size:20px;color:var(--blue)}
+  svg text{font-family:var(--sans)}
+  .bgphoto{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.22;z-index:0;pointer-events:none}
+  .bgphoto::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--bg) 0%,rgba(14,22,38,.4) 60%,rgba(14,22,38,.1) 100%)}
+  #content > *{position:relative;z-index:1}
+  #content > .bgphoto{position:absolute;z-index:0}
+  .photo{display:block;object-fit:cover;border-radius:16px;border:1px solid var(--line);box-shadow:0 18px 40px rgba(0,0,0,.45);background:var(--panel)}
+  .pz{border-radius:50%;overflow:hidden;box-shadow:0 16px 36px rgba(0,0,0,.55);background:#d99a3e;flex:none}
+  .pz img{width:100%;height:100%;object-fit:cover;transform:scale(1.08);display:block}
+  .flow{display:flex;align-items:stretch;gap:8px}
+  .fs{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 20px;display:flex;flex-direction:column;gap:4px}
+  .fs b{font-family:var(--mono);color:var(--accent);font-size:24px}
+  .fs span{font-size:31px;font-weight:700;line-height:1.2}
+  .fs small{font-size:23px;color:var(--muted);line-height:1.35}
+  .fs small span{font-size:23px}
+  .fs.choice{border-color:var(--accent2);flex:1.25}
+  .fs.auto{border-style:dashed}
+  .fa{align-self:center;color:var(--muted);font-size:34px}
+  .credit{position:absolute !important;left:60px;bottom:4px;font-size:13px;color:#6f819f;z-index:2}
+  .credit a{color:#6f819f}
+  .code{font-family:var(--mono);font-size:24px;line-height:1.5;background:#0b1220;border:1px solid var(--line);border-radius:12px;padding:16px 22px;white-space:pre;color:#cfe0ff}
+  .code .k{color:#c792ea}.code .c{color:#6f819f}.code .f{color:var(--accent2)}.code .bug{background:rgba(255,107,107,.25);border-radius:4px}.code .fix{background:rgba(62,224,176,.25);border-radius:4px}
+  .ladder{display:flex;align-items:center;gap:10px}
+  .lb{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:12px 20px;text-align:center;min-width:190px}
+  .lb b{display:block;font-size:36px;font-family:var(--mono);color:var(--accent2)}
+  .lb span{font-size:22px;color:var(--muted)}
+  .la{display:flex;flex-direction:column;align-items:center;font-family:var(--mono);font-size:20px;color:var(--accent)}
+  .la .back{color:var(--blue)}
+  .opts{display:flex;gap:18px;margin-top:10px}
+  .opt{font-size:40px;font-weight:700;font-family:var(--mono);background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:10px 26px}
+  .bubble{position:relative;background:#fff;color:#0e1626;border-radius:18px;padding:14px 24px;font-size:34px;font-weight:700;display:inline-block}
+  .bubble::after{content:"";position:absolute;left:40px;bottom:-18px;border:12px solid transparent;border-top:12px solid #fff;border-bottom:0;border-width:18px 14px 0}
+  #notes{position:absolute;right:24px;top:90px;width:600px;max-height:730px;overflow:auto;background:#fffbe8;color:#1b2333;border-radius:14px;padding:18px 22px;font-size:19px;line-height:1.45;box-shadow:0 20px 50px rgba(0,0,0,.6);z-index:20;display:none}
+  #notes.on{display:block}
+  #notes h4{margin:0 0 6px;font-size:16px;letter-spacing:1px;text-transform:uppercase;color:#8a6d00}
+  #notes ul{margin:4px 0 8px 18px;padding:0}
+  #notes li{font-size:19px;line-height:1.4}
+  #notes b{color:#000}
+  #notes p{font-size:19px;line-height:1.45;margin:4px 0 8px}
+  .la{white-space:nowrap;font-size:17px}
+  .lb{min-width:150px;padding:10px 14px}
+  /* verhoudingstabel */
+  .vt{display:inline-flex;align-items:stretch;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 14px}
+  .vc{display:flex;flex-direction:column}
+  .vc div{min-width:110px;height:60px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:32px;border:1px solid var(--line);background:#0b1220;padding:0 12px}
+  .vc.lab div{font-family:var(--sans);font-size:24px;color:var(--muted);justify-content:flex-start;min-width:0;background:transparent}
+  .vc.q div:last-child{color:var(--accent2)}
+  .vstep{display:flex}
+  .small .vc div{height:48px;font-size:28px}
+  .vo{display:flex;flex-direction:column;justify-content:space-around;padding:0 10px;font-family:var(--mono);font-size:20px;color:var(--accent);white-space:nowrap}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+  <div id="top">
+    <div id="classTag" title="Andere klas kiezen (Home)">kies een klas</div>
+    <div id="title" style="font-size:20px;color:var(--muted);white-space:nowrap">Rekenen</div>
+    <div id="steps"></div>
+  </div>
+  <div id="content"></div>
+  <div id="notes"></div>
+  <div id="bottom">
+    <div id="words"></div>
+    <div id="nav">
+      <button class="btn" id="notesBtn" title="Docentnotities (N)">📝</button>
+      <button class="btn" id="homeBtn" title="Terug naar klaskeuze (Home)">⌂ klassen</button>
+      <button class="btn" id="restartBtn" title="Deze les opnieuw vanaf het begin (R)">↺ opnieuw</button>
+      <button class="btn" id="fsBtn" title="Volledig scherm (F)">⛶</button>
+      <button class="btn" id="prevBtn">← terug</button>
+      <button class="btn primary" id="nextBtn">verder →</button>
+    </div>
+  </div>
+</div></div>
+
+<script>
+/* ============ helpers ============ */
+const STEPS = ["Deur","Opwarmen","Uitleg","ICT-koppeling","Samen oplossen","Aan de slag"];
+const $ = s => document.querySelector(s);
+const R = (html, cls="", style="") => `<div class="rev ${cls}" style="${style}">${html}</div>`;
+const Q = (n, q, a) => R(`<div class="q"><span class="n">${n}</span><span>${q}</span><span class="a rev">${a}</span></div>`);
+const L = (tag, txt) => {
+  const lab = {d:"ik denk", q:"vraag"}[tag];
+  return R(`<div class="line"><span class="tag t${tag}">${lab}</span><span>${txt}</span></div>`);
+};
+const C = t => `<span class="calc">${t}</span>`;
+const PH = (k) => `<!--phase:${k}-->`;
+const TIMER = (s=10) => `<span class="timer" data-timer="${s}">⏱ ${s} s</span>`;
+const N = (...parts) => parts.join("");           // docentnotities
+const NH = t => `<h4>${t}</h4>`;
+const NL = (...li) => `<ul>${li.map(x=>`<li>${x}</li>`).join("")}</ul>`;
+
+/* ============ foto's (Wikimedia Commons) ============ */
+const WM = "https://upload.wikimedia.org/wikipedia/commons/thumb/";
+const PHOTOS = {
+  dc:   {src:WM+"0/0c/Google_Data_Center%2C_Council_Bluffs_Iowa_%2849062863796%29.jpg/1280px-Google_Data_Center%2C_Council_Bluffs_Iowa_%2849062863796%29.jpg", by:"Chad Davis", lic:"CC BY 2.0", page:"https://commons.wikimedia.org/wiki/File:Google_Data_Center,_Council_Bluffs_Iowa_(49062863796).jpg"},
+  code: {src:WM+"7/7f/Code_on_computer_monitor_%28Unsplash%29.jpg/1280px-Code_on_computer_monitor_%28Unsplash%29.jpg", by:"Markus Spiske", lic:"CC0", page:"https://commons.wikimedia.org/wiki/File:Code_on_computer_monitor_(Unsplash).jpg"},
+  lab:  {src:WM+"4/40/Computer_lab_showing_desktop_PCs_warwick.jpg/1280px-Computer_lab_showing_desktop_PCs_warwick.jpg", by:"Mike1024", lic:"publiek domein", page:"https://commons.wikimedia.org/wiki/File:Computer_lab_showing_desktop_PCs_warwick.jpg"}
+};
+const BG = k => `<div class="bgphoto" style="background-image:url('${PHOTOS[k].src}')"></div>`;
+const PH_IMG = (k, w, h, extra="") => `<img class="photo" src="${PHOTOS[k].src}" alt="" style="width:${w}px;height:${h}px;${extra}" onerror="this.style.display='none'">`;
+const CREDIT = (...ks) => `<div class="credit">Foto's via Wikimedia Commons: ${ks.map(k=>`<a href="${PHOTOS[k].page}" target="_blank" rel="noopener">${PHOTOS[k].by}</a> (${PHOTOS[k].lic})`).join(" · ")}</div>`;
+
+function phases(){
+  return `<div class="phases">
+    <div class="ph" data-ph="1"><b>1</b><span>Analyseren<small>Wat is het probleem? Wat weet ik al?</small></span></div>
+    <div class="ph" data-ph="2"><b>2</b><span>Uitvoeren<small>Wat reken ik eerst uit?</small></span></div>
+    <div class="ph" data-ph="3"><b>3</b><span>Testen<small>Klopt mijn antwoord?</small></span></div>
+  </div>`;
+}
+function estimateBox(){
+  return R(`<div class="est">Schattingen van de klas: <input type="text" placeholder="typ hier de schattingen…" autocomplete="off"></div>`);
+}
+
+
+/* ============ verhoudingstabel ============
+   VT(labels, eerste kolom, stappen, {rev:true}) — elke stap: {op:"× 5", v:[boven, onder], q:true}
+   Met rev:true verschijnt elke stap (pijl + kolom) los bij een klik. */
+const VT = (labels, first, steps=[], o={}) => {
+  const col = (v, q=false) => `<div class="vc${q?" q":""}"><div>${v[0]}</div><div>${v[1]}</div></div>`;
+  return `<div class="vt"><div class="vc lab"><div>${labels[0]}</div><div>${labels[1]}</div></div>${col(first)}${
+    steps.map(s=>`<div class="vstep${o.rev?" rev":""}"><div class="vo"><span>${s.op} →</span><span>${s.op} →</span></div>${col(s.v, s.q)}</div>`).join("")}</div>`;
+};
+
+/* ============ SVG's ============ */
+/* printer met stapel papier */
+const SVG_PRINTER = `<svg viewBox="0 0 520 400" width="520" height="400">
+  <rect x="150" y="40" width="220" height="70" rx="6" fill="#eef3fb" stroke="#9fb0cc" stroke-width="3"/>
+  <g stroke="#9fb0cc" stroke-width="3"><line x1="180" y1="65" x2="340" y2="65"/><line x1="180" y1="85" x2="300" y2="85"/></g>
+  <rect x="80" y="100" width="360" height="150" rx="18" fill="#2c3f63" stroke="#eef3fb" stroke-width="4"/>
+  <rect x="120" y="225" width="280" height="14" rx="4" fill="#0b1220"/>
+  <circle cx="400" cy="140" r="9" fill="#3ee0b0"/>
+  <rect x="110" y="130" width="110" height="34" rx="5" fill="#0b1220" stroke="#5aa9ff" stroke-width="2"/>
+  <text x="165" y="154" fill="#5aa9ff" font-size="18" text-anchor="middle" font-family="monospace">READY</text>
+  <g fill="#eef3fb" stroke="#9fb0cc" stroke-width="2"><rect x="140" y="250" width="240" height="22"/><rect x="146" y="272" width="240" height="22"/></g>
+  <text x="260" y="340" fill="#ffcf4a" font-size="34" font-weight="700" text-anchor="middle">20 pagina's per minuut</text>
+</svg>`;
+
+/* patchkabel met twee RJ45-stekkers */
+const SVG_CABLE = `<svg viewBox="0 0 420 380" width="420" height="380">
+  <path d="M70 70 C 300 40, 360 160, 210 190 S 60 300, 340 310" fill="none" stroke="#5aa9ff" stroke-width="14" stroke-linecap="round"/>
+  <g stroke="#eef3fb" stroke-width="3">
+    <rect x="20" y="50" width="60" height="40" rx="5" fill="rgba(238,243,251,.25)"/>
+    <rect x="330" y="290" width="60" height="40" rx="5" fill="rgba(238,243,251,.25)"/>
+  </g>
+  <g fill="#ffcf4a">${[0,1,2,3,4,5,6,7].map(i=>`<rect x="${25+i*6.5}" y="56" width="4" height="12"/><rect x="${335+i*6.5}" y="296" width="4" height="12"/>`).join("")}</g>
+  <text x="210" y="368" fill="#9fb0cc" font-size="26" text-anchor="middle">patchkabel 2 m · RJ45</text>
+</svg>`;
+
+/* computermuis */
+const MOUSE = (x,y,s=1) => `<g transform="translate(${x} ${y}) scale(${s})"><rect x="0" y="0" width="44" height="68" rx="22" fill="#2c3f63" stroke="#eef3fb" stroke-width="3"/><line x1="22" y1="2" x2="22" y2="28" stroke="#eef3fb" stroke-width="3"/><rect x="19" y="10" width="6" height="11" rx="3" fill="#3ee0b0"/></g>`;
+const SVG_MICE = n => `<svg viewBox="0 0 ${n*56} 76" width="${n*56}" height="76">${Array.from({length:n},(_,i)=>MOUSE(6+i*56,4)).join("")}</svg>`;
+
+/* laptops in rijen van 10; kapot = lijst met posities (rood) */
+const LAPTOP = (x,y,bad) => `<g transform="translate(${x} ${y})"><rect x="4" y="0" width="30" height="20" rx="2" fill="${bad?"#ff6b6b":"#2c3f63"}" stroke="${bad?"#ff6b6b":"#5aa9ff"}" stroke-width="2"/><rect x="0" y="21" width="38" height="5" rx="2" fill="${bad?"#ff6b6b":"#5aa9ff"}"/></g>`;
+const SVG_LAPTOPS = (n, kapot, title) => {
+  const rows = Math.ceil(n/10), h = 50 + rows*38;
+  return `<svg viewBox="0 0 470 ${h}" width="470" height="${h}">
+  <text x="0" y="30" fill="#ffcf4a" font-size="28" font-weight="700">${title}</text>
+  ${Array.from({length:n},(_,i)=>LAPTOP((i%10)*46, 46+Math.floor(i/10)*38, kapot.includes(i))).join("")}
+  </svg>`;
+};
+
+/* ============ Aan de slag ============ */
+const COMMON_FF = (niv, onderdeel, items, letop, extra="") => `
+  <div class="kicker">Aan de slag</div>
+  <h1 style="margin-bottom:12px">ffRekenen · MBO niveau ${niv}</h1>
+  <div class="card" style="margin-bottom:18px;padding:14px 26px">
+    <p style="margin:0;font-family:var(--mono);font-size:24px;color:var(--muted)">Verhoudingen herkennen en gebruiken › <span class="hl">${onderdeel}</span></p>
+  </div>
+  <div class="flow">
+    <div class="fs"><b>1</b><span>Start de les</span><small>${items.length>1?"per onderdeel":"in ffRekenen"}</small></div>
+    <div class="fa">→</div>
+    <div class="fs"><b>2</b><span>Bekijk de video</span><small>advies: altijd even doen</small></div>
+    <div class="fa">→</div>
+    <div class="fs choice"><b>3</b><span>Jij kiest</span>
+      <small><span class="ok">Snap ik het?</span> → toets</small>
+      <small><span class="hl">Twijfel?</span> → lesopgaves</small></div>
+    <div class="fa">→</div>
+    <div class="fs auto"><b>4</b><span>ffRekenen kiest</span><small>extra opgaves als dat nodig is</small></div>
+  </div>
+  <div class="row" style="gap:40px;margin-top:22px">
+    <div class="col">
+      <p class="muted" style="margin:0 0 4px;font-size:22px">Deze week:</p>
+      ${items.map((t,i)=>`<p style="margin:2px 0;font-size:28px"><span class="ok">${i+1}.</span> ${t}</p>`).join("")}
+    </div>
+    <div class="col">${R(`<div class="card" style="border-color:var(--accent2);padding:18px 26px"><p style="margin:0" class="hl">Let op</p><p style="margin:4px 0 0;font-size:27px;line-height:1.35">${letop}</p></div>`)}${extra}</div>
+  </div>`;
+
+const NOTE_FF = (...extra) => N(NH("Aan de slag · ± 1 min"),
+  NL("Wijs de onderdelen aan in ffRekenen (hoofdstuk <b>Verhoudingen herkennen en gebruiken › Verhoudingen 1</b>). Herhaal: video kijken, dan zelf kiezen tussen toets of lesopgaves.",
+     "Daarna rondlopen en het werk van vorige week bespreken.",
+     ...extra));
+
+/* ============ lessen per klas ============ */
+const LESSONS = {
+
+/* ---------------- NIVEAU 2 – les 1 ---------------- */
+"mi-1": {
+  code:"ID.26MI.A · 25999 Medewerker ICT · les 1",
+  words:["per <i>= voor elke 1</i>","verhoudingstabel","boven = onder","via 1"],
+  slides:[
+    {step:0, html:`<div class="kicker">Klopt dit?</div><h1>Een collega moet 100 pagina's printen…</h1>
+      <div class="row"><div>${SVG_PRINTER}</div>
+      <div class="col" style="padding-top:30px"><div class="bubble">Dat duurt 120 minuten!</div>
+      <p class="big" style="margin-top:50px">Klopt dit?</p><p class="muted">Hoe lang duurt het echt?</p></div></div>`,
+     notes:N(NH("Deur · bij binnenkomst · ± 2 min"),
+      NL("Antwoord: <b>nee</b>. 20 pagina's per minuut, dus 100 pagina's duurt <b>100 : 20 = 5 minuten</b>. Nog niet verklappen, komt terug bij de uitleg.",
+         "<b>Valkuil 1:</b> 100 + 20 = 120. Dat is wat de collega deed: optellen in plaats van delen. Het woordje <b>per</b> is niet gezien.",
+         "<b>Valkuil 2:</b> 100 × 20 = 2.000. Twee getallen zien en dan maar keer doen.",
+         "Extra vraag: hoeveel pagina's print hij in een half uur? (30 × 20 = <b>600</b>)",
+         "20 pagina's per minuut is normaal voor een kantoorprinter. De eerste pagina duurt in het echt iets langer (opwarmen). Dat laten we weg."))},
+    {step:1, html:`<div class="kicker">Hersenen aan</div><h1>Opwarmen ${TIMER()}</h1>
+      <div class="qa">
+        ${Q("1","4 × 25","100")}
+        ${Q("2","100 : 20","5")}
+        ${Q("3","14 : 2","7")}
+        ${Q("4","1 doos = 10 kabels. 6 dozen = … kabels","60 kabels")}
+        ${Q("5","1 muis kost €8. Wat kosten 5 muizen?","€40")}
+      </div>`,
+     notes:N(NH("Opwarmen · 3 min"),
+      NL("Iedereen schrijft het antwoord op (wisbordje of kladblok). Pas daarna het antwoord laten zien.",
+         "Antwoorden: 100 · 5 · 7 · 60 kabels · €40.",
+         "<b>Valkuil 1:</b> vraag 2 omdraaien: 20 : 100. Vraag: hoe vaak past 20 in 100?",
+         "<b>Valkuil 2:</b> vraag 5: 8 + 5 = 13. Vraag: is één muis €8 of vijf muizen?",
+         "Vraag 2 lost de deurvraag op. Vraag 4 is een <b>vast verband</b>: 1 doos is altijd 10 kabels.",
+         "Extra vraag: 3 muizen kosten €24. Wat kost 1 muis? (<b>€8</b>)"))},
+    {step:3, html:`${BG("lab")}<div class="kicker">Servicedesk</div><h1>Er komt een ticket binnen…</h1>
+      <div class="row" style="gap:30px"><div class="col"><div class="ticket"><div class="hd"><span>TICKET #3115</span><span>Werkplekken</span><span class="st">NIEUW</span></div>
+      <h3>Patchkabels voor lokaal B2.14</h3>
+      <p>In lokaal B2.14 komen <b>10 nieuwe werkplekken</b>.</p>
+      <p>Elke werkplek krijgt <b>1 patchkabel</b> van 2 m.</p>
+      <p>Op de vorige factuur: <b>4 patchkabels = €14</b>.</p>
+      <p>Het budget is <b>€40</b>.</p>
+      <p class="hl">Is het budget genoeg?</p></div></div>
+      <div style="padding-top:30px">${SVG_CABLE}</div></div>${CREDIT("lab")}`,
+     notes:N(NH("ICT-koppeling · 1 min"),
+      NL("Een patchkabel is een korte netwerkkabel (UTP, Cat6) met aan beide kanten een RJ45-stekker. Hij gaat van de netwerkaansluiting in de muur naar de pc. Dat sluit een medewerker ICT echt aan.",
+         "Prijs: €3,50 per stuk is normaal voor een patchkabel van 2 m.",
+         "Lees het ticket samen. Vraag: welke getallen heb je nodig? (10, 4, €14 en €40)",
+         "<b>Valkuil 1:</b> de 2 m meerekenen. Die heb je niet nodig voor de prijs.",
+         "<b>Valkuil 2:</b> denken dat je per 4 moet kopen. Nee: op de factuur staan 4 losse kabels.",
+         "Extra vraag: waarom krijgt niet elk bureau één lange kabel voor alle pc's? (elke pc heeft een eigen poort nodig)"))},
+    {step:2, html:`<div class="kicker">Uitleg</div><h1>Het woordje <span class="hl">per</span></h1>
+      <div class="row" style="gap:50px"><div class="col">
+        ${R(`<p><span class="hl">per</span> = voor elke 1<br><span class="muted">20 pagina's per minuut = in <b>1</b> minuut 20 pagina's</span></p>`)}
+        ${R(VT(["minuten","pagina's"],[1,20],[{op:"× 5",v:[5,100]}]))}
+        ${R(`<p style="margin-top:16px">Wat je <b>boven</b> doet, doe je ook <b>onder</b>.</p>`)}
+        ${R(`<p class="ok">Deurvraag: 100 pagina's = 5 minuten</p>`)}
+      </div><div class="col" style="flex:.95">
+        ${R(`<div class="card"><p style="margin:0 0 12px" class="hl">Rekenen in stappen: via 1</p>
+          <p style="margin:0 0 10px;font-size:26px">3 muizen kosten €24. Wat kosten 5 muizen?</p>
+          ${VT(["muizen","prijs"],[3,"€24"],[{op:": 3",v:[1,"€8"]},{op:"× 5",v:[5,"€40"]}],{rev:true})}
+          <p class="muted" style="font-size:24px;margin:12px 0 0">Eerst naar 1, dan naar het getal dat je zoekt.</p></div>`)}
+        ${R(`<p class="bad" style="font-size:28px;margin-top:14px">Niet optellen! 100 + 20 is fout.</p>`)}
+      </div></div>`,
+     notes:N(NH("Uitleg · 3 min"),
+      NL("Teken de verhoudingstabel ook op het bord. Twee rijen: boven en onder. Elke kolom hoort bij elkaar.",
+         "Antwoorden: 100 pagina's = <b>5 minuten</b>. 1 muis = <b>€8</b>, 5 muizen = <b>€40</b>.",
+         "<b>Valkuil 1:</b> boven × 5 en onder + 5 doen. Wijs steeds de twee pijlen aan: boven en onder <b>hetzelfde</b>.",
+         "<b>Valkuil 2:</b> de rijen door elkaar halen: minuten en pagina's in dezelfde rij zetten. Zet er altijd een woord voor.",
+         "Rekentaal: per, verhoudingstabel, via 1, keer, delen.",
+         "Extra vraag: wat kosten 7 muizen? (7 × €8 = <b>€56</b>)"))},
+    {step:4, phased:true, html:`<div class="kicker">Samen oplossen · ticket #3115</div>${phases()}
+      <div class="think">
+        ${PH(1)}${L("q","Wat moeten we weten?")}
+        ${L("d","Wat kosten <b>10</b> kabels? Ik weet: 4 kabels = €14. Dat is een <b>verhouding</b>!")}
+        ${L("q","Wat schatten jullie: wat kosten 10 kabels?")}
+        ${estimateBox()}
+        ${PH(2)}${L("d","Ik maak een verhoudingstabel. Eerst naar 2, dan naar 10.")}
+        ${R(VT(["kabels","prijs"],[4,"€14"],[{op:": 2",v:[2,"€7"]},{op:"× 5",v:[10,"€35"]}],{rev:true}),"small","margin:2px 0 2px 54px")}
+        ${L("d",`Of via 1: ${C("€14 : 4 = €3,50")} per kabel → ${C("10 × €3,50 = €35")}`)}
+        ${PH(3)}${L("q","Klopt het? Reken het op een andere manier.")}
+        ${L("d",`8 kabels: ${C("2 × €14 = €28")} &nbsp;+ 2 kabels: ${C("€7")} &nbsp;= ${C("€35")} ✔ &nbsp; En €35 is minder dan €40.`)}
+        ${R(`<div class="answer">✔ Ja, het budget is genoeg: <b>10 kabels kosten €35</b>. Er blijft €5 over.</div>`)}
+      </div>`,
+     notes:N(NH("Samen oplossen · 5 min · hardop denken"),
+      "<p><b>Zeg:</b> 'De vraag is ja of nee. Maar eerst moet ik weten wat 10 kabels kosten. Ik zie <i>4 kabels = €14</i>. Dat is een verhouding, dus ik pak een verhoudingstabel.'</p>",
+      NL("Laat de klas eerst schatten. Tip: 8 kabels is 2 × 4, dus 2 × €14 = €28. 10 is iets meer: ongeveer €35.",
+         "<b>Valkuil 1:</b> optellen: van 4 naar 10 is +6, dus €14 + 6 = €20. Vraag: kost een kabel dan €1?",
+         "<b>Valkuil 2:</b> €14 × 10 = €140. Dan reken je alsof 1 kabel €14 kost.",
+         "<b>Valkuil 3:</b> €14 : 4 = 3,5 opschrijven als <b>€3,05</b>. Bij geld: €3,50.",
+         "Andere stappen zijn ook goed, bijvoorbeeld 4 → 8 (× 2) en 8 → 10 (+ 2 kabels = €7). Laat zien dat er meer wegen zijn.",
+         "Extra vraag: hoeveel kabels kun je kopen voor €40? (11 kabels = €38,50. 12 kabels = €42, te duur. Dus <b>11</b>)"))},
+    {step:5, html: COMMON_FF(2,"Verhoudingen 1",["Het woordje per","Vaste verbanden","Rekenen met een verhoudingstabel","(les 2) Vaste verhoudingen"],
+      "Zie je <b>per</b>? Denk: voor elke 1.<br>Wat je boven doet, doe je <b>ook onder</b>."),
+     notes:NOTE_FF("<b>Valkuil 1:</b> de video overslaan en meteen de toets doen. Dan zakt het vaak. Video eerst.",
+                   "<b>Valkuil 2:</b> geen verhoudingstabel opschrijven en alles uit het hoofd doen. Laat ze de tabel op papier zetten.",
+                   "Extra vraag voor wie klaar is: bedenk zelf een opgave met <b>per</b> uit je stage of thuis.")}
+  ]
+},
+
+/* ---------------- NIVEAU 2 – les 2 (mini-intro) ---------------- */
+"mi-2": {
+  code:"ID.26MI.A · 25999 Medewerker ICT · les 2",
+  words:["in verhouding","1 op de 4","vaste verhouding","vergelijken"],
+  slides:[
+    {step:0, html:`<div class="kicker">Stemmen</div><h1>Welk pak is in verhouding goedkoper?</h1>
+      <div class="row" style="gap:40px;margin-top:30px">
+        <div class="card col" style="text-align:center"><p class="hl" style="margin:0">Pak A</p>${SVG_MICE(2)}<p class="big" style="margin:10px 0 0"><b>2 muizen · €18</b></p></div>
+        <div class="card col" style="text-align:center"><p class="hl" style="margin:0">Pak B</p>${SVG_MICE(5)}<p class="big" style="margin:10px 0 0"><b>5 muizen · €40</b></p></div>
+      </div>
+      <p class="muted" style="margin-top:30px">A of B? Steek je hand op. Waarom?</p>`,
+     notes:N(NH("Deur · ± 2 min"),
+      NL("Antwoord: <b>pak B</b>. A: €18 : 2 = <b>€9</b> per muis. B: €40 : 5 = <b>€8</b> per muis. Komt terug bij de uitleg.",
+         "<b>Valkuil 1:</b> 'A, want €18 is minder dan €40.' Dan kijk je alleen naar het totaal, niet naar het aantal muizen.",
+         "<b>Valkuil 2:</b> 'B, want je krijgt meer muizen.' Goed antwoord, maar zonder reden. Vraag: hoeveel kost één muis?",
+         "Extra vraag: je hebt maar 2 muizen nodig. Wat koop je dan? (pak A: €18. In verhouding goedkoper is niet altijd beter.)"))},
+    {step:2, html:`<div class="kicker">Uitleg</div><h1>Vergelijken? Maak één kant gelijk.</h1>
+      <div class="row" style="gap:50px"><div class="col">
+        ${R(`<p><span class="hl">Per 1</span><br>${C("A: €18 : 2 = €9")} per muis<br>${C("B: €40 : 5 = €8")} per muis</p>`)}
+        ${R(`<p class="ok">B is in verhouding goedkoper.</p>`)}
+      </div><div class="col">
+        ${R(`<p><span class="hl">1 op de 4</span> = van elke 4 is er 1</p>`)}
+        ${R(VT(["kapot","laptops"],[1,4],[{op:"× 2",v:[2,8]},{op:"× 5",v:[10,40]}],{rev:true}))}
+        ${R(`<p style="margin-top:14px">1 op de 4 = 2 op de 8 = 10 op de 40.<br><span class="muted">Andere getallen, <b>dezelfde</b> verhouding: een <b>vaste verhouding</b>.</span></p>`)}
+      </div></div>`,
+     notes:N(NH("Uitleg · 2 min"),
+      NL("Twee manieren om eerlijk te vergelijken: naar <b>1</b> rekenen (per muis) of beide naar <b>hetzelfde getal</b> rekenen.",
+         "Antwoorden: €9 en €8 per muis. 1 op de 4 = 2 op de 8 = 10 op de 40.",
+         "<b>Valkuil 1:</b> denken dat 2 op de 8 'meer' is dan 1 op de 4. Teken 8 laptops met 2 rode: het is hetzelfde.",
+         "<b>Valkuil 2:</b> boven × 2 en onder + 2 doen (1 op de 6). Wat je boven doet, doe je ook onder.",
+         "Rekentaal: in verhouding, op de, van de, vaste verhouding.",
+         "Extra vraag: is 3 op de 12 ook 1 op de 4? (ja, 12 : 3 = 4)"))},
+    {step:4, phased:true, html:`<div class="kicker">Samen oplossen · welk merk laptops?</div>${phases()}
+      <div class="row" style="gap:24px"><div class="col"><div class="think">
+        ${PH(1)}${L("q","Vorig jaar kapot: merk A <b>2 van de 40</b>, merk B <b>3 van de 30</b>. Welk merk koopt de school?")}
+        ${L("d","Bij A zijn er 2 kapot, bij B 3. Maar B heeft ook <b>minder</b> laptops. Zo is het niet eerlijk.")}
+        ${estimateBox()}
+        ${PH(2)}${L("d",`Naar 1: ${C("A: 2 van de 40 → 1 op de 20")}`)}
+        ${L("d",`${C("B: 3 van de 30 → 1 op de 10")}`)}
+        ${L("d",`Of allebei naar 120 laptops: ${C("A: 2 × 3 = 6 kapot")} ${C("B: 3 × 4 = 12 kapot")}`)}
+        ${PH(3)}${L("q","Klopt dit met de tekening?")}
+        ${L("d","Ja. Bij B is in <b>elke rij</b> van 10 er 1 rood. Bij A maar 1 per <b>twee rijen</b>.")}
+        ${R(`<div class="answer">✔ Advies: <b>merk A</b>. Daar gaat in verhouding de helft minder kapot.</div>`)}
+      </div></div><div style="padding-top:6px;flex:none;width:400px">${SVG_LAPTOPS(40,[6,26],"Merk A · 2 van de 40").replace('width="470"','width="400"').replace(/height="(\d+)"/,(m,h)=>`height="${Math.round(h*400/470)}"`)}${SVG_LAPTOPS(30,[3,14,27],"Merk B · 3 van de 30").replace('width="470"','width="400"').replace(/height="(\d+)"/,(m,h)=>`height="${Math.round(h*400/470)}"`)}</div></div>`,
+     notes:N(NH("Samen oplossen · 4 min · hardop denken"),
+      "<p><b>Zeg:</b> 'B heeft 3 kapot en A maar 2. Maar wacht: B heeft ook minder laptops. Ik moet het eerlijk maken.'</p>",
+      NL("Antwoorden: A = 1 op de 20, B = 1 op de 10. Op 120 laptops: A 6 kapot, B 12 kapot.",
+         "<b>Valkuil 1:</b> '2 is minder dan 3, dus A.' Goed antwoord, verkeerde reden. Vraag: en als A 2 van de 10 had?",
+         "<b>Valkuil 2:</b> werkende laptops vergelijken: 40 − 2 = 38 en 30 − 3 = 27, 'dus A'. Ook dat vergelijkt aantallen, geen verhouding.",
+         "<b>Valkuil 3:</b> omgekeerd delen: 2 : 40 en 3 : 30 geeft kommagetallen (0,05 en 0,1). Dat mag, maar 40 : 2 = 20 is op niveau 2 makkelijker.",
+         "Vereenvoudigd: echte uitvalcijfers verschillen per type en per jaar.",
+         "Extra vraag: de school koopt 120 laptops van merk A. Hoeveel gaan er ongeveer kapot in het eerste jaar? (120 : 20 = <b>6</b>)"))},
+    {step:5, html: COMMON_FF(2,"Verhoudingen 1",["Vaste verhoudingen"],
+      "Vergelijken? Maak <b>één kant gelijk</b>.<br>Bijvoorbeeld: <b>per 1</b> of allebei naar <b>120</b>."),
+     notes:NOTE_FF("<b>Valkuil 1:</b> bij vergelijk-opgaves alleen de grootste of kleinste getallen kiezen. Laat ze eerst naar 1 rekenen.",
+                   "<b>Valkuil 2:</b> 'op de' en 'van de' verwarren met min. 1 op de 4 is niet 4 − 1.",
+                   "Extra vraag voor wie klaar is: wat is in verhouding goedkoper: 3 USB-sticks voor €12 of 4 voor €14? (€4 tegen €3,50: de 4 voor €14)")}
+  ]
+}
+};
+
+/* schermen op volgorde van de stappen zetten (Uitleg vóór ICT-koppeling) */
+Object.values(LESSONS).forEach(l=>l.slides.sort((a,b)=>a.step-b.step));
+
+/* ============ start screen ============ */
+const START_HTML = `<div id="start">
+  <div class="kicker">Rekenen · Verhoudingen herkennen en gebruiken · periode 2 week 3</div>
+  <h1>Verhoudingen 1</h1>
+  <p class="muted" style="margin:0">Het woordje per · vaste verbanden · verhoudingstabel · vaste verhoudingen</p>
+  <div class="classes">
+    <div class="cls" style="cursor:default"><div class="c">25999 · niveau 2 · 2F</div><div class="t">Medewerker ICT</div><div class="s">ID.26MI.A · Verhoudingen 1</div>
+      <div class="lesbtns"><button class="btn primary" data-go="mi-1">Les 1 · per &amp; tabel</button><button class="btn" data-go="mi-2">Les 2 · vergelijken</button></div></div>
+  </div>
+  <button class="btn" id="resetAll" style="position:absolute;left:60px;bottom:90px">↺ alles resetten</button>
+  <div class="help">
+    <kbd>→</kbd> / <kbd>spatie</kbd> / klik: volgende stap &nbsp; <kbd>←</kbd>: terug<br>
+    <kbd>F</kbd>: volledig scherm &nbsp; <kbd>T</kbd>: timer &nbsp; <kbd>N</kbd>: docentnotities<br>
+    <kbd>R</kbd>: les opnieuw &nbsp; <kbd>Home</kbd>: klas kiezen
+  </div>
+</div>`;
+
+
+/* ============ engine ============ */
+let lesson=null, slideIdx=0, revIdx=0, en=false, notesOn=false;
+
+function fit(){
+  const s=Math.min(innerWidth/1600, innerHeight/900);
+  $("#stage").style.transform=`scale(${s})`;
+}
+addEventListener("resize",fit); fit();
+
+function renderSteps(active){
+  $("#steps").innerHTML = STEPS.map((s,i)=>{
+    const c = active<0 ? "" : (i===active?"on":(i<active?"done":""));
+    return `<span class="stp ${c}">${i+1}. ${s}</span>`;
+  }).join("");
+}
+function renderWords(){
+  if(!lesson){ $("#words").innerHTML=""; return; }
+  let w = lesson.words.map(t=>`<span class="word">${t}</span>`).join("");
+  if(en && lesson.wordsEN) w += lesson.wordsEN.map(t=>`<span class="word term">${t}</span>`).join("");
+  $("#words").innerHTML = w;
+}
+function renderNotes(){
+  const el=$("#notes");
+  const s = lesson && lesson.slides[slideIdx];
+  el.innerHTML = s && s.notes ? s.notes : "<h4>Docentnotities</h4><p>Geen notities bij dit scherm.</p>";
+  el.classList.toggle("on", notesOn && !!lesson);
+}
+function toggleNotes(){ notesOn=!notesOn; renderNotes(); }
+
+/* terug naar opleidingspagina via ?o=mi|st|se|sd */
+const TERUG = (()=>{ const o=new URLSearchParams(location.search).get("o"); return /^(mi|st|se|sd)$/.test(o||"") ? "../"+o+"/" : null; })();
+function showStart(init){
+  if(TERUG && init!==true){ clearInterval(tInt); location.href=TERUG; return; }
+  lesson=null; slideIdx=0; revIdx=0;
+  $("#classTag").textContent= TERUG ? "← overzicht" : "kies een klas"; $("#title").textContent="Rekenen";
+  renderSteps(-1); renderWords(); renderNotes();
+  $("#content").innerHTML = START_HTML;
+  document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",e=>{
+    e.stopPropagation(); en = b.dataset.en==="1"; startLesson(b.dataset.go);
+  }));
+  $("#resetAll").addEventListener("click",e=>{ e.stopPropagation(); resetAll(); });
+  $("#homeBtn").style.display="none"; $("#restartBtn").style.display="none";
+  $("#nextBtn").textContent="verder →";
+  try{ if(location.hash) history.replaceState(null,"",location.pathname+location.search); }catch(e){}
+}
+function resetAll(){
+  clearInterval(tInt); en=false; lesson=null; notesOn=false;
+  try{ location.replace(location.pathname); }catch(e){ showStart(); }
+}
+function restartLesson(){
+  if(!lesson) return; clearInterval(tInt);
+  slideIdx=0; revIdx=0; renderSlide();
+}
+function startLesson(key){
+  lesson = LESSONS[key]; lesson.key=key; slideIdx=0; revIdx=0;
+  $("#classTag").textContent = lesson.code + (en?" · TTO":"");
+  $("#title").textContent = "Rekenen · Verhoudingen 1";
+  $("#homeBtn").style.display=""; $("#restartBtn").style.display="";
+  renderWords(); renderSlide();
+  try{ location.hash = key + (en?"-en":""); }catch(e){}
+}
+function renderSlide(){
+  const s = lesson.slides[slideIdx];
+  renderSteps(s.step);
+  $("#content").innerHTML = s.html;
+  if(s.phased){
+    let ph=0;
+    const walker = document.createTreeWalker($("#content"), NodeFilter.SHOW_COMMENT|NodeFilter.SHOW_ELEMENT);
+    let n; while((n=walker.nextNode())){
+      if(n.nodeType===8){ const m=n.nodeValue.match(/phase:(\d)/); if(m) ph=+m[1]; }
+      else if(n.classList && n.classList.contains("rev")) n.dataset.phase = n.dataset.phase || ph;
+    }
+  }
+  revIdx=0; applyReveal(); renderNotes();
+  bindTimers();
+}
+function revList(){ return Array.from($("#content").querySelectorAll(".rev")); }
+function applyReveal(){
+  const list=revList();
+  list.forEach((el,i)=>el.classList.toggle("show", i<revIdx));
+  const s=lesson.slides[slideIdx];
+  if(s.phased){
+    let cur=0; list.forEach((el,i)=>{ if(i<revIdx) cur=Math.max(cur,+el.dataset.phase||0); });
+    document.querySelectorAll(".ph").forEach(p=>{
+      const k=+p.dataset.ph; p.classList.toggle("on",k===cur); p.classList.toggle("done",k<cur);
+    });
+  }
+  const last = slideIdx===lesson.slides.length-1 && revIdx>=list.length;
+  $("#nextBtn").textContent = last ? (TERUG ? "klaar ✓ → overzicht" : "klaar ✓ → klassen") : "verder →";
+}
+function next(){
+  if(!lesson) return;
+  const list=revList();
+  if(revIdx<list.length){ revIdx++; applyReveal();
+    const el=list[revIdx-1]; const inp=el.querySelector && el.querySelector("input"); if(inp) setTimeout(()=>inp.focus(),50);
+    return; }
+  if(slideIdx<lesson.slides.length-1){ slideIdx++; renderSlide(); }
+  else showStart();
+}
+function prev(){
+  if(!lesson) return;
+  if(revIdx>0){ revIdx--; applyReveal(); return; }
+  if(slideIdx>0){ slideIdx--; renderSlide(); revIdx=revList().length; applyReveal(); }
+  else showStart();
+}
+
+/* timer */
+let tInt=null;
+function bindTimers(){
+  document.querySelectorAll("[data-timer]").forEach(t=>t.addEventListener("click",e=>{e.stopPropagation();runTimer(t);}));
+}
+function runTimer(t){
+  t = t || document.querySelector("[data-timer]"); if(!t) return;
+  clearInterval(tInt); let left=+t.dataset.timer; t.textContent=`⏱ ${left} s`; t.style.color="var(--accent2)";
+  tInt=setInterval(()=>{ left--; t.textContent = left>0?`⏱ ${left} s`:"⏱ tijd!"; if(left<=0){clearInterval(tInt); t.style.color="var(--warn)";} },1000);
+}
+
+/* fullscreen */
+function toggleFS(){
+  try{
+    if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+    else document.exitFullscreen().catch(()=>{});
+  }catch(e){}
+}
+
+/* input */
+document.addEventListener("keydown",e=>{
+  if(e.target.tagName==="INPUT"){ if(e.key==="Escape"||e.key==="Enter") e.target.blur(); return; }
+  if(["ArrowRight","PageDown"," ","Enter"].includes(e.key)){ e.preventDefault(); next(); }
+  else if(["ArrowLeft","PageUp","Backspace"].includes(e.key)){ e.preventDefault(); prev(); }
+  else if(e.key==="Home"||e.key==="Escape"&&!document.fullscreenElement){ showStart(); }
+  else if(e.key==="f"||e.key==="F"){ toggleFS(); }
+  else if(e.key==="t"||e.key==="T"){ runTimer(); }
+  else if(e.key==="n"||e.key==="N"){ toggleNotes(); }
+  else if(e.key==="r"||e.key==="R"){ restartLesson(); }
+});
+$("#content").addEventListener("click",e=>{
+  if(e.target.closest("input,button,.btn,[data-timer],.cls")) return;
+  next();
+});
+$("#nextBtn").addEventListener("click",next);
+$("#prevBtn").addEventListener("click",prev);
+$("#fsBtn").addEventListener("click",toggleFS);
+$("#notesBtn").addEventListener("click",toggleNotes);
+$("#classTag").addEventListener("click",()=>showStart());
+$("#homeBtn").addEventListener("click",()=>showStart());
+if(TERUG){ $("#homeBtn").textContent="⌂ overzicht"; $("#homeBtn").title="Terug naar het overzicht van de opleiding (Home)"; }
+$("#restartBtn").addEventListener("click",restartLesson);
+
+/* deep link via #mi-1, #mi-2, #st, #se, #sd, #sd-en */
+function fromHash(){
+  const h=(location.hash||"").slice(1);
+  if(!h){ showStart(true); return; }
+  const isEn = h.endsWith("-en"); const key = isEn? h.slice(0,-3) : h;
+  if(LESSONS[key]){ en=isEn; if(!lesson||lesson.key!==key){ startLesson(key);} }
+  else showStart(true);
+}
+addEventListener("hashchange", fromHash);
+fromHash();
+</script>
+</body>
+</html>
