@@ -51,5 +51,13 @@ const ONDERWERPEN = [
         { hash: "mi-2", titel: "Les 2 · Vaste verhoudingen",    sub: "in verhouding vergelijken · 1 op de 4" }
       ]
     }
+  },
+  {
+    periode: "Periode 2 · Verhoudingen herkennen en gebruiken",
+    week: 3,
+    map: "verhoudingen-niveau-3",
+    lessen: {
+      st: [ { hash: "st", titel: "Verhoudingen 1", sub: "per · verhoudingstabel · 1 : 3 = 1 op de 4" } ]
+    }
   }
 ];
