@@ -22,8 +22,6 @@
   .t{font-size:26px;font-weight:700;margin:6px 0}
   .s{color:var(--muted);font-size:16px}
   .soon{opacity:.45;pointer-events:none}
-  .s a{color:var(--muted)}
-  .s a:hover{color:var(--accent)}
   footer{margin-top:56px;color:var(--muted);font-size:14px}
 </style>
 </head>
@@ -35,9 +33,6 @@
 
   <h2>Opleidingen</h2>
   <div class="grid" id="opleidingen"></div>
-
-  <h2>Alle onderwerpen</h2>
-  <p class="s" id="onderwerpen" style="margin:0"></p>
 
   <footer>Te gebruiken naast ffRekenen. Bediening op het digibord: pijltjestoetsen of klikken, F voor volledig scherm.</footer>
 </main>
@@ -51,8 +46,6 @@ document.getElementById("opleidingen").innerHTML = Object.entries(OPLEIDINGEN).m
       <div class="s">${k.toUpperCase()} · ${n} ${n===1?"week":"weken"} lesintro's${k==="sd"?" · tweetalig":""}</div>
     </a>`;
 }).join("");
-document.getElementById("onderwerpen").innerHTML = "Alle klassen in één lesintro (met klaskeuze): " +
-  ONDERWERPEN.map(x => `<a href="${x.map}/">week ${x.week} · ${x.map.replace(/-/g," ")}</a>`).join(" · ");
 </script>
 </body>
 </html>
