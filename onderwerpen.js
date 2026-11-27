@@ -61,8 +61,24 @@ const ONDERWERPEN = [
     }
   },
   {
-    periode: "Periode 2 · Verhoudingen herkennen en gebruiken",
+    periode: "Periode 2 · Oriëntatie in de twee- en driedimensionale wereld",
     week: 3,
+    map: "2d-3d-niveau-4-se",
+    lessen: {
+      se: [ { hash: "se", titel: "2D/3D", sub: "schaal · plattegrond · oppervlakte × schaal × schaal" } ]
+    }
+  },
+  {
+    periode: "Periode 2 · Oriëntatie in de twee- en driedimensionale wereld",
+    week: 3,
+    map: "2d-3d-niveau-4-sd",
+    lessen: {
+      sd: [ { hash: "sd-en", titel: "2D/3D", sub: "schaal · plattegrond · (x, y) op een scherm", en: "scale · floor plan · coordinates" } ]
+    }
+  },
+  {
+    periode: "Periode 2 · Verhoudingen herkennen en gebruiken",
+    week: 4,
     map: "verhoudingen-niveau-4-se",
     lessen: {
       se: [ { hash: "se", titel: "Verhoudingen 1", sub: "per · verhoudingstabel · 3 : 1 en 1 op de 8" } ]
@@ -70,7 +86,7 @@ const ONDERWERPEN = [
   },
   {
     periode: "Periode 2 · Verhoudingen herkennen en gebruiken",
-    week: 3,
+    week: 4,
     map: "verhoudingen-niveau-4-sd",
     lessen: {
       sd: [ { hash: "sd-en", titel: "Verhoudingen 1", sub: "per · beeldverhouding · 1 : 23 = 1 op de 24", en: "ratio · aspect ratio · conversion rate" } ]

@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rekenen – 2D/3D niveau 4 SE | Lesintro digibord</title>
+<style>
+  :root{
+    --bg:#0e1626; --panel:#16223a; --panel2:#1d2c4a; --line:#2c3f63;
+    --ink:#eef3fb; --muted:#9fb0cc; --accent:#3ee0b0; --accent2:#ffcf4a;
+    --warn:#ff6b6b; --blue:#5aa9ff;
+    --mono: ui-monospace, "Cascadia Code", "Consolas", "SFMono-Regular", monospace;
+    --sans: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:#070c16;color:var(--ink);font-family:var(--sans);overflow:hidden}
+  #viewport{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+  #stage{width:1600px;height:900px;flex:none;position:relative;background:var(--bg);transform-origin:center center;
+    background-image:radial-gradient(circle at 85% 10%, rgba(62,224,176,.08), transparent 40%),
+    linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+    background-size:auto,40px 40px,40px 40px;overflow:hidden}
+
+  /* top bar */
+  #top{position:absolute;left:0;right:0;top:0;height:76px;display:flex;align-items:center;gap:18px;padding:0 40px;border-bottom:1px solid var(--line)}
+  #classTag{white-space:nowrap;font-family:var(--mono);font-size:18px;color:var(--accent);background:rgba(62,224,176,.1);border:1px solid rgba(62,224,176,.35);padding:6px 12px;border-radius:8px;cursor:pointer}
+  #steps{display:flex;gap:6px;margin-left:auto}
+  .stp{font-size:16px;color:var(--muted);padding:7px 14px;border-radius:999px;border:1px solid var(--line);white-space:nowrap}
+  .stp.on{color:#06121f;background:var(--accent);border-color:var(--accent);font-weight:700}
+  .stp.done{color:var(--ink);border-color:#3b5482}
+
+  #content{position:absolute;left:0;right:0;top:76px;bottom:64px;padding:28px 60px}
+  #bottom{position:absolute;left:0;right:0;bottom:0;height:64px;display:flex;align-items:center;padding:0 40px;gap:16px;border-top:1px solid var(--line);color:var(--muted);font-size:17px}
+  #words{display:flex;gap:10px;flex-wrap:wrap}
+  .word{background:var(--panel2);border:1px solid var(--line);color:var(--ink);padding:4px 12px;border-radius:6px;font-size:18px}
+  .word i{color:var(--accent2);font-style:normal}
+  #nav{margin-left:auto;display:flex;gap:10px}
+  .btn{background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:8px 16px;font-size:18px;cursor:pointer;font-family:var(--sans)}
+  .btn:hover{border-color:var(--accent)}
+  .btn.primary{background:var(--accent);color:#06121f;border-color:var(--accent);font-weight:700}
+
+  h1{font-size:60px;margin:0 0 18px;line-height:1.1;letter-spacing:-.5px}
+  h2{font-size:44px;margin:0 0 20px;line-height:1.15}
+  .kicker{font-family:var(--mono);color:var(--accent);font-size:22px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
+  p,li{font-size:30px;line-height:1.4}
+  .muted{color:var(--muted)}
+  .big{font-size:40px}
+  .hl{color:var(--accent2);font-weight:700}
+  .ok{color:var(--accent);font-weight:700}
+  .bad{color:var(--warn);font-weight:700}
+  .row{display:flex;gap:40px;align-items:flex-start}
+  .col{flex:1}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:26px 30px}
+  .rev{opacity:0;transform:translateY(10px);transition:opacity .35s, transform .35s;pointer-events:none}
+  .rev.show{opacity:1;transform:none;pointer-events:auto}
+  .rev.dim{opacity:.45}
+
+  /* ticket */
+  .ticket{background:var(--panel);border:1px solid var(--line);border-left:8px solid var(--accent2);border-radius:14px;padding:26px 34px;max-width:1300px}
+  .ticket .hd{font-family:var(--mono);font-size:22px;color:var(--accent2);display:flex;gap:18px;margin-bottom:10px}
+  .ticket .hd span.st{margin-left:auto;color:#06121f;background:var(--accent2);padding:2px 10px;border-radius:6px;font-weight:700}
+  .ticket h3{font-size:38px;margin:0 0 12px}
+  .ticket p{margin:8px 0;font-size:31px}
+
+  /* warm-up list */
+  .qa{display:flex;flex-direction:column;gap:14px}
+  .q{display:flex;align-items:center;gap:22px;font-size:34px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 24px}
+  .q .n{font-family:var(--mono);color:var(--accent);font-size:26px;width:34px}
+  .q .a{margin-left:auto;color:var(--accent2);font-weight:700;font-family:var(--mono)}
+
+  /* phases (stap 5) */
+  .phases{display:flex;gap:12px;margin-bottom:14px}
+  .ph{flex:1;border:2px solid var(--line);border-radius:14px;padding:10px 18px;color:var(--muted);font-size:24px;font-weight:700;display:flex;gap:12px;align-items:center}
+  .ph b{font-family:var(--mono);font-size:28px}
+  .ph.on{border-color:var(--accent);color:var(--ink);background:rgba(62,224,176,.08)}
+  .ph.done{border-color:#3b5482;color:var(--ink)}
+  .ph small{font-weight:400;font-size:18px;color:var(--muted);display:block}
+  .think{display:flex;flex-direction:column;gap:8px}
+  .line{display:flex;gap:16px;align-items:flex-start;font-size:27px;line-height:1.3}
+  .line .tag{font-family:var(--mono);font-size:17px;padding:3px 9px;border-radius:6px;white-space:nowrap;margin-top:3px}
+  .tag.tq{background:rgba(255,207,74,.15);color:var(--accent2);border:1px solid rgba(255,207,74,.4)}
+  .tag.td{background:rgba(90,169,255,.15);color:var(--blue);border:1px solid rgba(90,169,255,.4)}
+  .tag.r{background:rgba(62,224,176,.15);color:var(--accent);border:1px solid rgba(62,224,176,.4)}
+  .calc{white-space:nowrap;font-family:var(--mono);color:var(--ink);background:#0b1220;border:1px solid var(--line);border-radius:8px;padding:2px 10px}
+  .answer{font-size:31px;border:2px solid var(--accent);background:rgba(62,224,176,.08);border-radius:14px;padding:14px 22px;margin-top:6px}
+  .est{display:flex;gap:12px;align-items:center;font-size:24px;color:var(--muted)}
+  .est input{font-size:26px;font-family:var(--mono);background:#0b1220;color:var(--accent2);border:1px solid var(--line);border-radius:8px;padding:6px 12px;width:520px}
+
+  /* start screen */
+  #start{height:100%}
+  #start h1{font-size:72px}
+  .classes{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:26px}
+  .cls{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:22px 26px;cursor:pointer;text-align:left;color:var(--ink);font-family:var(--sans)}
+  .cls:hover{border-color:var(--accent);transform:translateY(-2px)}
+  .cls .c{font-family:var(--mono);color:var(--accent);font-size:20px}
+  .cls .t{font-size:30px;font-weight:700;margin:6px 0}
+  .cls .s{font-size:20px;color:var(--muted)}
+  .lesbtns{display:flex;gap:10px;margin-top:12px}
+  .lesbtns .btn{font-size:18px}
+
+  .help{position:absolute;right:60px;bottom:90px;font-size:18px;color:var(--muted);text-align:right;line-height:1.6}
+  kbd{font-family:var(--mono);background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:1px 7px;color:var(--ink)}
+  .timer{font-family:var(--mono);font-size:30px;color:var(--accent2);border:1px solid var(--line);border-radius:10px;padding:4px 14px;cursor:pointer;background:var(--panel)}
+  .term{font-family:var(--mono);font-size:20px;color:var(--blue)}
+  svg text{font-family:var(--sans)}
+  .bgphoto{position:absolute;inset:0;background-size:cover;background-position:center;opacity:.22;z-index:0;pointer-events:none}
+  .bgphoto::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,var(--bg) 0%,rgba(14,22,38,.4) 60%,rgba(14,22,38,.1) 100%)}
+  #content > *{position:relative;z-index:1}
+  #content > .bgphoto{position:absolute;z-index:0}
+  .photo{display:block;object-fit:cover;border-radius:16px;border:1px solid var(--line);box-shadow:0 18px 40px rgba(0,0,0,.45);background:var(--panel)}
+  .pz{border-radius:50%;overflow:hidden;box-shadow:0 16px 36px rgba(0,0,0,.55);background:#d99a3e;flex:none}
+  .pz img{width:100%;height:100%;object-fit:cover;transform:scale(1.08);display:block}
+  .flow{display:flex;align-items:stretch;gap:8px}
+  .fs{flex:1;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px 20px;display:flex;flex-direction:column;gap:4px}
+  .fs b{font-family:var(--mono);color:var(--accent);font-size:24px}
+  .fs span{font-size:31px;font-weight:700;line-height:1.2}
+  .fs small{font-size:23px;color:var(--muted);line-height:1.35}
+  .fs small span{font-size:23px}
+  .fs.choice{border-color:var(--accent2);flex:1.25}
+  .fs.auto{border-style:dashed}
+  .fa{align-self:center;color:var(--muted);font-size:34px}
+  .credit{position:absolute !important;left:60px;bottom:4px;font-size:13px;color:#6f819f;z-index:2}
+  .credit a{color:#6f819f}
+  .code{font-family:var(--mono);font-size:24px;line-height:1.5;background:#0b1220;border:1px solid var(--line);border-radius:12px;padding:16px 22px;white-space:pre;color:#cfe0ff}
+  .code .k{color:#c792ea}.code .c{color:#6f819f}.code .f{color:var(--accent2)}.code .bug{background:rgba(255,107,107,.25);border-radius:4px}.code .fix{background:rgba(62,224,176,.25);border-radius:4px}
+  .ladder{display:flex;align-items:center;gap:10px}
+  .lb{background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:12px 20px;text-align:center;min-width:190px}
+  .lb b{display:block;font-size:36px;font-family:var(--mono);color:var(--accent2)}
+  .lb span{font-size:22px;color:var(--muted)}
+  .la{display:flex;flex-direction:column;align-items:center;font-family:var(--mono);font-size:20px;color:var(--accent)}
+  .la .back{color:var(--blue)}
+  .opts{display:flex;gap:18px;margin-top:10px}
+  .opt{font-size:40px;font-weight:700;font-family:var(--mono);background:var(--panel);border:2px solid var(--line);border-radius:14px;padding:10px 26px}
+  .bubble{position:relative;background:#fff;color:#0e1626;border-radius:18px;padding:14px 24px;font-size:34px;font-weight:700;display:inline-block}
+  .bubble::after{content:"";position:absolute;left:40px;bottom:-18px;border:12px solid transparent;border-top:12px solid #fff;border-bottom:0;border-width:18px 14px 0}
+  #notes{position:absolute;right:24px;top:90px;width:600px;max-height:730px;overflow:auto;background:#fffbe8;color:#1b2333;border-radius:14px;padding:18px 22px;font-size:19px;line-height:1.45;box-shadow:0 20px 50px rgba(0,0,0,.6);z-index:20;display:none}
+  #notes.on{display:block}
+  #notes h4{margin:0 0 6px;font-size:16px;letter-spacing:1px;text-transform:uppercase;color:#8a6d00}
+  #notes ul{margin:4px 0 8px 18px;padding:0}
+  #notes li{font-size:19px;line-height:1.4}
+  #notes b{color:#000}
+  #notes p{font-size:19px;line-height:1.45;margin:4px 0 8px}
+  .la{white-space:nowrap;font-size:17px}
+  .lb{min-width:150px;padding:10px 14px}
+  /* verhoudingstabel */
+  .vt{display:inline-flex;align-items:stretch;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:10px 14px}
+  .vc{display:flex;flex-direction:column}
+  .vc div{min-width:110px;height:60px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:32px;border:1px solid var(--line);background:#0b1220;padding:0 12px}
+  .vc.lab div{font-family:var(--sans);font-size:24px;color:var(--muted);justify-content:flex-start;min-width:0;background:transparent}
+  .vc.vq div:last-child{color:var(--accent2)}
+  .vstep{display:flex}
+  .small .vc div{height:48px;font-size:28px}
+  .vo{display:flex;flex-direction:column;justify-content:space-around;padding:0 10px;font-family:var(--mono);font-size:20px;color:var(--accent);white-space:nowrap}
+</style>
+</head>
+<body>
+<div id="viewport"><div id="stage">
+  <div id="top">
+    <div id="classTag" title="Andere klas kiezen (Home)">kies een klas</div>
+    <div id="title" style="font-size:20px;color:var(--muted);white-space:nowrap">Rekenen</div>
+    <div id="steps"></div>
+  </div>
+  <div id="content"></div>
+  <div id="notes"></div>
+  <div id="bottom">
+    <div id="words"></div>
+    <div id="nav">
+      <button class="btn" id="notesBtn" title="Docentnotities (N)">📝</button>
+      <button class="btn" id="homeBtn" title="Terug naar klaskeuze (Home)">⌂ klassen</button>
+      <button class="btn" id="restartBtn" title="Deze les opnieuw vanaf het begin (R)">↺ opnieuw</button>
+      <button class="btn" id="fsBtn" title="Volledig scherm (F)">⛶</button>
+      <button class="btn" id="prevBtn">← terug</button>
+      <button class="btn primary" id="nextBtn">verder →</button>
+    </div>
+  </div>
+</div></div>
+
+<script>
+/* ============ helpers ============ */
+const STEPS = ["Deur","Opwarmen","Uitleg","ICT-koppeling","Samen oplossen","Aan de slag"];
+const $ = s => document.querySelector(s);
+const R = (html, cls="", style="") => `<div class="rev ${cls}" style="${style}">${html}</div>`;
+const Q = (n, q, a) => R(`<div class="q"><span class="n">${n}</span><span>${q}</span><span class="a rev">${a}</span></div>`);
+const L = (tag, txt) => {
+  const lab = {d:"ik denk", q:"vraag"}[tag];
+  return R(`<div class="line"><span class="tag t${tag}">${lab}</span><span>${txt}</span></div>`);
+};
+const C = t => `<span class="calc">${t}</span>`;
+const PH = (k) => `<!--phase:${k}-->`;
+const TIMER = (s=10) => `<span class="timer" data-timer="${s}">⏱ ${s} s</span>`;
+const N = (...parts) => parts.join("");           // docentnotities
+const NH = t => `<h4>${t}</h4>`;
+const NL = (...li) => `<ul>${li.map(x=>`<li>${x}</li>`).join("")}</ul>`;
+
+/* ============ foto's (Wikimedia Commons) ============ */
+const WM = "https://upload.wikimedia.org/wikipedia/commons/thumb/";
+const PHOTOS = {
+  dc:   {src:WM+"0/0c/Google_Data_Center%2C_Council_Bluffs_Iowa_%2849062863796%29.jpg/1280px-Google_Data_Center%2C_Council_Bluffs_Iowa_%2849062863796%29.jpg", by:"Chad Davis", lic:"CC BY 2.0", page:"https://commons.wikimedia.org/wiki/File:Google_Data_Center,_Council_Bluffs_Iowa_(49062863796).jpg"}
+};
+const BG = k => `<div class="bgphoto" style="background-image:url('${PHOTOS[k].src}')"></div>`;
+const PH_IMG = (k, w, h, extra="") => `<img class="photo" src="${PHOTOS[k].src}" alt="" style="width:${w}px;height:${h}px;${extra}" onerror="this.style.display='none'">`;
+const CREDIT = (...ks) => `<div class="credit">Foto's via Wikimedia Commons: ${ks.map(k=>`<a href="${PHOTOS[k].page}" target="_blank" rel="noopener">${PHOTOS[k].by}</a> (${PHOTOS[k].lic})`).join(" · ")}</div>`;
+
+function phases(){
+  return `<div class="phases">
+    <div class="ph" data-ph="1"><b>1</b><span>Analyseren<small>Wat is het probleem? Wat weet ik al?</small></span></div>
+    <div class="ph" data-ph="2"><b>2</b><span>Uitvoeren<small>Wat reken ik eerst uit?</small></span></div>
+    <div class="ph" data-ph="3"><b>3</b><span>Testen<small>Klopt mijn antwoord?</small></span></div>
+  </div>`;
+}
+function estimateBox(){
+  return R(`<div class="est">Schattingen van de klas: <input type="text" placeholder="typ hier de schattingen…" autocomplete="off"></div>`);
+}
+
+
+/* ============ verhoudingstabel ============
+   VT(labels, eerste kolom, stappen, {rev:true}) — elke stap: {op:"× 5", v:[boven, onder], q:true}
+   Met rev:true verschijnt elke stap (pijl + kolom) los bij een klik. */
+const VT = (labels, first, steps=[], o={}) => {
+  const col = (v, q=false) => `<div class="vc${q?" vq":""}"><div>${v[0]}</div><div>${v[1]}</div></div>`;
+  return `<div class="vt"><div class="vc lab"><div>${labels[0]}</div><div>${labels[1]}</div></div>${col(first)}${
+    steps.map(s=>`<div class="vstep${o.rev?" rev":""}"><div class="vo"><span>${s.op} →</span><span>${s.op} →</span></div>${col(s.v, s.q)}</div>`).join("")}</div>`;
+};
+
+/* ============ SVG's ============ */
+/* bouwtekening serverruimte 8 × 5 cm (schaal 1 : 100) */
+const SVG_PLAN = (w=520) => `<svg viewBox="0 0 540 340" width="${w}" height="${Math.round(w*340/540)}">
+  <rect x="40" y="44" width="400" height="250" fill="#16223a" stroke="#eef3fb" stroke-width="6"/>
+  <rect x="190" y="290" width="70" height="9" fill="#0e1626"/>
+  <path d="M190 294 A70 70 0 0 1 260 224" fill="none" stroke="#9fb0cc" stroke-width="2" stroke-dasharray="5 4"/>
+  <text x="240" y="160" fill="#9fb0cc" font-size="28" text-anchor="middle">serverruimte</text>
+  <line x1="40" y1="20" x2="440" y2="20" stroke="#ffcf4a" stroke-width="2"/>
+  <text x="240" y="16" fill="#ffcf4a" font-size="26" font-weight="700" text-anchor="middle">8 cm</text>
+  <line x1="462" y1="44" x2="462" y2="294" stroke="#ffcf4a" stroke-width="2"/>
+  <text x="474" y="178" fill="#ffcf4a" font-size="26" font-weight="700">5 cm</text>
+  <text x="40" y="330" fill="#9fb0cc" font-size="24">schaal 1 : 100</text>
+</svg>`;
+
+/* plattegrond SR-1: 12 × 8 vloertegels van 60 × 60 cm (schaal 1 : 50)
+   grid=false: alleen de buitenmaten op de tekening */
+const SVG_FLOOR = (w=420, grid=true) => {
+  const t=30, ox=34, oy=34, cols="ABCDEFGHIJKL";
+  let g="";
+  if(grid){
+    for(let r=0;r<8;r++) for(let c=0;c<12;c++) g+=`<rect x="${ox+c*t}" y="${oy+r*t}" width="${t}" height="${t}" fill="#16223a" stroke="#2c3f63"/>`;
+    g += [...cols].map((L,c)=>`<text x="${ox+c*t+15}" y="${oy-10}" fill="#9fb0cc" font-size="16" text-anchor="middle">${L}</text>`).join("");
+    g += Array.from({length:8},(_,r)=>`<text x="${ox-10}" y="${oy+r*t+21}" fill="#9fb0cc" font-size="16" text-anchor="end">${r+1}</text>`).join("");
+    g += [2,3,4,5,6,7].map(c=>`<rect x="${ox+c*t+3}" y="${oy+2*t+3}" width="${t-6}" height="${2*t-6}" rx="3" fill="#5aa9ff"/>`).join("");
+    g += [8,9].map(c=>`<rect x="${ox+c*t+3}" y="${oy+2*t+3}" width="${t-6}" height="${2*t-6}" rx="3" fill="none" stroke="#ffcf4a" stroke-width="3" stroke-dasharray="6 4"/>`).join("");
+    g += `<text x="${ox+180}" y="${oy+t+6}" fill="#3ee0b0" font-size="17" text-anchor="middle">koude gang</text>
+          <text x="${ox+180}" y="${oy+5*t+6}" fill="#ff6b6b" font-size="17" text-anchor="middle">warme gang</text>`;
+  } else {
+    g += `<rect x="${ox}" y="${oy}" width="360" height="240" fill="#16223a"/>
+          <text x="${ox+180}" y="${oy-10}" fill="#ffcf4a" font-size="22" font-weight="700" text-anchor="middle">14,4 cm</text>
+          <text x="${ox+372}" y="${oy+128}" fill="#ffcf4a" font-size="22" font-weight="700">9,6 cm</text>
+          <text x="${ox+180}" y="${oy+128}" fill="#9fb0cc" font-size="26" text-anchor="middle">SR-1</text>`;
+  }
+  return `<svg viewBox="0 0 ${grid?420:480} 314" width="${w}" height="${Math.round(w*314/(grid?420:480))}">
+  ${g}
+  <rect x="${ox}" y="${oy}" width="360" height="240" fill="none" stroke="#eef3fb" stroke-width="4"/>
+  <text x="${ox}" y="${oy+272}" fill="#9fb0cc" font-size="20">${grid?"tegel 60 × 60 cm · nieuwe racks I3–J4":"plattegrond · schaal 1 : 50"}</text>
+</svg>`;
+};
+
+/* ============ Aan de slag ============ */
+const COMMON_FF = (niv, onderdeel, items, letop, extra="") => `
+  <div class="kicker">Aan de slag</div>
+  <h1 style="margin-bottom:12px">ffRekenen · MBO niveau ${niv}</h1>
+  <div class="card" style="margin-bottom:18px;padding:14px 26px">
+    <p style="margin:0;font-family:var(--mono);font-size:24px;color:var(--muted)">Oriëntatie in de twee- en driedimensionale wereld › <span class="hl">${onderdeel}</span></p>
+  </div>
+  <div class="flow">
+    <div class="fs"><b>1</b><span>Start de les</span><small>${items.length>1?"per onderdeel":"in ffRekenen"}</small></div>
+    <div class="fa">→</div>
+    <div class="fs"><b>2</b><span>Bekijk de video</span><small>advies: altijd even doen</small></div>
+    <div class="fa">→</div>
+    <div class="fs choice"><b>3</b><span>Jij kiest</span>
+      <small><span class="ok">Snap ik het?</span> → toets</small>
+      <small><span class="hl">Twijfel?</span> → lesopgaves</small></div>
+    <div class="fa">→</div>
+    <div class="fs auto"><b>4</b><span>ffRekenen kiest</span><small>extra opgaves als dat nodig is</small></div>
+  </div>
+  <div class="row" style="gap:40px;margin-top:22px">
+    <div class="col">
+      <p class="muted" style="margin:0 0 4px;font-size:22px">Deze week:</p>
+      ${items.map((t,i)=>`<p style="margin:2px 0;font-size:28px"><span class="ok">${i+1}.</span> ${t}</p>`).join("")}
+    </div>
+    <div class="col">${R(`<div class="card" style="border-color:var(--accent2);padding:18px 26px"><p style="margin:0" class="hl">Let op</p><p style="margin:4px 0 0;font-size:27px;line-height:1.35">${letop}</p></div>`)}${extra}</div>
+  </div>`;
+
+const NOTE_FF = (...extra) => N(NH("Aan de slag · ± 1 min"),
+  NL("Wijs de onderdelen aan in ffRekenen (hoofdstuk <b>Oriëntatie in de twee- en driedimensionale wereld › 2D/3D</b>). Herhaal: video kijken, dan zelf kiezen tussen toets of lesopgaves.",
+     "Daarna rondlopen en het werk van vorige week bespreken.",
+     ...extra));
+
+/* ============ lessen per klas ============ */
+const LESSONS = {
+
+/* ---------------- NIVEAU 4 – SE ---------------- */
+"se": {
+  code:"ID.26SE.A · 27016 ICT system engineer",
+  words:["1 : 50 <i>= 1 cm is 50 cm</i>","plattegrond <i>= bovenaanzicht</i>","oppervlakte <i>× 50 × 50</i>"],
+  slides:[
+    {step:0, html:`<div class="kicker">Klopt dit?</div><h1>De serverruimte op de bouwtekening: 8 cm × 5 cm</h1>
+      <div class="row"><div style="padding-top:10px">${SVG_PLAN(500)}</div>
+      <div class="col" style="padding-top:10px"><div class="bubble">Schaal 1 : 100. 8 × 5 = 40 cm². Dus echt is het 40 × 100 = 4.000 cm². Dat is 0,4 m².</div>
+      <p class="big" style="margin-top:50px">Klopt dit?</p><p class="muted">Hoe groot is de serverruimte echt?</p></div></div>`,
+     notes:N(NH("Deur · bij binnenkomst · ± 2 min"),
+      NL("Antwoord: <b>nee</b>. 0,4 m² is kleiner dan een bureau. Goed: 8 cm × 100 = 800 cm = <b>8 m</b> en 5 cm × 100 = 500 cm = <b>5 m</b>. 8 × 5 = <b>40 m²</b>. Nog niet verklappen, komt terug bij de uitleg.",
+         "<b>Valkuil 1:</b> de oppervlakte maar één keer × 100 doen, zoals de collega. De schaal geldt voor de lengte én voor de breedte, dus de oppervlakte gaat × 100 × 100 = × 10.000. 40 cm² × 10.000 = 400.000 cm² = 40 m².",
+         "<b>Valkuil 2:</b> cm naar m fout: 800 cm = 80 m (: 10). Een meter is 100 cm, dus 800 cm = 8 m.",
+         "Mooi om te zien: bij schaal 1 : 100 is 1 cm² op papier precies 1 m² echt (100 cm × 100 cm).",
+         "Klopt het in het echt? 40 m² is een kleine serverruimte, ongeveer een klaslokaal van 8 bij 5 meter. Past.",
+         "Extra vraag: dezelfde ruimte wordt getekend op schaal 1 : 50. Hoe groot op papier? (800 : 50 = 16 cm en 500 : 50 = 10 cm. Dat is 160 cm², <b>4 keer</b> zo veel papier, niet 2 keer)"))},
+    {step:1, html:`<div class="kicker">Hersenen aan · eerst stil opschrijven</div><h1>Opwarmen ${TIMER()}</h1>
+      <div class="row"><div class="col"><div class="qa">
+        ${Q("1","Schaal 1 : 100. 3 cm op papier = … m","3")}
+        ${Q("2","1 m² = … cm²","10.000")}
+        ${Q("3","720 cm : 60 cm","12")}
+      </div></div><div class="col"><div class="qa">
+        ${Q("4","Schaal 1 : 50. 60 cm echt = … cm op papier","1,2")}
+        ${Q("5","7,2 × 4,8","34,56")}
+        ${Q("6","Bovenaanzicht van een cilinder = een …","cirkel")}
+      </div></div></div>`,
+     notes:N(NH("Opwarmen · 3 min"),
+      NL("Iedereen schrijft het antwoord op. Pas daarna het antwoord laten zien.",
+         "Antwoorden: 3 m · 10.000 · 12 · 1,2 cm · 34,56 · cirkel.",
+         "<b>Valkuil 1:</b> vraag 2: 100. Een meter is 100 cm, maar een vierkante meter is 100 cm × 100 cm = 10.000 cm². Teken het vierkant op het bord.",
+         "<b>Valkuil 2:</b> vraag 4: 60 × 50 = 3.000 cm. Vraag: wordt het op papier groter of kleiner? Kleiner, dus delen: 60 : 50 = 1,2 cm.",
+         "Vraag 5 zonder rekenmachine: 7 × 4,8 = 33,6 en 0,2 × 4,8 = 0,96. Samen 34,56. Komt terug in de change.",
+         "Vraag 6: een cilinder (bijvoorbeeld een rechtopstaande koelleiding of UPS-accu) is van boven een cirkel en van voren een rechthoek.",
+         "Extra vraag: een rack is 42U hoog. 1U = 4,445 cm. Hoe hoog is de kast binnenin? (42 × 4,445 = 186,69 cm, dus <b>ongeveer 1,87 m</b>)"))},
+    {step:3, html:`${BG("dc")}<div class="kicker">Datacenter</div><h1>Er komt een change binnen…</h1>
+      <div class="row" style="gap:30px"><div class="col"><div class="ticket"><div class="hd"><span>CHANGE #2317</span><span>Serverruimte</span><span class="st">AANVRAAG</span></div>
+      <h3>Twee nieuwe racks in serverruimte SR-1</h3>
+      <p>Op de plattegrond (schaal <b>1 : 50</b>) is SR-1 <b>14,4 cm × 9,6 cm</b>.</p>
+      <p>De vloer heeft tegels van <b>60 × 60 cm</b>. Een rack is <b>60 × 120 cm</b>.</p>
+      <p>Facilitair vraagt: hoeveel <b>m²</b> is SR-1? En hoeveel <b>tegels</b> liggen er?</p>
+      <p class="hl">En hoe groot teken jij een rack op de plattegrond?</p></div></div>
+      <div style="padding-top:40px;flex:none">${SVG_FLOOR(400,false)}</div></div>${CREDIT("dc")}`,
+     notes:N(NH("ICT-koppeling · 1 min"),
+      NL("Veel serverruimtes hebben een <b>verhoogde vloer</b> (raised floor). Die bestaat uit losse tegels van 60 × 60 cm. Onder de vloer lopen kabels en koude lucht.",
+         "Een standaard rack is 60 cm breed en 100 tot 120 cm diep. Op de plattegrond (een <b>bovenaanzicht</b> op schaal) plan je waar racks komen, en waar de koude en warme gang zijn.",
+         "Lees de change samen. Vraag: zijn 14,4 cm en 9,6 cm echte maten? (nee, dat is op papier)",
+         "<b>Valkuil 1:</b> de maten op papier gebruiken alsof ze echt zijn: 14,4 : 60 voor het aantal tegels.",
+         "<b>Valkuil 2:</b> de schaal omdraaien: 14,4 : 50. Check: echt is groter dan op papier.",
+         "Extra vraag: waarom staan racks met hun voorkant naar elkaar toe? (servers zuigen koude lucht aan de voorkant aan en blazen warme lucht naar achteren. Zo krijg je een koude gang en een warme gang)"))},
+    {step:2, html:`<div class="kicker">Uitleg</div><h1>Schaal is een <span class="hl">verhouding</span></h1>
+      <div class="row" style="gap:44px"><div class="col">
+        ${R(`<p style="margin-top:0">1 : 100 = <b>1 cm</b> op papier is <b>100 cm</b> echt</p>`)}
+        ${R(VT(["papier","echt"],["1 cm","100 cm"],[{op:"× 8",v:["8 cm","800 cm"]}]))}
+        ${R(`<p style="margin:10px 0 0">800 cm = <b>8 m</b> · net zo: 5 cm → <b>5 m</b></p>`)}
+        ${R(`<p style="margin-top:14px">Lengte: <b>× 100</b>. Oppervlakte: <b>× 100 × 100</b>.</p>`)}
+        ${R(`<p class="ok">Deurvraag: 8 m × 5 m = 40 m², niet 0,4 m².</p>`)}
+      </div><div class="col" style="flex:1.05">
+        ${R(`<div class="card" style="padding:20px 26px"><p style="margin:0 0 8px" class="hl">Van 3D naar 2D</p>
+          <p style="margin:0;font-size:26px"><b>Aanzicht</b>: van voren, van opzij of van boven</p>
+          <p style="margin:8px 0 0;font-size:26px"><b>Plattegrond</b> = bovenaanzicht op schaal</p>
+          <p style="margin:8px 0 0;font-size:26px"><b>Doorsnede</b> = alsof je het doorzaagt</p>
+          <p style="margin:8px 0 0;font-size:26px"><b>Exploded view</b> = onderdelen los uit elkaar</p></div>`)}
+        ${R(`<p class="bad" style="font-size:28px;margin-top:14px">Let op: bij oppervlakte telt de schaal twee keer!</p>`)}
+      </div></div>`,
+     notes:N(NH("Uitleg · 3 min"),
+      NL("Links: schaal is een verhouding, dus je kunt een verhoudingstabel gebruiken. 1 cm → 100 cm. × 8 geeft 800 cm. Dan naar meter (: 100): 8 m. Net zo: 5 cm → 5 m.",
+         "Teken op het bord een vierkant van 1 cm × 1 cm. Echt is dat 100 cm × 100 cm = 10.000 cm² = 1 m². Dus de oppervlakte gaat × 10.000, niet × 100.",
+         "Schaalmodellen (in ffRekenen): bij inhoud telt de schaal <b>drie</b> keer. Een model op 1 : 10 heeft een 10 × 10 × 10 = 1.000 keer kleinere inhoud.",
+         "Rechts: <b>Van 3D naar 2D</b>. Laat een server of een laptop zien. Vooraanzicht = de voorkant met de knoppen. Bovenaanzicht = wat je van boven ziet. Een exploded view ken je van handleidingen: zo vervang je een schijf of een fan.",
+         "<b>Valkuil 1:</b> oppervlakte op papier één keer × de schaal doen. Reken liever eerst de lengtes om, dan pas × elkaar.",
+         "<b>Valkuil 2:</b> bij de verhoudingstabel boven × 8 en onder + 8 doen. Boven en onder <b>hetzelfde</b>.",
+         "Rekentaal: schaal, plattegrond, bovenaanzicht, vooraanzicht, zijaanzicht, doorsnede, exploded view, coördinaat.",
+         "Extra vraag: een kaart heeft schaal 1 : 25.000. 4 cm op de kaart is hoeveel km? (4 × 25.000 = 100.000 cm = 1.000 m = <b>1 km</b>)"))},
+    {step:4, phased:true, html:`<div class="kicker">Samen oplossen · change #2317</div>${phases()}
+      <div class="row" style="gap:24px"><div class="col"><div class="think">
+        ${PH(1)}${L("q","Hoeveel <b>m²</b> is SR-1? Hoeveel <b>tegels</b>? Hoe groot teken je een <b>rack</b>?")}
+        ${L("d","1 : 50 → 1 cm op papier is 50 cm echt. Eerst alles naar <b>echte maten</b>.")}
+        ${estimateBox()}
+        ${PH(2)}${R(VT(["papier (cm)","echt (cm)"],[1,50],[{op:"× 14,4",v:["14,4",720],q:true}],{rev:true}),"small","margin:2px 0 2px 54px")}
+        ${L("d",`${C("9,6 × 50 = 480 cm")} → SR-1 is ${C("7,2 m × 4,8 m")} = ${C("34,56 m²")}`)}
+        ${L("d",`Tegels: ${C("720 : 60 = 12")} × ${C("480 : 60 = 8")} = ${C("96")}`)}
+        ${L("d",`Rack: ${C("60 : 50 = 1,2 cm")} bij ${C("120 : 50 = 2,4 cm")}`)}
+        ${PH(3)}${L("q","Klopt het? Een tegel is 0,6 × 0,6 = 0,36 m².")}
+        ${L("d",`${C("96 × 0,36 = 34,56 m²")} ✔`)}
+        ${R(`<div class="answer">✔ SR-1 is <b>34,56 m²</b> met <b>96 tegels</b>. Een rack teken je <b>1,2 × 2,4 cm</b>.</div>`)}
+      </div></div><div style="padding-top:10px;flex:none">${R(SVG_FLOOR(400))}</div></div>`,
+     notes:N(NH("Samen oplossen · 5 min · hardop denken"),
+      "<p><b>Zeg:</b> 'Op papier is alles klein. Ik reken eerst elke lengte om naar echt. Pas daarna reken ik de oppervlakte en de tegels uit.'</p>",
+      NL("Laat de klas eerst schatten. Vraag: is SR-1 groter of kleiner dan dit lokaal?",
+         "Antwoorden: 7,2 m × 4,8 m = <b>34,56 m²</b>. 12 × 8 = <b>96 tegels</b>. Rack op papier: <b>1,2 cm × 2,4 cm</b> (1 tegel = 1,2 cm op papier).",
+         "<b>Valkuil 1:</b> eerst de oppervlakte op papier: 14,4 × 9,6 = 138,24 cm². Dan × 50 = 6.912 cm² = 0,69 m². Fout: de schaal moet er twee keer in. 138,24 × 2.500 = 345.600 cm² = 34,56 m².",
+         "<b>Valkuil 2:</b> tegels uitrekenen met 34,56 : 60. Dan deel je m² door cm. Reken per lengte (720 : 60) of deel m² door m² (34,56 : 0,36 = 96).",
+         "<b>Valkuil 3:</b> rack op papier 60 × 50 = 3.000 cm. Op papier wordt het kleiner, dus delen.",
+         "De plattegrond rechts verschijnt als laatste: tel de tegels na (A t/m L = 12, 1 t/m 8 = 8). De nieuwe racks staan op <b>I3 t/m J4</b>: twee kolommen, twee rijen.",
+         "Extra vraag: de koude gang moet minstens 1,2 m breed zijn. Hoeveel tegels is dat, en hoeveel cm op de plattegrond? (<b>2 tegels</b>, 120 : 50 = <b>2,4 cm</b>)"))},
+    {step:5, html: COMMON_FF(4,"2D/3D",["Oriëntatie op 2D/3D","Doorsnedes en exploded views","Plattegronden en coördinaten","Schaal","Schaalmodellen"],
+      "Reken eerst naar <b>echte maten</b>, dan pas m².<br>Oppervlakte: × schaal × schaal."),
+     notes:NOTE_FF("Vijf onderdelen is veel. Wie schaal al goed snapt, mag bij Schaal meteen de toets proberen.",
+                   "<b>Valkuil 1:</b> de video overslaan en meteen de toets doen. Dan zakt het vaak. Video eerst.",
+                   "<b>Valkuil 2:</b> bij Schaalmodellen de inhoud maar één keer × de schaal doen. Inhoud: × schaal × schaal × schaal.",
+                   "Extra vraag voor wie klaar is: een schaalmodel van een rack (1 : 10) is 6 × 12 × 20 cm. Hoeveel m³ is het echte rack? (60 × 120 × 200 cm = 1.440.000 cm³ = <b>1,44 m³</b>. Of: model 1.440 cm³ × 1.000)")}
+  ]
+}
+};
+
+/* schermen op volgorde van de stappen zetten (Uitleg vóór ICT-koppeling) */
+Object.values(LESSONS).forEach(l=>l.slides.sort((a,b)=>a.step-b.step));
+
+/* ============ start screen ============ */
+const START_HTML = `<div id="start">
+  <div class="kicker">Rekenen · Oriëntatie in de twee- en driedimensionale wereld · periode 2 week 3</div>
+  <h1>2D/3D · niveau 4</h1>
+  <p class="muted" style="margin:0">Oriëntatie op 2D/3D · doorsnedes en exploded views · plattegronden en coördinaten · schaal · schaalmodellen</p>
+  <div class="classes">
+    <button class="cls" data-go="se"><div class="c">27016 · niveau 4 · 3F</div><div class="t">ICT system engineer</div><div class="s">ID.26SE.A · bouwtekening · serverruimte op schaal</div></button>
+  </div>
+  <button class="btn" id="resetAll" style="position:absolute;left:60px;bottom:90px">↺ alles resetten</button>
+  <div class="help">
+    <kbd>→</kbd> / <kbd>spatie</kbd> / klik: volgende stap &nbsp; <kbd>←</kbd>: terug<br>
+    <kbd>F</kbd>: volledig scherm &nbsp; <kbd>T</kbd>: timer &nbsp; <kbd>N</kbd>: docentnotities<br>
+    <kbd>R</kbd>: les opnieuw &nbsp; <kbd>Home</kbd>: klas kiezen
+  </div>
+</div>`;
+
+
+
+
+
+/* ============ engine ============ */
+let lesson=null, slideIdx=0, revIdx=0, en=false, notesOn=false;
+
+function fit(){
+  const s=Math.min(innerWidth/1600, innerHeight/900);
+  $("#stage").style.transform=`scale(${s})`;
+}
+addEventListener("resize",fit); fit();
+
+function renderSteps(active){
+  $("#steps").innerHTML = STEPS.map((s,i)=>{
+    const c = active<0 ? "" : (i===active?"on":(i<active?"done":""));
+    return `<span class="stp ${c}">${i+1}. ${s}</span>`;
+  }).join("");
+}
+function renderWords(){
+  if(!lesson){ $("#words").innerHTML=""; return; }
+  let w = lesson.words.map(t=>`<span class="word">${t}</span>`).join("");
+  if(en && lesson.wordsEN) w += lesson.wordsEN.map(t=>`<span class="word term">${t}</span>`).join("");
+  $("#words").innerHTML = w;
+}
+function renderNotes(){
+  const el=$("#notes");
+  const s = lesson && lesson.slides[slideIdx];
+  el.innerHTML = s && s.notes ? s.notes : "<h4>Docentnotities</h4><p>Geen notities bij dit scherm.</p>";
+  el.classList.toggle("on", notesOn && !!lesson);
+}
+function toggleNotes(){ notesOn=!notesOn; renderNotes(); }
+
+/* terug naar opleidingspagina via ?o=mi|st|se|sd */
+const TERUG = (()=>{ const o=new URLSearchParams(location.search).get("o"); return /^(mi|st|se|sd)$/.test(o||"") ? "../"+o+"/" : null; })();
+function showStart(init){
+  if(TERUG && init!==true){ clearInterval(tInt); location.href=TERUG; return; }
+  lesson=null; slideIdx=0; revIdx=0;
+  $("#classTag").textContent= TERUG ? "← overzicht" : "kies een klas"; $("#title").textContent="Rekenen";
+  renderSteps(-1); renderWords(); renderNotes();
+  $("#content").innerHTML = START_HTML;
+  document.querySelectorAll("[data-go]").forEach(b=>b.addEventListener("click",e=>{
+    e.stopPropagation(); en = b.dataset.en==="1"; startLesson(b.dataset.go);
+  }));
+  $("#resetAll").addEventListener("click",e=>{ e.stopPropagation(); resetAll(); });
+  $("#homeBtn").style.display="none"; $("#restartBtn").style.display="none";
+  $("#nextBtn").textContent="verder →";
+  try{ if(location.hash) history.replaceState(null,"",location.pathname+location.search); }catch(e){}
+}
+function resetAll(){
+  clearInterval(tInt); en=false; lesson=null; notesOn=false;
+  try{ location.replace(location.pathname); }catch(e){ showStart(); }
+}
+function restartLesson(){
+  if(!lesson) return; clearInterval(tInt);
+  slideIdx=0; revIdx=0; renderSlide();
+}
+function startLesson(key){
+  lesson = LESSONS[key]; lesson.key=key; slideIdx=0; revIdx=0;
+  $("#classTag").textContent = lesson.code + (en?" · TTO":"");
+  $("#title").textContent = "Rekenen · 2D/3D";
+  $("#homeBtn").style.display=""; $("#restartBtn").style.display="";
+  renderWords(); renderSlide();
+  try{ location.hash = key + (en?"-en":""); }catch(e){}
+}
+function renderSlide(){
+  const s = lesson.slides[slideIdx];
+  renderSteps(s.step);
+  $("#content").innerHTML = s.html;
+  if(s.phased){
+    let ph=0;
+    const walker = document.createTreeWalker($("#content"), NodeFilter.SHOW_COMMENT|NodeFilter.SHOW_ELEMENT);
+    let n; while((n=walker.nextNode())){
+      if(n.nodeType===8){ const m=n.nodeValue.match(/phase:(\d)/); if(m) ph=+m[1]; }
+      else if(n.classList && n.classList.contains("rev")) n.dataset.phase = n.dataset.phase || ph;
+    }
+  }
+  revIdx=0; applyReveal(); renderNotes();
+  bindTimers();
+}
+function revList(){ return Array.from($("#content").querySelectorAll(".rev")); }
+function applyReveal(){
+  const list=revList();
+  list.forEach((el,i)=>el.classList.toggle("show", i<revIdx));
+  const s=lesson.slides[slideIdx];
+  if(s.phased){
+    let cur=0; list.forEach((el,i)=>{ if(i<revIdx) cur=Math.max(cur,+el.dataset.phase||0); });
+    document.querySelectorAll(".ph").forEach(p=>{
+      const k=+p.dataset.ph; p.classList.toggle("on",k===cur); p.classList.toggle("done",k<cur);
+    });
+  }
+  const last = slideIdx===lesson.slides.length-1 && revIdx>=list.length;
+  $("#nextBtn").textContent = last ? (TERUG ? "klaar ✓ → overzicht" : "klaar ✓ → klassen") : "verder →";
+}
+function next(){
+  if(!lesson) return;
+  const list=revList();
+  if(revIdx<list.length){ revIdx++; applyReveal();
+    const el=list[revIdx-1]; const inp=el.querySelector && el.querySelector("input"); if(inp) setTimeout(()=>inp.focus(),50);
+    return; }
+  if(slideIdx<lesson.slides.length-1){ slideIdx++; renderSlide(); }
+  else showStart();
+}
+function prev(){
+  if(!lesson) return;
+  if(revIdx>0){ revIdx--; applyReveal(); return; }
+  if(slideIdx>0){ slideIdx--; renderSlide(); revIdx=revList().length; applyReveal(); }
+  else showStart();
+}
+
+/* timer */
+let tInt=null;
+function bindTimers(){
+  document.querySelectorAll("[data-timer]").forEach(t=>t.addEventListener("click",e=>{e.stopPropagation();runTimer(t);}));
+}
+function runTimer(t){
+  t = t || document.querySelector("[data-timer]"); if(!t) return;
+  clearInterval(tInt); let left=+t.dataset.timer; t.textContent=`⏱ ${left} s`; t.style.color="var(--accent2)";
+  tInt=setInterval(()=>{ left--; t.textContent = left>0?`⏱ ${left} s`:"⏱ tijd!"; if(left<=0){clearInterval(tInt); t.style.color="var(--warn)";} },1000);
+}
+
+/* fullscreen */
+function toggleFS(){
+  try{
+    if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{});
+    else document.exitFullscreen().catch(()=>{});
+  }catch(e){}
+}
+
+/* input */
+document.addEventListener("keydown",e=>{
+  if(e.target.tagName==="INPUT"){ if(e.key==="Escape"||e.key==="Enter") e.target.blur(); return; }
+  if(["ArrowRight","PageDown"," ","Enter"].includes(e.key)){ e.preventDefault(); next(); }
+  else if(["ArrowLeft","PageUp","Backspace"].includes(e.key)){ e.preventDefault(); prev(); }
+  else if(e.key==="Home"||e.key==="Escape"&&!document.fullscreenElement){ showStart(); }
+  else if(e.key==="f"||e.key==="F"){ toggleFS(); }
+  else if(e.key==="t"||e.key==="T"){ runTimer(); }
+  else if(e.key==="n"||e.key==="N"){ toggleNotes(); }
+  else if(e.key==="r"||e.key==="R"){ restartLesson(); }
+});
+$("#content").addEventListener("click",e=>{
+  if(e.target.closest("input,button,.btn,[data-timer],.cls")) return;
+  next();
+});
+$("#nextBtn").addEventListener("click",next);
+$("#prevBtn").addEventListener("click",prev);
+$("#fsBtn").addEventListener("click",toggleFS);
+$("#notesBtn").addEventListener("click",toggleNotes);
+$("#classTag").addEventListener("click",()=>showStart());
+$("#homeBtn").addEventListener("click",()=>showStart());
+if(TERUG){ $("#homeBtn").textContent="⌂ overzicht"; $("#homeBtn").title="Terug naar het overzicht van de opleiding (Home)"; }
+$("#restartBtn").addEventListener("click",restartLesson);
+
+/* deep link via #se */
+function fromHash(){
+  const h=(location.hash||"").slice(1);
+  if(!h){ showStart(true); return; }
+  const isEn = h.endsWith("-en"); const key = isEn? h.slice(0,-3) : h;
+  if(LESSONS[key]){ en=isEn; if(!lesson||lesson.key!==key){ startLesson(key);} }
+  else showStart(true);
+}
+addEventListener("hashchange", fromHash);
+fromHash();
+</script>
+</body>
+</html>
