@@ -42,8 +42,19 @@ const ONDERWERPEN = [
     }
   },
   {
-    periode: "Periode 2 · Verhoudingen herkennen en gebruiken",
+    periode: "Periode 2 · Oriëntatie in de twee- en driedimensionale wereld",
     week: 3,
+    map: "kubieke-inhoud-niveau-2",
+    lessen: {
+      mi: [
+        { hash: "mi-1", titel: "Les 1 · Liters en kubieke meters", sub: "l × b × h · 1 dm³ = 1 L · 1 m³ = 1.000 L" },
+        { hash: "mi-2", titel: "Les 2 · cc en milliliters",        sub: "1 ml = 1 cm³ = 1 cc · 1 L = 1.000 ml" }
+      ]
+    }
+  },
+  {
+    periode: "Periode 2 · Verhoudingen herkennen en gebruiken",
+    week: 4,
     map: "verhoudingen",
     lessen: {
       mi: [
