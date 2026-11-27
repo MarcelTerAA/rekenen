@@ -36,9 +36,6 @@
   <h2>Opleidingen</h2>
   <div class="grid" id="opleidingen"></div>
 
-  <h2>Alle onderwerpen</h2>
-  <p class="s" id="onderwerpen" style="margin:0"></p>
-
   <footer>Te gebruiken naast ffRekenen. Bediening op het digibord: pijltjestoetsen of klikken, F voor volledig scherm.</footer>
 </main>
 <script src="onderwerpen.js"></script>
@@ -51,8 +48,6 @@ document.getElementById("opleidingen").innerHTML = Object.entries(OPLEIDINGEN).m
       <div class="s">${k.toUpperCase()} · ${n} ${n===1?"week":"weken"} lesintro's${k==="sd"?" · tweetalig":""}</div>
     </a>`;
 }).join("");
-document.getElementById("onderwerpen").innerHTML = "Alle klassen in één lesintro (met klaskeuze): " +
-  ONDERWERPEN.map(x => `<a href="${x.map}/">week ${x.week} · ${x.map.replace(/-/g," ")}</a>`).join(" · ");
 </script>
 </body>
 </html>
