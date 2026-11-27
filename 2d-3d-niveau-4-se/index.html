@@ -298,7 +298,7 @@ const LESSONS = {
 /* ---------------- NIVEAU 4 – SE ---------------- */
 "se": {
   code:"ID.26SE.A · 27016 ICT system engineer",
-  words:["1 : 50 <i>= 1 cm is 50 cm</i>","plattegrond <i>= bovenaanzicht</i>","oppervlakte <i>× 50 × 50</i>"],
+  words:["1 : 50 <i>= 1 cm is 50 cm</i>","plattegrond <i>= bovenaanzicht</i>","oppervlakte <i>50 × 50 = 2.500 keer</i>"],
   slides:[
     {step:0, html:`<div class="kicker">Klopt dit?</div><h1>De serverruimte op de bouwtekening: 8 cm × 5 cm</h1>
       <div class="row"><div style="padding-top:10px">${SVG_PLAN(500)}</div>
@@ -306,7 +306,7 @@ const LESSONS = {
       <p class="big" style="margin-top:50px">Klopt dit?</p><p class="muted">Hoe groot is de serverruimte echt?</p></div></div>`,
      notes:N(NH("Deur · bij binnenkomst · ± 2 min"),
       NL("Antwoord: <b>nee</b>. 0,4 m² is kleiner dan een bureau. Goed: 8 cm × 100 = 800 cm = <b>8 m</b> en 5 cm × 100 = 500 cm = <b>5 m</b>. 8 × 5 = <b>40 m²</b>. Nog niet verklappen, komt terug bij de uitleg.",
-         "<b>Valkuil 1:</b> de oppervlakte maar één keer × 100 doen, zoals de collega. De schaal geldt voor de lengte én voor de breedte, dus de oppervlakte gaat × 100 × 100 = × 10.000. 40 cm² × 10.000 = 400.000 cm² = 40 m².",
+         "<b>Valkuil 1:</b> de oppervlakte maar één keer × 100 doen, zoals de collega. De schaal geldt voor de lengte én voor de breedte, dus de oppervlakte wordt 100 × 100 = 10.000 keer zo groot. 40 cm² × 10.000 = 400.000 cm² = 40 m².",
          "<b>Valkuil 2:</b> cm naar m fout: 800 cm = 80 m (: 10). Een meter is 100 cm, dus 800 cm = 8 m.",
          "Mooi om te zien: bij schaal 1 : 100 is 1 cm² op papier precies 1 m² echt (100 cm × 100 cm).",
          "Klopt het in het echt? 40 m² is een kleine serverruimte, ongeveer een klaslokaal van 8 bij 5 meter. Past.",
@@ -349,7 +349,7 @@ const LESSONS = {
         ${R(`<p style="margin-top:0">1 : 100 = <b>1 cm</b> op papier is <b>100 cm</b> echt</p>`)}
         ${R(VT(["papier","echt"],["1 cm","100 cm"],[{op:"× 8",v:["8 cm","800 cm"]}]))}
         ${R(`<p style="margin:10px 0 0">800 cm = <b>8 m</b> · net zo: 5 cm → <b>5 m</b></p>`)}
-        ${R(`<p style="margin-top:14px">Lengte: <b>× 100</b>. Oppervlakte: <b>× 100 × 100</b>.</p>`)}
+        ${R(`<p style="margin-top:14px">Lengtes: <b>100 keer zo groot</b>.<br>Oppervlakte: 100 × 100 = <b>10.000 keer zo groot</b>.</p>`)}
         ${R(`<p class="ok">Deurvraag: 8 m × 5 m = 40 m², niet 0,4 m².</p>`)}
       </div><div class="col" style="flex:1.05">
         ${R(`<div class="card" style="padding:20px 26px"><p style="margin:0 0 8px" class="hl">Van 3D naar 2D</p>
@@ -357,11 +357,11 @@ const LESSONS = {
           <p style="margin:8px 0 0;font-size:26px"><b>Plattegrond</b> = bovenaanzicht op schaal</p>
           <p style="margin:8px 0 0;font-size:26px"><b>Doorsnede</b> = alsof je het doorzaagt</p>
           <p style="margin:8px 0 0;font-size:26px"><b>Exploded view</b> = onderdelen los uit elkaar</p></div>`)}
-        ${R(`<p class="bad" style="font-size:28px;margin-top:14px">Let op: bij oppervlakte telt de schaal twee keer!</p>`)}
+        ${R(`<p class="bad" style="font-size:28px;margin-top:14px">Let op: de oppervlakte wordt niet 100, maar 10.000 keer zo groot!</p>`)}
       </div></div>`,
      notes:N(NH("Uitleg · 3 min"),
       NL("Links: schaal is een verhouding, dus je kunt een verhoudingstabel gebruiken. 1 cm → 100 cm. × 8 geeft 800 cm. Dan naar meter (: 100): 8 m. Net zo: 5 cm → 5 m.",
-         "Teken op het bord een vierkant van 1 cm × 1 cm. Echt is dat 100 cm × 100 cm = 10.000 cm² = 1 m². Dus de oppervlakte gaat × 10.000, niet × 100.",
+         "Teken op het bord een vierkant van 1 cm × 1 cm. Echt is dat 100 cm × 100 cm = 10.000 cm² = 1 m². Dus de oppervlakte wordt 10.000 keer zo groot, niet 100 keer.",
          "Schaalmodellen (in ffRekenen): bij inhoud telt de schaal <b>drie</b> keer. Een model op 1 : 10 heeft een 10 × 10 × 10 = 1.000 keer kleinere inhoud.",
          "Rechts: <b>Van 3D naar 2D</b>. Laat een server of een laptop zien. Vooraanzicht = de voorkant met de knoppen. Bovenaanzicht = wat je van boven ziet. Een exploded view ken je van handleidingen: zo vervang je een schijf of een fan.",
          "<b>Valkuil 1:</b> oppervlakte op papier één keer × de schaal doen. Reken liever eerst de lengtes om, dan pas × elkaar.",
@@ -375,7 +375,7 @@ const LESSONS = {
         ${estimateBox()}
         ${PH(2)}${R(VT(["papier (cm)","echt (cm)"],[1,50],[{op:"× 14,4",v:["14,4",720],q:true}],{rev:true}),"small","margin:2px 0 2px 54px")}
         ${L("d",`${C("9,6 × 50 = 480 cm")} → SR-1 is ${C("7,2 m × 4,8 m")} = ${C("34,56 m²")}`)}
-        ${L("d",`Tegels: ${C("720 : 60 = 12")} × ${C("480 : 60 = 8")} = ${C("96")}`)}
+        ${L("d",`Tegels: ${C("720 : 60 = 12")} en ${C("480 : 60 = 8")} → ${C("12 × 8 = 96")}`)}
         ${L("d",`Rack: ${C("60 : 50 = 1,2 cm")} bij ${C("120 : 50 = 2,4 cm")}`)}
         ${PH(3)}${L("q","Klopt het? Een tegel is 0,6 × 0,6 = 0,36 m².")}
         ${L("d",`${C("96 × 0,36 = 34,56 m²")} ✔`)}
@@ -391,10 +391,10 @@ const LESSONS = {
          "De plattegrond rechts verschijnt als laatste: tel de tegels na (A t/m L = 12, 1 t/m 8 = 8). De nieuwe racks staan op <b>I3 t/m J4</b>: twee kolommen, twee rijen.",
          "Extra vraag: de koude gang moet minstens 1,2 m breed zijn. Hoeveel tegels is dat, en hoeveel cm op de plattegrond? (<b>2 tegels</b>, 120 : 50 = <b>2,4 cm</b>)"))},
     {step:5, html: COMMON_FF(4,"2D/3D",["Oriëntatie op 2D/3D","Doorsnedes en exploded views","Plattegronden en coördinaten","Schaal","Schaalmodellen"],
-      "Reken eerst naar <b>echte maten</b>, dan pas m².<br>Oppervlakte: × schaal × schaal."),
+      "Reken eerst naar <b>echte maten</b>, dan pas m².<br>Schaal 1 : 50? De oppervlakte wordt 50 × 50 = <b>2.500 keer</b> zo groot."),
      notes:NOTE_FF("Vijf onderdelen is veel. Wie schaal al goed snapt, mag bij Schaal meteen de toets proberen.",
                    "<b>Valkuil 1:</b> de video overslaan en meteen de toets doen. Dan zakt het vaak. Video eerst.",
-                   "<b>Valkuil 2:</b> bij Schaalmodellen de inhoud maar één keer × de schaal doen. Inhoud: × schaal × schaal × schaal.",
+                   "<b>Valkuil 2:</b> bij Schaalmodellen de inhoud maar één keer × de schaal doen. Bij 1 : 10 wordt de inhoud 10 × 10 × 10 = 1.000 keer zo groot.",
                    "Extra vraag voor wie klaar is: een schaalmodel van een rack (1 : 10) is 6 × 12 × 20 cm. Hoeveel m³ is het echte rack? (60 × 120 × 200 cm = 1.440.000 cm³ = <b>1,44 m³</b>. Of: model 1.440 cm³ × 1.000)")}
   ]
 }

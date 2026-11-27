@@ -291,7 +291,7 @@ const LESSONS = {
 /* ---------------- NIVEAU 4 – SD ---------------- */
 "sd": {
   code:"ID.26SD · 25998 Software developer",
-  words:["1 : 4 <i>= 4× zo klein</i>","(x, y) <i>= eerst x</i>"],
+  words:["1 : 4 <i>= 4 keer zo klein</i>","(x, y) <i>= eerst x</i>"],
   wordsEN:["scale","floor plan","coordinates"],
   slides:[
     {step:0, html:`<div class="kicker">Klopt dit?</div><h1>Een kaart van 800 × 600 px wordt een minimap op schaal 1 : 4.</h1>
@@ -303,7 +303,7 @@ const LESSONS = {
       <p class="big" style="margin-top:36px">Klopt dit?</p><p class="muted">Hoeveel pixels heeft de minimap echt?</p></div></div>`,
      notes:N(NH("Deur · bij binnenkomst · ± 2 min"),
       NL("Antwoord: <b>nee</b>. De minimap is 800 : 4 = <b>200 px</b> breed en 600 : 4 = <b>150 px</b> hoog. 200 × 150 = <b>30.000 px²</b>. Dat is 480.000 : 16, niet : 4. Nog niet verklappen, komt terug bij de uitleg.",
-         "<b>Valkuil 1:</b> de oppervlakte maar één keer : 4 doen, zoals in de code. De schaal geldt voor de breedte én de hoogte: : 4 : 4 = : 16.",
+         "<b>Valkuil 1:</b> de oppervlakte maar één keer : 4 doen, zoals in de code. De breedte én de hoogte worden 4 keer zo klein. Dus de oppervlakte wordt 4 × 4 = 16 keer zo klein.",
          "<b>Valkuil 2:</b> 800 − 4 en 600 − 4 doen. Bij schaal doe je × of :, nooit + of −.",
          "Grappig: 120.000 px² is precies de minimap op schaal <b>1 : 2</b> (400 × 300). Teken op het bord de kaart in 4 × 4 vakjes. De minimap is 1 vakje van de 16.",
          "TTO: 'If you scale the map down by a factor of 4, the <i>area</i> shrinks by a factor of 16.'",
@@ -345,7 +345,7 @@ const LESSONS = {
       <div class="row" style="gap:44px"><div class="col">
         ${R(`<p style="margin-top:0">1 : 4 = de minimap is <b>4 keer zo klein</b></p>`)}
         ${R(VT(["breedte","hoogte"],[800,600],[{op:": 4",v:[200,150]}]))}
-        ${R(`<p style="margin-top:14px">Lengte: <b>: 4</b>. Oppervlakte: <b>: 4 : 4 = : 16</b>.</p>`)}
+        ${R(`<p style="margin-top:14px">Breedte en hoogte: <b>4 keer zo klein</b>.<br>Oppervlakte: 4 × 4 = <b>16 keer zo klein</b>.</p>`)}
         ${R(`<p class="ok">Deurvraag: 200 × 150 = 30.000 px², niet 120.000.</p>`)}
       </div><div class="col" style="flex:1.05">
         ${R(`<div class="card" style="padding:20px 26px"><p style="margin:0 0 8px" class="hl">Van 3D naar 2D</p>
@@ -353,11 +353,11 @@ const LESSONS = {
           <p style="margin:8px 0 0;font-size:26px"><b>Plattegrond</b> = bovenaanzicht op schaal</p>
           <p style="margin:8px 0 0;font-size:26px"><b>Doorsnede</b> en <b>exploded view</b>: kijk erin</p>
           <p style="margin:8px 0 0;font-size:26px"><b>(x, y)</b>: eerst x. Op een scherm gaat y <b>omlaag</b>.</p></div>`)}
-        ${R(`<p class="bad" style="font-size:28px;margin-top:14px">Let op: bij oppervlakte telt de schaal twee keer!</p>`)}
+        ${R(`<p class="bad" style="font-size:28px;margin-top:14px">Let op: de oppervlakte wordt niet 4, maar 16 keer zo klein!</p>`)}
       </div></div>`,
      notes:N(NH("Uitleg · 3 min"),
-      NL("Links: schaal is een verhouding, dus een verhoudingstabel werkt. Breedte en hoogte gaan allebei : 4. Pas daarna × elkaar: 200 × 150 = 30.000.",
-         "Teken op het bord de kaart in 4 × 4 vakjes. De minimap is 1 vakje: 1 van de 16. Dus oppervlakte : 16.",
+      NL("Links: schaal is een verhouding, dus een verhoudingstabel werkt. Breedte en hoogte worden allebei 4 keer zo klein (gedeeld door 4). Pas daarna × elkaar: 200 × 150 = 30.000.",
+         "Teken op het bord de kaart in 4 × 4 vakjes. De minimap is 1 vakje: 1 van de 16. Dus de oppervlakte wordt 16 keer zo klein.",
          "Schaalmodellen (in ffRekenen): bij inhoud telt de schaal <b>drie</b> keer. Een 3D-model dat 2× zo groot geprint wordt, heeft 2 × 2 × 2 = 8 keer zoveel filament nodig.",
          "Rechts: <b>Van 3D naar 2D</b>. Een plattegrond is een bovenaanzicht. Een doorsnede is alsof je het doorzaagt. Een exploded view toont alle onderdelen los, zoals in een handleiding of een 3D-viewer.",
          "Coördinaten: (x, y), eerst x (naar rechts), dan y. In de wiskunde gaat y omhoog, op een scherm omlaag.",
@@ -388,7 +388,7 @@ const LESSONS = {
          "TTO: 'The y-axis points down on screen.' 'Scale factor: 20 pixels per metre.'",
          "Extra vraag: op de telefoon is de plattegrond 1 : 4 kleiner (250 × 150 px). Waar staat de pin dan? (240 : 4 = 60, 120 : 4 = 30, dus <b>(60, 30)</b>)"))},
     {step:5, html: COMMON_FF(4,"2D/3D",["Oriëntatie op 2D/3D","Doorsnedes en exploded views","Plattegronden en coördinaten","Schaal","Schaalmodellen"],
-      "Oppervlakte: × schaal × schaal.<br>Op een scherm: <b>(x, y)</b> en y gaat <b>omlaag</b>."),
+      "Schaal 1 : 4? De oppervlakte wordt 4 × 4 = <b>16 keer</b> zo klein.<br>Op een scherm: <b>(x, y)</b> en y gaat <b>omlaag</b>."),
      notes:NOTE_FF("Vijf onderdelen is veel. Wie schaal al goed snapt, mag bij Schaal meteen de toets proberen.",
                    "<b>Valkuil 1:</b> de video overslaan en meteen de toets doen. Dan zakt het vaak. Video eerst.",
                    "<b>Valkuil 2:</b> in ffRekenen (Plattegronden en coördinaten) gaat y gewoon <b>omhoog</b>, zoals in de wiskunde. Alleen op een scherm in code gaat y omlaag. Zeg dit er even bij.",
