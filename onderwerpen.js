@@ -53,6 +53,14 @@ const ONDERWERPEN = [
     }
   },
   {
+    periode: "Periode 2 · Oriëntatie in de twee- en driedimensionale wereld",
+    week: 3,
+    map: "3d-naar-2d-niveau-3",
+    lessen: {
+      st: [ { hash: "st", titel: "3D naar 2D", sub: "plattegrond · coördinaten · schaal 1 : 100" } ]
+    }
+  },
+  {
     periode: "Periode 2 · Verhoudingen herkennen en gebruiken",
     week: 4,
     map: "verhoudingen",
@@ -65,7 +73,7 @@ const ONDERWERPEN = [
   },
   {
     periode: "Periode 2 · Verhoudingen herkennen en gebruiken",
-    week: 3,
+    week: 4,
     map: "verhoudingen-niveau-3",
     lessen: {
       st: [ { hash: "st", titel: "Verhoudingen 1", sub: "per · verhoudingstabel · 1 : 3 = 1 op de 4" } ]
